@@ -44,7 +44,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   return (
-    <div className="flex h-screen gap-4 bg-[#000209E5] text-white overflow-hidden">
+    <div className="flex itc h-screen gap-4 bg-[#000209E5] text-white overflow-hidden">
       {/* Desktop Sidebar */}
       <div className="hidden lg:block w-64">
         <Sidebar />
@@ -118,7 +118,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </header>
 
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 container mx-auto overflow-hidden">
           {/* Page Content */}
           <div className="flex-1 overflow-auto">{children}</div>
 

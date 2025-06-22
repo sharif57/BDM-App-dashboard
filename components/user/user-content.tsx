@@ -1,269 +1,302 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, Search, Filter, Edit, Trash2, Eye, UserCheck, UserX } from "lucide-react"
+import { ChevronLeft, ChevronRight, Check, Info, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-const users = [
+interface User {
+  id: string
+  userName: string
+  joiningDate: string
+  emailId: string
+  phoneNum: string
+  shopName: string
+  area: string
+  address: string
+  status: "Pending" | "Inactive" | "Active"
+}
+
+const mockUsers: User[] = [
   {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-    avatar: "/placeholder.svg?height=40&width=40",
-    role: "Admin",
-    status: "Active",
-    lastLogin: "2024-01-15",
-    orders: 23,
-    totalSpent: "$2,340.50",
+    id: "1",
+    userName: "Mahmud",
+    joiningDate: "23 June 2024",
+    emailId: "mahmudgajigaji@gmail.com",
+    phoneNum: "01768481561",
+    shopName: "MJ pharma",
+    area: "Rampura",
+    address: "Rampura",
+    status: "Pending",
   },
   {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane@example.com",
-    avatar: "/placeholder.svg?height=40&width=40",
-    role: "Customer",
-    status: "Active",
-    lastLogin: "2024-01-14",
-    orders: 12,
-    totalSpent: "$890.25",
-  },
-  {
-    id: 3,
-    name: "Mike Johnson",
-    email: "mike@example.com",
-    avatar: "/placeholder.svg?height=40&width=40",
-    role: "Manager",
-    status: "Active",
-    lastLogin: "2024-01-13",
-    orders: 8,
-    totalSpent: "$1,250.00",
-  },
-  {
-    id: 4,
-    name: "Sarah Wilson",
-    email: "sarah@example.com",
-    avatar: "/placeholder.svg?height=40&width=40",
-    role: "Customer",
+    id: "2",
+    userName: "Mahmud",
+    joiningDate: "23 June 2024",
+    emailId: "mahmudgajigaji@gmail.com",
+    phoneNum: "01768481561",
+    shopName: "MJ pharma",
+    area: "Rampura",
+    address: "Rampura",
     status: "Inactive",
-    lastLogin: "2024-01-05",
-    orders: 3,
-    totalSpent: "$145.75",
   },
   {
-    id: 5,
-    name: "David Brown",
-    email: "david@example.com",
-    avatar: "/placeholder.svg?height=40&width=40",
-    role: "Customer",
-    status: "Suspended",
-    lastLogin: "2024-01-01",
-    orders: 1,
-    totalSpent: "$89.99",
+    id: "3",
+    userName: "Mahmud",
+    joiningDate: "23 June 2024",
+    emailId: "mahmudgajigaji@gmail.com",
+    phoneNum: "01768481561",
+    shopName: "MJ pharma",
+    area: "Rampura",
+    address: "Rampura",
+    status: "Active",
+  },
+  {
+    id: "4",
+    userName: "Mahmud",
+    joiningDate: "23 June 2024",
+    emailId: "mahmudgajigaji@gmail.com",
+    phoneNum: "01768481561",
+    shopName: "MJ pharma",
+    area: "Rampura",
+    address: "Rampura",
+    status: "Active",
+  },
+  {
+    id: "5",
+    userName: "Mahmud",
+    joiningDate: "23 June 2024",
+    emailId: "mahmudgajigaji@gmail.com",
+    phoneNum: "01768481561",
+    shopName: "MJ pharma",
+    area: "Rampura",
+    address: "Rampura",
+    status: "Active",
+  },
+  {
+    id: "6",
+    userName: "Mahmud",
+    joiningDate: "23 June 2024",
+    emailId: "mahmudgajigaji@gmail.com",
+    phoneNum: "01768481561",
+    shopName: "MJ pharma",
+    area: "Rampura",
+    address: "Rampura",
+    status: "Active",
+  },
+  {
+    id: "7",
+    userName: "Mahmud",
+    joiningDate: "23 June 2024",
+    emailId: "mahmudgajigaji@gmail.com",
+    phoneNum: "01768481561",
+    shopName: "MJ pharma",
+    area: "Rampura",
+    address: "Rampura",
+    status: "Active",
   },
 ]
 
-const roles = ["All", "Admin", "Manager", "Customer"]
-const statuses = ["All", "Active", "Inactive", "Suspended"]
+export default function Component() {
+  const [users, setUsers] = useState<User[]>(mockUsers)
+  const [currentPage, setCurrentPage] = useState(2)
+  const totalPages = 24
+  const newUserRequests = 3
 
-export default function UserContent() {
-  const [selectedRole, setSelectedRole] = useState("All")
-  const [selectedStatus, setSelectedStatus] = useState("All")
-  const [searchTerm, setSearchTerm] = useState("")
+  const handleStatusChange = (userIndex: number, newStatus: "Pending" | "Inactive" | "Active") => {
+    setUsers((prev) => prev.map((user, index) => (index === userIndex ? { ...user, status: newStatus } : user)))
+  }
 
-  const filteredUsers = users.filter((user) => {
-    const matchesRole = selectedRole === "All" || user.role === selectedRole
-    const matchesStatus = selectedStatus === "All" || user.status === selectedStatus
-    const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    return matchesRole && matchesStatus && matchesSearch
-  })
-
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case "Admin":
-        return "bg-red-500/20 text-red-400"
-      case "Manager":
-        return "bg-blue-500/20 text-blue-400"
-      case "Customer":
-        return "bg-green-500/20 text-green-400"
-      default:
-        return "bg-gray-500/20 text-gray-400"
+  const handleAction = (userIndex: number, action: "approve" | "info" | "delete") => {
+    switch (action) {
+      case "approve":
+        handleStatusChange(userIndex, "Active")
+        break
+      case "info":
+        console.log("View user info:", users[userIndex])
+        break
+      case "delete":
+        setUsers((prev) => prev.filter((_, index) => index !== userIndex))
+        break
     }
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Active":
-        return "bg-green-500/20 text-green-400"
+      case "Pending":
+        return "text-red-400"
       case "Inactive":
-        return "bg-yellow-500/20 text-yellow-400"
-      case "Suspended":
-        return "bg-red-500/20 text-red-400"
+        return "text-gray-400"
+      case "Active":
+        return "text-green-400"
       default:
-        return "bg-gray-500/20 text-gray-400"
+        return "text-gray-400"
     }
   }
 
+  const renderPagination = () => {
+    const pages = []
+
+    // Previous button
+    pages.push(
+      <Button
+        key="prev"
+        variant="ghost"
+        size="sm"
+        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+        disabled={currentPage === 1}
+        className="text-white hover:bg-gray-700"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </Button>,
+    )
+
+    // Page numbers
+    for (let i = 1; i <= 6; i++) {
+      pages.push(
+        <Button
+          key={i}
+          variant={currentPage === i ? "default" : "ghost"}
+          size="sm"
+          onClick={() => setCurrentPage(i)}
+          className={currentPage === i ? "bg-green-500 hover:bg-green-600 text-white" : "text-white hover:bg-gray-700"}
+        >
+          {i}
+        </Button>,
+      )
+    }
+
+    // Ellipsis and last page
+    pages.push(
+      <span key="ellipsis" className="text-gray-400 px-2">
+        ...
+      </span>,
+    )
+    pages.push(
+      <Button
+        key={totalPages}
+        variant="ghost"
+        size="sm"
+        onClick={() => setCurrentPage(totalPages)}
+        className="text-white hover:bg-gray-700"
+      >
+        {totalPages}
+      </Button>,
+    )
+
+    // Next button
+    pages.push(
+      <Button
+        key="next"
+        variant="ghost"
+        size="sm"
+        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+        disabled={currentPage === totalPages}
+        className="text-white hover:bg-gray-700"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </Button>,
+    )
+
+    return pages
+  }
+
   return (
-    <div className="p-3 sm:p-4 lg:p-6">
+    <div className=" text-white p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <div>
-          <h2 className="text-2xl font-bold text-white mb-2">User Management</h2>
-          <p className="text-gray-400">Manage user accounts and permissions</p>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold">User Details</h1>
+
+        <div className="flex items-center gap-4">
+          {/* Notification */}
+          <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2">
+            <div className="w-2 h-2 bg-white rounded-full"></div>
+            You have {newUserRequests} new user request
+          </div>
+          <Button className="bg-green-500 hover:bg-green-600 text-white px-6">Details</Button>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Add User
-        </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <Card className="bg-gray-800 border-gray-700">
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-white">2,456</div>
-            <div className="text-sm text-gray-400">Total Users</div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gray-800 border-gray-700">
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-green-400">2,234</div>
-            <div className="text-sm text-gray-400">Active Users</div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gray-800 border-gray-700">
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-yellow-400">156</div>
-            <div className="text-sm text-gray-400">Inactive Users</div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gray-800 border-gray-700">
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-red-400">66</div>
-            <div className="text-sm text-gray-400">Suspended</div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Table */}
+      <div className="bg-[#2a2a2a] rounded-lg overflow-hidden">
+        {/* Table Header */}
+        <div className="grid grid-cols-9 gap-4 p-4 border-b border-gray-600 text-sm font-medium text-gray-300">
+          <div>User Name</div>
+          <div>Joining Date</div>
+          <div>Email ID</div>
+          <div>Phone Num</div>
+          <div>Shop Name</div>
+          <div>Area</div>
+          <div>Address</div>
+          <div>Status</div>
+          <div>Action</div>
+        </div>
 
-      {/* Filters */}
-      <Card className="bg-gray-800 border-gray-700 mb-6">
-        <CardContent className="p-4">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search users..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                />
+        {/* Table Body */}
+        <div className="divide-y divide-gray-600">
+          {users.map((user, index) => (
+            <div
+              key={user.id}
+              className="grid grid-cols-9 gap-4 p-4 items-center hover:bg-gray-700/50 transition-colors"
+            >
+              <div className="text-white">{user.userName}</div>
+              <div className="text-gray-300">{user.joiningDate}</div>
+              <div className="text-gray-300 text-sm">{user.emailId}</div>
+              <div className="text-gray-300">{user.phoneNum}</div>
+              <div className="text-gray-300">{user.shopName}</div>
+              <div className="text-gray-300">{user.area}</div>
+              <div className="text-gray-300">{user.address}</div>
+              <div>
+                <Select
+                  value={user.status}
+                  onValueChange={(value: "Pending" | "Inactive" | "Active") => handleStatusChange(index, value)}
+                >
+                  <SelectTrigger className="w-20 bg-transparent border-none p-0 h-auto">
+                    <SelectValue className={`${getStatusColor(user.status)} font-medium text-sm`} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#2a2a2a] border-gray-600">
+                    <SelectItem value="Pending" className="text-red-400">
+                      Pending
+                    </SelectItem>
+                    <SelectItem value="Inactive" className="text-gray-400">
+                      Inactive
+                    </SelectItem>
+                    <SelectItem value="Active" className="text-green-400">
+                      Active
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => handleAction(index, "approve")}
+                  className="w-8 h-8 p-0 bg-green-500 hover:bg-green-600 rounded-full"
+                >
+                  <Check className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => handleAction(index, "info")}
+                  className="w-8 h-8 p-0 bg-blue-500 hover:bg-blue-600 rounded-full"
+                >
+                  <Info className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => handleAction(index, "delete")}
+                  className="w-8 h-8 p-0 bg-red-500 hover:bg-red-600 rounded-full"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
             </div>
-            <div className="flex gap-2 flex-wrap">
-              <select
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white rounded-md px-3 py-2 text-sm"
-              >
-                {roles.map((role) => (
-                  <option key={role} value={role}>
-                    {role} Role
-                  </option>
-                ))}
-              </select>
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white rounded-md px-3 py-2 text-sm"
-              >
-                {statuses.map((status) => (
-                  <option key={status} value={status}>
-                    {status} Status
-                  </option>
-                ))}
-              </select>
-            </div>
-            <Button variant="ghost" size="sm" className="text-gray-400">
-              <Filter className="w-4 h-4 mr-2" />
-              Filter
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          ))}
+        </div>
+      </div>
 
-      {/* Users Table */}
-      <Card className="bg-gray-800 border-gray-700">
-        <CardHeader>
-          <CardTitle className="text-white">User List</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-700">
-                  <th className="text-left py-3 px-4 text-gray-400 font-medium">User</th>
-                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Role</th>
-                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Status</th>
-                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Last Login</th>
-                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Orders</th>
-                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Total Spent</th>
-                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredUsers.map((user) => (
-                  <tr key={user.id} className="border-b border-gray-700 hover:bg-gray-700/50">
-                    <td className="py-3 px-4">
-                      <div className="flex items-center space-x-3">
-                        <Avatar className="w-10 h-10">
-                          <AvatarImage src={user.avatar || "/placeholder.svg"} />
-                          <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="text-white font-medium">{user.name}</div>
-                          <div className="text-gray-400 text-sm">{user.email}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <Badge className={getRoleColor(user.role)}>{user.role}</Badge>
-                    </td>
-                    <td className="py-3 px-4">
-                      <Badge className={getStatusColor(user.status)}>{user.status}</Badge>
-                    </td>
-                    <td className="py-3 px-4 text-gray-300">{user.lastLogin}</td>
-                    <td className="py-3 px-4 text-gray-300">{user.orders}</td>
-                    <td className="py-3 px-4 text-white font-medium">{user.totalSpent}</td>
-                    <td className="py-3 px-4">
-                      <div className="flex space-x-2">
-                        <Button variant="ghost" size="sm" className="p-1 h-8 w-8 text-gray-400 hover:text-blue-400">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="p-1 h-8 w-8 text-gray-400 hover:text-green-400">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="p-1 h-8 w-8 text-gray-400 hover:text-yellow-400">
-                          {user.status === "Active" ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
-                        </Button>
-                        <Button variant="ghost" size="sm" className="p-1 h-8 w-8 text-gray-400 hover:text-red-400">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Pagination */}
+      <div className="flex items-center justify-center gap-2 mt-6">{renderPagination()}</div>
     </div>
   )
 }

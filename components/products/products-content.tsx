@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 const products = [
   {
@@ -106,17 +107,18 @@ export default function ProductsContent() {
         <div>
           <h2 className="text-2xl font-bold text-white mb-2">Products</h2>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Product
-        </Button>
+        <Link href="/products/add-product">
+          <Button className="bg-[#44B46E] hover:bg-[#44B46E] rounded-full">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Product
+          </Button>
+        </Link>
       </div>
 
       {/* Filters */}
       <Card className="bg-gray-800 border-gray-700 mb-6">
         <CardContent className="p-4">
           <div className="flex flex-col lg:flex-row gap-4">
-          
             <div className="flex gap-2 flex-wrap">
               {categories.map((category) => (
                 <Button

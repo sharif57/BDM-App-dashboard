@@ -120,7 +120,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         <div className="flex flex-1 container mx-auto overflow-hidden">
           {/* Page Content */}
-          <div className="flex-1 overflow-auto">{children}</div>
+          <div className="flex-1 overflow-auto ">{children}</div>
 
           {/* Desktop Notifications Sidebar */}
           {/* <div className="hidden xl:block w-80 border-l border-gray-700">

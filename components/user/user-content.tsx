@@ -218,7 +218,7 @@ export default function Component() {
       </div>
 
       {/* Table */}
-      <div className="bg-[#2a2a2a] rounded-lg overflow-hidden">
+      <div className="bg-[#23252b] rounded-lg overflow-hidden">
         {/* Table Header */}
         <div className="grid grid-cols-9 gap-4 p-4 border-b border-gray-600 text-sm font-medium text-gray-300">
           <div>User Name</div>

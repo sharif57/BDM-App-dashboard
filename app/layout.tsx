@@ -7,9 +7,9 @@ import DashboardLayout from "@/components/layout/dashboard-layout";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Dashboard - Admin Panel",
-  description: "Complete admin dashboard with analytics and management tools",
-  generator: "v0.dev",
+  title: "Dashboard - BDM-App",
+  description: "BDM-App",
+  generator: "Next.js",
 };
 
 export default function RootLayout({

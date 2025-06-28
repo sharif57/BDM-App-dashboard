@@ -22,6 +22,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const pathname = usePathname();
 
+  if(pathname === "/auth/login" || pathname === "/auth/forgot-password" || pathname === "/auth/verify-email") {
+    return children
+  }
+
   const getPageTitle = () => {
     switch (pathname) {
       case "/":
@@ -122,10 +126,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {/* Page Content */}
           <div className="flex-1 overflow-auto ">{children}</div>
 
-          {/* Desktop Notifications Sidebar */}
-          {/* <div className="hidden xl:block w-80 border-l border-gray-700">
-            <NotificationsPanel />
-          </div> */}
+          
         </div>
       </div>
     </div>

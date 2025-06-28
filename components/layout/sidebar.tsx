@@ -7,17 +7,21 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 
 const sidebarItems = [
-  { name: "Dashboard", href: "/", icon: "🏠" },
-  { name: "Products", href: "/products", icon: "📦" },
-  { name: "Orders", href: "/orders", icon: "📋" },
-  { name: "Notice", href: "/notice", icon: "📢" },
-  { name: "User", href: "/user", icon: "👥" },
-  { name: "Area", href: "/area", icon: "🌍" },
-  { name: "Settings", href: "/settings", icon: "⚙️" },
+  { name: "Dashboard", href: "/",  },
+  { name: "Products", href: "/products", },
+  { name: "Orders", href: "/orders",  },
+  { name: "Notice", href: "/notice", },
+  { name: "User", href: "/user", },
+  { name: "Area", href: "/area",  },
+  { name: "Settings", href: "/settings", },
 ]
 
 export default function Sidebar({ className = "" }: { className?: string }) {
   const pathname = usePathname()
+
+  if (pathname === "/auth/login" || pathname === "/register") {
+    return null
+  }
 
   return (
     <div className={`bg-[#2c2e34] p-4 flex flex-col h-full ${className}`}>
@@ -44,7 +48,7 @@ export default function Sidebar({ className = "" }: { className?: string }) {
                 }`}
               >
                 <div className="flex items-center space-x-3">
-                  <span className="text-lg">{item.icon}</span>
+                  {/* <span className="text-lg">{item.icon}</span> */}
                   <span>{item.name}</span>
                 </div>
                 <ChevronRight className="w-4 h-4" />

@@ -101,7 +101,7 @@ export default function ProductsContent() {
   const handleDelete = (id: number) => console.log(`Delete product ${id}`);
 
   return (
-    <div className="p-3 sm:p-4 lg:p-6">
+    <div className="p-3 sm:p-4 lg:p-6 ">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>

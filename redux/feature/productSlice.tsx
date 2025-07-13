@@ -2,11 +2,11 @@
 
 import baseApi from "../Api/baseApi";
 
-export const userApi = baseApi.injectEndpoints({
+export const productsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    userProfile: builder.query({
+    allProducts: builder.query({
       query: () => ({
-        url: "/auth/get_user_profile/",
+        url: "/products/products/",
         method: "GET",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -27,16 +27,7 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
-    allUsers: builder.query({
-      query: () => ({
-        url: "/auth/user/",
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      }),
-    })
   }),
 });
 
-export const { useUserProfileQuery, useUpdateProfileMutation , useAllUsersQuery} = userApi;
+export const { useAllProductsQuery, useUpdateProfileMutation } = productsApi;

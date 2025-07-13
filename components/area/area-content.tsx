@@ -1,14 +1,225 @@
-// import React from 'react'
+// "use client";
+
+// import { useState } from "react";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
+// import { ChevronLeft, ChevronRight, Edit, Trash2 } from "lucide-react";
+// import Link from "next/link";
+// import { useAreaListQuery, useUpdateAreaMutation } from "@/redux/feature/areaSlice";
+// import { Button } from "@/components/ui/button";
+// import {
+//   Dialog,
+//   DialogClose,
+//   DialogContent,
+//   DialogDescription,
+//   DialogFooter,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogTrigger,
+// } from "@/components/ui/dialog";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+
+// interface AreaData {
+//   id: string;
+//   name: string;
+//   status: "Active" | "Inactive";
+// }
 
 // export default function AreaContent() {
+//   const { data, isLoading } = useAreaListQuery(undefined);
+//   const [updateArea]=useUpdateAreaMutation();
+
+//   // Transform API data to match AreaData interface
+//   const apiAreas: AreaData[] =
+//     data?.data?.map((area: any) => ({
+//       id: `#${area.area_id}`,
+//       name: area.area_name,
+//       status: area.is_active ? "Active" : "Inactive",
+//     })) || [];
+
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [localAreas, setLocalAreas] = useState<AreaData[]>([]); // for status toggle only
+
+//   const handleStatusChange = (
+//     index: number,
+//     newStatus: "Active" | "Inactive"
+//   ) => {
+//     const updated = [...(localAreas.length ? localAreas : apiAreas)];
+//     updated[index].status = newStatus;
+//     setLocalAreas(updated);
+//   };
+
+//   const handleEdit = (index: number) => {
+//     const target = (localAreas.length ? localAreas : apiAreas)[index];
+//     console.log("Edit area:", target);
+//   };
+
+//   const handleDelete = (index: number) => {
+//     const updated = (localAreas.length ? localAreas : apiAreas).filter(
+//       (_, i) => i !== index
+//     );
+//     setLocalAreas(updated);
+//   };
+
+//   const handleAddNew = () => {
+//     console.log("Add new area");
+//   };
+
+//   const displayedAreas = localAreas.length ? localAreas : apiAreas;
+
 //   return (
-//     <div>area-content</div>
-//   )
+//     <div className="w-full p-6">
+//       <div className="w-full">
+//         {/* Header */}
+//         <div className="flex justify-between items-center mb-6">
+//           <h1 className="text-white text-xl font-medium">Area</h1>
+//           <Link href={"add-area-form"}>
+//             <Button
+//               onClick={handleAddNew}
+//               className="bg-[#44B46E] hover:bg-green-700 text-white px-6 py-2 rounded-full"
+//             >
+//               Add New
+//             </Button>
+//           </Link>
+//         </div>
+
+//         {/* Table */}
+//         <div className="bg-[#23252b] w-full rounded-lg overflow-hidden">
+//           <div className="grid grid-cols-4 gap-4 p-4 bg-gray-600 text-white text-sm font-medium">
+//             <div>Area ID</div>
+//             <div>Area Name</div>
+//             <div>Status</div>
+//             <div>Action</div>
+//           </div>
+
+//           <div className="divide-y divide-gray-600">
+//             {isLoading ? (
+//               <div className="p-4 text-white">Loading...</div>
+//             ) : (
+//               displayedAreas.map((area, index) => (
+//                 <div
+//                   key={index}
+//                   className="grid grid-cols-4 gap-4 p-4 items-center"
+//                 >
+//                   <div className="text-white text-sm">{area.id}</div>
+//                   <div className="text-white text-sm">{area.name}</div>
+//                   <div>
+//                     <Select
+//                       value={area.status}
+//                       onValueChange={(value: "Active" | "Inactive") =>
+//                         handleStatusChange(index, value)
+//                       }
+//                     >
+//                       <SelectTrigger
+//                         className={`w-24 h-8 text-xs border-none ${
+//                           area.status === "Active"
+//                             ? "bg-green-600 text-white"
+//                             : "bg-red-600 text-white"
+//                         }`}
+//                       >
+//                         <SelectValue />
+//                       </SelectTrigger>
+//                       <SelectContent>
+//                         <SelectItem value="Active">Active</SelectItem>
+//                         <SelectItem value="Inactive">Inactive</SelectItem>
+//                       </SelectContent>
+//                     </Select>
+//                   </div>
+//                   <div className="flex gap-2">
+//                     <Button
+//                       onClick={() => handleEdit(index)}
+//                       size="sm"
+//                       className="bg-green-600 hover:bg-green-700 text-white w-8 h-8 p-0"
+//                     >
+//                       <Edit className="w-3 h-3" />
+//                     </Button>
+
+//                     <Dialog>
+//                       <DialogTrigger asChild>
+//                         <Button variant="outline">Share</Button>
+//                       </DialogTrigger>
+//                       <DialogContent className="sm:max-w-md">
+//                         <DialogHeader>
+//                           <DialogTitle>Share link</DialogTitle>
+//                           <DialogDescription>
+//                             Anyone who has this link will be able to view this.
+//                           </DialogDescription>
+//                         </DialogHeader>
+//                         <div className="flex items-center gap-2">
+//                           <div className="grid flex-1 gap-2">
+//                             <Label htmlFor="link" className="sr-only">
+//                               Link
+//                             </Label>
+//                             <Input
+//                               id="link"
+//                               defaultValue="https://ui.shadcn.com/docs/installation"
+//                               readOnly
+//                             />
+//                           </div>
+//                         </div>
+//                         <DialogFooter className="sm:justify-start">
+//                           <DialogClose asChild>
+//                             <Button type="button" variant="secondary">
+//                               Close
+//                             </Button>
+//                           </DialogClose>
+//                         </DialogFooter>
+//                       </DialogContent>
+//                     </Dialog>
+//                     <Button
+//                       onClick={() => handleDelete(index)}
+//                       size="sm"
+//                       className="bg-red-500 hover:bg-red-600 text-white w-8 h-8 p-0"
+//                     >
+//                       <Trash2 className="w-3 h-3" />
+//                     </Button>
+//                   </div>
+//                 </div>
+//               ))
+//             )}
+//           </div>
+//         </div>
+
+//         {/* Pagination (dummy for now) */}
+//         <div className="flex justify-center items-center mt-6 gap-2">
+//           <Button
+//             variant="ghost"
+//             size="sm"
+//             className="text-white hover:bg-gray-700"
+//             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+//           >
+//             <ChevronLeft className="w-4 h-4" />
+//           </Button>
+
+//           <Button
+//             size="sm"
+//             className="bg-green-600 hover:bg-green-700 text-white w-8 h-8 p-0"
+//           >
+//             {currentPage}
+//           </Button>
+
+//           <Button
+//             variant="ghost"
+//             size="sm"
+//             className="text-white hover:bg-gray-700"
+//             onClick={() => setCurrentPage(currentPage + 1)}
+//           >
+//             <ChevronRight className="w-4 h-4" />
+//           </Button>
+//         </div>
+//       </div>
+//     </div>
+//   );
 // }
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -18,6 +229,26 @@ import {
 } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Edit, Trash2 } from "lucide-react";
 import Link from "next/link";
+import {
+  useAreaListQuery,
+  useDeleteAreaMutation,
+  useUpdateAreaMutation,
+} from "@/redux/feature/areaSlice";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Tooltip } from "../ui/tooltip";
 
 interface AreaData {
   id: string;
@@ -26,46 +257,83 @@ interface AreaData {
 }
 
 export default function AreaContent() {
-  const [areas, setAreas] = useState<AreaData[]>([
-    { id: "#12345", name: "Mohammadpur", status: "Active" },
-    { id: "#12345", name: "Dhanmondi", status: "Inactive" },
-    { id: "#12345", name: "Mohammadpur", status: "Active" },
-    { id: "#12345", name: "Mohammadpur", status: "Active" },
-    { id: "#12345", name: "Mohammadpur", status: "Active" },
-    { id: "#12345", name: "Mohammadpur", status: "Active" },
-    { id: "#12345", name: "Mohammadpur", status: "Active" },
-  ]);
+  const { data, isLoading } = useAreaListQuery(undefined);
+  const [updateArea] = useUpdateAreaMutation();
+  const [deleteArea] = useDeleteAreaMutation();
+  // Transform API data to match AreaData interface
+  const apiAreas: AreaData[] =
+    data?.data?.map((area: any) => ({
+      id: area.area_id,
+      name: area.area_name,
+      status: area.is_active ? "Active" : "Inactive",
+    })) || [];
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [localAreas, setLocalAreas] = useState<AreaData[]>([]); // for status toggle only
+  const [editArea, setEditArea] = useState<AreaData | null>(null); // Area to be edited
 
   const handleStatusChange = (
     index: number,
     newStatus: "Active" | "Inactive"
   ) => {
-    const updatedAreas = [...areas];
-    updatedAreas[index].status = newStatus;
-    setAreas(updatedAreas);
+    const updated = [...(localAreas.length ? localAreas : apiAreas)];
+    updated[index].status = newStatus;
+    setLocalAreas(updated);
   };
 
   const handleEdit = (index: number) => {
-    console.log("Edit area:", areas[index]);
+    const target = (localAreas.length ? localAreas : apiAreas)[index];
+    setEditArea(target); // Set the area to edit
   };
 
-  const handleDelete = (index: number) => {
-    const updatedAreas = areas.filter((_, i) => i !== index);
-    setAreas(updatedAreas);
-  };
+
 
   const handleAddNew = () => {
     console.log("Add new area");
   };
 
+  const handleUpdateArea = async () => {
+    if (editArea) {
+      try {
+        // Ensure id is set and log the API URL
+        console.log("Updating area with ID:", editArea.id); // Log the ID
+
+        const updatedArea = {
+          id: editArea.id, // Ensure id is always a string
+          area_name: editArea.name,
+          is_active: editArea.status === "Active", // Send status as boolean
+        };
+        console.log("Updated Area:", updatedArea);
+
+        console.log("Request Payload:", updatedArea); // Log the request payload
+
+        // Send the updated area to the backend
+      const response =  await updateArea({ updatedArea }).unwrap();
+      console.log(response, 'response')
+
+      
+
+        // Close the dialog after update
+        setEditArea(null);
+
+        alert("Area updated successfully!");
+      } catch (error) {
+        console.error("Error updating area:", error);
+        alert("Failed to update area.");
+      }
+    }
+  };
+
+  const displayedAreas = localAreas.length ? localAreas : apiAreas;
+
   return (
     <div className="w-full p-6">
-      <div className=" w-full">
+      <div className="w-full">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-white text-xl font-medium">Area</h1>
+
+          <h1 className="text-white text-xl font-medium " title="Area">Area</h1>
+   
           <Link href={"add-area-form"}>
             <Button
               onClick={handleAddNew}
@@ -78,7 +346,6 @@ export default function AreaContent() {
 
         {/* Table */}
         <div className="bg-[#23252b] w-full rounded-lg overflow-hidden">
-          {/* Table Header */}
           <div className="grid grid-cols-4 gap-4 p-4 bg-gray-600 text-white text-sm font-medium">
             <div>Area ID</div>
             <div>Area Name</div>
@@ -86,59 +353,74 @@ export default function AreaContent() {
             <div>Action</div>
           </div>
 
-          {/* Table Rows */}
           <div className="divide-y divide-gray-600">
-            {areas.map((area, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-4 gap-4 p-4 items-center"
-              >
-                <div className="text-white text-sm">{area.id}</div>
-                <div className="text-white text-sm">{area.name}</div>
-                <div>
-                  <Select
-                    value={area.status}
-                    onValueChange={(value: "Active" | "Inactive") =>
-                      handleStatusChange(index, value)
-                    }
-                  >
-                    <SelectTrigger
-                      className={`w-24 h-8 text-xs border-none ${
-                        area.status === "Active"
-                          ? "bg-green-600 text-white"
-                          : "bg-red-600 text-white"
-                      }`}
+            {isLoading ? (
+              <div className="p-4 text-white">Loading...</div>
+            ) : (
+              displayedAreas.map((area, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-4 gap-4 p-4 items-center"
+                >
+                  <div className="text-white text-sm">{area.id}</div>
+                  <div className="text-white text-sm">{area.name}</div>
+                  <div>
+                    <Select
+                      value={area.status}
+                      onValueChange={(value: "Active" | "Inactive") =>
+                        handleStatusChange(index, value)
+                      }
                     >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Active">Active</SelectItem>
-                      <SelectItem value="Inactive">Inactive</SelectItem>
-                    </SelectContent>
-                  </Select>
+                      <SelectTrigger
+                        className={`w-24 h-8 text-xs border-none ${
+                          area.status === "Active"
+                            ? "bg-green-600 text-white"
+                            : "bg-red-600 text-white"
+                        }`}
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Active">Active</SelectItem>
+                        <SelectItem value="Inactive">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => handleEdit(index)}
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700 text-white w-8 h-8 p-0"
+                    >
+                      <Edit className="w-3 h-3" />
+                    </Button>
+
+                    <Button
+                      onClick={async () => {
+                        try {
+                          await deleteArea(area.id);
+                          toast.success("Area deleted successfully!", {
+                            position: "top-right",
+                          });
+                        } catch (error) {
+                          toast.error("Failed to delete area!", {
+                            position: "top-right",
+                          });
+                        }
+                      }}
+                      size="sm"
+                      className="bg-red-500 hover:bg-red-600 text-white w-8 h-8 p-0"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => handleEdit(index)}
-                    size="sm"
-                    className="bg-green-600 hover:bg-green-700 text-white w-8 h-8 p-0"
-                  >
-                    <Edit className="w-3 h-3" />
-                  </Button>
-                  <Button
-                    onClick={() => handleDelete(index)}
-                    size="sm"
-                    className="bg-red-500 hover:bg-red-600 text-white w-8 h-8 p-0"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
-        {/* Pagination */}
+        {/* Pagination (dummy for now) */}
         <div className="flex justify-center items-center mt-6 gap-2">
           <Button
             variant="ghost"
@@ -166,6 +448,66 @@ export default function AreaContent() {
           </Button>
         </div>
       </div>
+
+      {/* Edit Area Dialog */}
+      <Dialog open={editArea !== null}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Area</DialogTitle>
+            <DialogDescription>Update the area details</DialogDescription>
+          </DialogHeader>
+
+          {editArea && (
+            <div>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="areaName">Area Name</Label>
+                  <Input
+                    id="areaName"
+                    value={editArea.name}
+                    onChange={(e) =>
+                      setEditArea((prev) => ({
+                        ...prev!,
+                        name: e.target.value,
+                      }))
+                    }
+                    placeholder="Enter area name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="status">Status</Label>
+                  <Select
+                    value={editArea.status}
+                    onValueChange={(value: "Active" | "Inactive") =>
+                      setEditArea((prev) => ({
+                        ...prev!,
+                        status: value,
+                      }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">
+                Close
+              </Button>
+            </DialogClose>
+            <Button onClick={handleUpdateArea}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

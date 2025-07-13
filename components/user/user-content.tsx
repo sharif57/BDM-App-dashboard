@@ -1,226 +1,84 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ChevronLeft, ChevronRight, Check, Info, Trash2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState, useEffect } from "react";
+import { Check, Info, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem } from "@/components/ui/select";
+import { useAllUsersQuery } from "@/redux/feature/userSlice"; // Assuming this is your custom hook for API call
 
 interface User {
-  id: string
-  userName: string
-  joiningDate: string
-  emailId: string
-  phoneNum: string
-  shopName: string
-  area: string
-  address: string
-  status: "Pending" | "Inactive" | "Active"
+  id: string;
+  userName: string;
+  joiningDate: string;
+  emailId: string;
+  phoneNum: string;
+  shopName: string;
+  area: string;
+  address: string;
+  status: "Pending" | "Inactive" | "Active";
 }
 
-const mockUsers: User[] = [
-  {
-    id: "1",
-    userName: "Mahmud",
-    joiningDate: "23 June 2024",
-    emailId: "mahmudgajigaji@gmail.com",
-    phoneNum: "01768481561",
-    shopName: "MJ pharma",
-    area: "Rampura",
-    address: "Rampura",
-    status: "Pending",
-  },
-  {
-    id: "2",
-    userName: "Mahmud",
-    joiningDate: "23 June 2024",
-    emailId: "mahmudgajigaji@gmail.com",
-    phoneNum: "01768481561",
-    shopName: "MJ pharma",
-    area: "Rampura",
-    address: "Rampura",
-    status: "Inactive",
-  },
-  {
-    id: "3",
-    userName: "Mahmud",
-    joiningDate: "23 June 2024",
-    emailId: "mahmudgajigaji@gmail.com",
-    phoneNum: "01768481561",
-    shopName: "MJ pharma",
-    area: "Rampura",
-    address: "Rampura",
-    status: "Active",
-  },
-  {
-    id: "4",
-    userName: "Mahmud",
-    joiningDate: "23 June 2024",
-    emailId: "mahmudgajigaji@gmail.com",
-    phoneNum: "01768481561",
-    shopName: "MJ pharma",
-    area: "Rampura",
-    address: "Rampura",
-    status: "Active",
-  },
-  {
-    id: "5",
-    userName: "Mahmud",
-    joiningDate: "23 June 2024",
-    emailId: "mahmudgajigaji@gmail.com",
-    phoneNum: "01768481561",
-    shopName: "MJ pharma",
-    area: "Rampura",
-    address: "Rampura",
-    status: "Active",
-  },
-  {
-    id: "6",
-    userName: "Mahmud",
-    joiningDate: "23 June 2024",
-    emailId: "mahmudgajigaji@gmail.com",
-    phoneNum: "01768481561",
-    shopName: "MJ pharma",
-    area: "Rampura",
-    address: "Rampura",
-    status: "Active",
-  },
-  {
-    id: "7",
-    userName: "Mahmud",
-    joiningDate: "23 June 2024",
-    emailId: "mahmudgajigaji@gmail.com",
-    phoneNum: "01768481561",
-    shopName: "MJ pharma",
-    area: "Rampura",
-    address: "Rampura",
-    status: "Active",
-  },
-]
-
 export default function Component() {
-  const [users, setUsers] = useState<User[]>(mockUsers)
-  const [currentPage, setCurrentPage] = useState(2)
-  const totalPages = 24
-  const newUserRequests = 3
+  const [users, setUsers] = useState<User[]>([]); // State to store the fetched users
+  const [selectedUser, setSelectedUser] = useState<User | null>(null); // State to manage selected user
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
 
-  const handleStatusChange = (userIndex: number, newStatus: "Pending" | "Inactive" | "Active") => {
-    setUsers((prev) => prev.map((user, index) => (index === userIndex ? { ...user, status: newStatus } : user)))
+  // Fetch users data from the API (using custom hook or fetch)
+  const { data, error, isLoading } = useAllUsersQuery(undefined); // Assuming this is the custom API query hook
+
+  useEffect(() => {
+    if (data) {
+      // Map the response data to the structure needed for the users state
+      const mappedUsers = data?.data?.map((user: any) => ({
+        id: user.user_id,
+        userName: user.full_name,
+        joiningDate: new Date(user.date_joined).toLocaleDateString(),
+        emailId: user.email,
+        phoneNum: user.phone,
+        shopName: user.shop_name || "N/A",
+        area: user.area_name || "N/A",
+        address: user.shop_address || "N/A",
+        status: user.is_active
+          ? "Active"
+          : user.is_approved
+          ? "Pending"
+          : "Inactive",
+      }));
+      setUsers(mappedUsers); // Update the users state with fetched data
+    }
+  }, [data]);
+
+  const handleDetailsClick = (userId: string) => {
+    const user = users.find((user) => user.id === userId);
+    if (user) {
+      setSelectedUser(user); // Set the selected user for the modal
+      setIsModalOpen(true); // Open the modal
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false); // Close the modal
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Show a loading message while fetching data
   }
 
-  const handleAction = (userIndex: number, action: "approve" | "info" | "delete") => {
-    switch (action) {
-      case "approve":
-        handleStatusChange(userIndex, "Active")
-        break
-      case "info":
-        console.log("View user info:", users[userIndex])
-        break
-      case "delete":
-        setUsers((prev) => prev.filter((_, index) => index !== userIndex))
-        break
-    }
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Pending":
-        return "text-red-400"
-      case "Inactive":
-        return "text-gray-400"
-      case "Active":
-        return "text-green-400"
-      default:
-        return "text-gray-400"
-    }
-  }
-
-  const renderPagination = () => {
-    const pages = []
-
-    // Previous button
-    pages.push(
-      <Button
-        key="prev"
-        variant="ghost"
-        size="sm"
-        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-        disabled={currentPage === 1}
-        className="text-white hover:bg-gray-700"
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>,
-    )
-
-    // Page numbers
-    for (let i = 1; i <= 6; i++) {
-      pages.push(
-        <Button
-          key={i}
-          variant={currentPage === i ? "default" : "ghost"}
-          size="sm"
-          onClick={() => setCurrentPage(i)}
-          className={currentPage === i ? "bg-green-500 hover:bg-green-600 text-white" : "text-white hover:bg-gray-700"}
-        >
-          {i}
-        </Button>,
-      )
-    }
-
-    // Ellipsis and last page
-    pages.push(
-      <span key="ellipsis" className="text-gray-400 px-2">
-        ...
-      </span>,
-    )
-    pages.push(
-      <Button
-        key={totalPages}
-        variant="ghost"
-        size="sm"
-        onClick={() => setCurrentPage(totalPages)}
-        className="text-white hover:bg-gray-700"
-      >
-        {totalPages}
-      </Button>,
-    )
-
-    // Next button
-    pages.push(
-      <Button
-        key="next"
-        variant="ghost"
-        size="sm"
-        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-        disabled={currentPage === totalPages}
-        className="text-white hover:bg-gray-700"
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>,
-    )
-
-    return pages
+  if (error) {
+    return <div>Error loading data</div>; // Show an error message if the data fetch fails
   }
 
   return (
-    <div className=" text-white p-6">
+    <div className="text-white p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">User Details</h1>
-
-        <div className="flex items-center gap-4">
-          {/* Notification */}
-          <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2">
-            <div className="w-2 h-2 bg-white rounded-full"></div>
-            You have {newUserRequests} new user request
-          </div>
-          <Button className="bg-green-500 hover:bg-green-600 text-white px-6">Details</Button>
-        </div>
       </div>
 
       {/* Table */}
       <div className="bg-[#23252b] rounded-lg overflow-hidden">
         {/* Table Header */}
-        <div className="grid grid-cols-9 gap-4 p-4 border-b border-gray-600 text-sm font-medium text-gray-300">
+        <div className="grid grid-cols-8 gap-4 p-4 border-b border-gray-600 text-sm font-medium text-gray-300">
           <div>User Name</div>
           <div>Joining Date</div>
           <div>Email ID</div>
@@ -228,16 +86,16 @@ export default function Component() {
           <div>Shop Name</div>
           <div>Area</div>
           <div>Address</div>
-          <div>Status</div>
+          {/* <div>Status</div> */}
           <div>Action</div>
         </div>
 
         {/* Table Body */}
         <div className="divide-y divide-gray-600">
-          {users.map((user, index) => (
+          {users.map((user) => (
             <div
               key={user.id}
-              className="grid grid-cols-9 gap-4 p-4 items-center hover:bg-gray-700/50 transition-colors"
+              className="grid grid-cols-8 gap-4 p-4 items-center hover:bg-gray-700/50 transition-colors"
             >
               <div className="text-white">{user.userName}</div>
               <div className="text-gray-300">{user.joiningDate}</div>
@@ -246,14 +104,8 @@ export default function Component() {
               <div className="text-gray-300">{user.shopName}</div>
               <div className="text-gray-300">{user.area}</div>
               <div className="text-gray-300">{user.address}</div>
-              <div>
-                <Select
-                  value={user.status}
-                  onValueChange={(value: "Pending" | "Inactive" | "Active") => handleStatusChange(index, value)}
-                >
-                  <SelectTrigger className="w-20 bg-transparent border-none p-0 h-auto">
-                    <SelectValue className={`${getStatusColor(user.status)} font-medium text-sm`} />
-                  </SelectTrigger>
+              {/* <div>
+                <Select value={user.status}>
                   <SelectContent className="bg-[#2a2a2a] border-gray-600">
                     <SelectItem value="Pending" className="text-red-400">
                       Pending
@@ -266,25 +118,24 @@ export default function Component() {
                     </SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </div> */}
               <div className="flex items-center gap-2">
+                  {/* <Button
+                    size="sm"
+                    className="w-8 h-8 p-0 bg-green-500 hover:bg-green-600 rounded-full"
+                    onClick={() => handleDetailsClick(user.id)}
+                  >
+                    <Check className="h-4 w-4" />
+                  </Button> */}
                 <Button
                   size="sm"
-                  onClick={() => handleAction(index, "approve")}
-                  className="w-8 h-8 p-0 bg-green-500 hover:bg-green-600 rounded-full"
-                >
-                  <Check className="h-4 w-4" />
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => handleAction(index, "info")}
                   className="w-8 h-8 p-0 bg-blue-500 hover:bg-blue-600 rounded-full"
+                  onClick={() => handleDetailsClick(user.id)}
                 >
                   <Info className="h-4 w-4" />
                 </Button>
                 <Button
                   size="sm"
-                  onClick={() => handleAction(index, "delete")}
                   className="w-8 h-8 p-0 bg-red-500 hover:bg-red-600 rounded-full"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -295,8 +146,40 @@ export default function Component() {
         </div>
       </div>
 
-      {/* Pagination */}
-      <div className="flex items-center justify-center gap-2 mt-6">{renderPagination()}</div>
+      {/* Modal for User Details */}
+      {isModalOpen && selectedUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-[#23252b] p-6 rounded-lg max-w-lg w-full">
+            <h3 className="text-xl font-semibold">User Details</h3>
+            <p>
+              <strong>Name:</strong> {selectedUser.userName}
+            </p>
+            <p>
+              <strong>Email:</strong> {selectedUser.emailId}
+            </p>
+            <p>
+              <strong>Phone:</strong> {selectedUser.phoneNum}
+            </p>
+            <p>
+              <strong>Shop Name:</strong> {selectedUser.shopName}
+            </p>
+            <p>
+              <strong>Area:</strong> {selectedUser.area}
+            </p>
+            <p>
+              <strong>Address:</strong> {selectedUser.address}
+            </p>
+            <p>
+              <strong>Status:</strong> {selectedUser.status}
+            </p>
+
+            {/* Close Button */}
+            <Button className="mt-4 w-full" onClick={closeModal}>
+              Close
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }

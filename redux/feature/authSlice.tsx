@@ -4,17 +4,9 @@ import baseApi from "../Api/baseApi";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    register: builder.mutation({
-      query: (data) => ({
-        url: "/auth/signup/",
-        method: "POST",
-        body: data,
-      }),
-    }),
-
     login: builder.mutation({
       query: (credentials) => ({
-        url: "/auth/login/",
+        url: "/auth/admin_login/",
         method: "POST",
         body: credentials,
       }),
@@ -57,43 +49,13 @@ export const authApi = baseApi.injectEndpoints({
         };
       },
     }),
-
-    googleLogin: builder.mutation({
-      query: ({id_token}) => ({
-        url: "/auth/googleLogin/",
-        method: "POST",
-        body: {id_token: id_token},
-      }),
-    }),
-
-    // facebookLogin: builder.mutation({
-    //   query: ({ access_token }) => ({
-    //     url: "/auth/facebookLogin/",
-    //     method: "POST",
-    //     headers: {
-    //       Authorization: `${access_token}`,
-    //     },
-    //   }),
-    // }),
-    facebookLogin: builder.mutation({
-      query: ({ access_token }) => ({
-        url: "/auth/facebookLogin/",
-        method: "POST",
-        body: {
-          access_token: access_token,
-        },
-      }),
-    }),
   }),
 });
 
 export const {
-  useRegisterMutation,
   useLoginMutation,
   useChangePasswordMutation,
   useForgotPasswordMutation,
   useVerifyEmailMutation,
   useResetPasswordMutation,
-  useGoogleLoginMutation,
-  useFacebookLoginMutation,
 } = authApi;

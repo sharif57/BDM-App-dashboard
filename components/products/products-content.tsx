@@ -5,9 +5,9 @@ import { Plus, Filter, Edit, Trash2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
+
 import Link from "next/link";
+import { useAllProductsQuery } from "@/redux/feature/productSlice";
 
 const products = [
   {
@@ -73,6 +73,9 @@ const categories = [
 export default function ProductsContent() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
+
+  const {data} =useAllProductsQuery(undefined);
+  console.log(data,'dataYeah, no. We fell off OK. Linking the club. Funny. ')
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory =

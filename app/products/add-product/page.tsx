@@ -1,17 +1,22 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import { ArrowLeft, Upload, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
+import type React from "react";
+import { useState } from "react";
+import { ArrowLeft, Upload, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
+import { useAddPostMutation } from "@/redux/feature/productSlice";
+import { useRouter } from "next/navigation";
 
 export default function Component() {
+  const [addPost] = useAddPostMutation();
+  const router = useRouter()
+
   const [formData, setFormData] = useState({
     mainCategory: "Best Selling",
     companyName: "WG",
@@ -24,52 +29,98 @@ export default function Component() {
     grossPrice: "1025",
     priceRegular: "1025",
     discount: "10",
-  })
+  });
 
-  const [isSmall, setIsSmall] = useState(true)
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
-  const [dragActive, setDragActive] = useState(false)
+  const [isSmall, setIsSmall] = useState(true);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [dragActive, setDragActive] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true)
+      setDragActive(true);
     } else if (e.type === "dragleave") {
-      setDragActive(false)
+      setDragActive(false);
     }
-  }
+  };
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const files = Array.from(e.dataTransfer.files)
-      setUploadedFiles((prev) => [...prev, ...files])
+      const files = Array.from(e.dataTransfer.files);
+      setUploadedFiles((prev) => [...prev, ...files]);
     }
-  }
+  };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const files = Array.from(e.target.files)
-      setUploadedFiles((prev) => [...prev, ...files])
+      const files = Array.from(e.target.files);
+      setUploadedFiles((prev) => [...prev, ...files]);
     }
-  }
+  };
 
   const removeFile = (index: number) => {
-    setUploadedFiles((prev) => prev.filter((_, i) => i !== index))
-  }
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData)
-    console.log("Uploaded files:", uploadedFiles)
-  }
+  const handleSubmit = async () => {
+    if (uploadedFiles.length === 0) {
+      toast.error("Please upload at least one image!");
+      return;
+    }
+
+    const formDataToSend = new FormData();
+
+    // Append form fields
+    formDataToSend.append("product_name", formData.productName);
+    formDataToSend.append("company_name", formData.companyName);
+    formDataToSend.append("category", formData.mainCategory);
+    formDataToSend.append("stock_quantity", formData.stock);
+    formDataToSend.append("description", formData.description);
+    formDataToSend.append("selling_price", formData.netPrice);
+    formDataToSend.append("mrp", formData.grossPrice);
+    formDataToSend.append("regular_price", formData.priceRegular);
+    formDataToSend.append("discount_percent", formData.discount);
+    formDataToSend.append("status", formData.status === "Active" ? "1" : "0");
+    formDataToSend.append("quantity", formData.quantity);
+
+    // Append the first file as product_image (API expects this)
+    formDataToSend.append("product_image", uploadedFiles[0]); // Use the first file
+
+   
+
+    try {
+      const response = await addPost(formDataToSend).unwrap();
+      router.push('/products')
+      toast.success("Product added successfully!");
+      setFormData({
+        mainCategory: "",
+        companyName: "",
+        productName: "",
+        quantity: "",
+        description: "",
+        stock: "",
+        netPrice: "",
+        status: "",
+        grossPrice: "",
+        priceRegular: "",
+        discount: "",
+      });
+      setUploadedFiles([]);
+    } catch (error) {
+      const message = error?.data?.errors?.product_image?.[0] || "Failed to add product!";
+      toast.error(message);
+      console.error("Error:", error);
+    }
+  };
 
   const handleRemove = () => {
     setFormData({
@@ -84,12 +135,12 @@ export default function Component() {
       grossPrice: "",
       priceRegular: "",
       discount: "",
-    })
-    setUploadedFiles([])
-  }
+    });
+    setUploadedFiles([]);
+  };
 
   return (
-    <div className=" text-white">
+    <div className="text-white">
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-gray-700">
         <div onClick={() => window.history.back()} className="flex items-center gap-4">
@@ -191,9 +242,8 @@ export default function Component() {
               </div>
 
               <div
-                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                  dragActive ? "border-green-500 bg-green-500/10" : "border-gray-600 hover:border-gray-500"
-                }`}
+                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${dragActive ? "border-green-500 bg-green-500/10" : "border-gray-600 hover:border-gray-500"
+                  }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
                 onDragOver={handleDrag}
@@ -320,5 +370,5 @@ export default function Component() {
         </div>
       </div>
     </div>
-  )
+  );
 }

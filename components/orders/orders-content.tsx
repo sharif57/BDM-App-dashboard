@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Calendar,
   ChevronDown,
@@ -18,7 +18,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { useAllOrdersQuery, useDeleteOrderMutation } from "@/redux/feature/orderSlice";
+import { toast } from "sonner";
 
 interface Order {
   id: string;
@@ -26,83 +34,70 @@ interface Order {
   customerName: string;
   shopName: string;
   amount: string;
-  status: "Pending" | "Delivered" | "Shipped";
+  status: "pending" | "delivered" | "shipped";
+  shippingAddress?: string; // Added for modal
+  items?: Array<{
+    product: number;
+    product_name: string;
+    quantity: number;
+    mrp: string;
+    discount_percent: string;
+    discount: number;
+    items_total: number;
+  }>;
 }
 
-const mockOrders: Order[] = [
-  {
-    id: "#929337",
-    date: "29 April 2025",
-    customerName: "Mahmud",
-    shopName: "MJ Pharma",
-    amount: "₹1520",
-    status: "Pending",
-  },
-  {
-    id: "#929337",
-    date: "29 April 2025",
-    customerName: "Mahmud",
-    shopName: "MJ Pharma",
-    amount: "₹1520",
-    status: "Delivered",
-  },
-  {
-    id: "#929337",
-    date: "29 April 2025",
-    customerName: "Mahmud",
-    shopName: "MJ Pharma",
-    amount: "₹1520",
-    status: "Shipped",
-  },
-  {
-    id: "#929337",
-    date: "29 April 2025",
-    customerName: "Mahmud",
-    shopName: "MJ Pharma",
-    amount: "₹1520",
-    status: "Delivered",
-  },
-  {
-    id: "#929337",
-    date: "29 April 2025",
-    customerName: "Mahmud",
-    shopName: "MJ Pharma",
-    amount: "₹1520",
-    status: "Delivered",
-  },
-  {
-    id: "#929337",
-    date: "29 April 2025",
-    customerName: "Mahmud",
-    shopName: "MJ Pharma",
-    amount: "₹1520",
-    status: "Delivered",
-  },
-  {
-    id: "#929337",
-    date: "29 April 2025",
-    customerName: "Mahmud",
-    shopName: "MJ Pharma",
-    amount: "₹1520",
-    status: "Delivered",
-  },
-];
+// Helper function to format date
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+};
+
+// Helper function to map API data to Order interface
+const mapApiToOrders = (apiData: any[]): Order[] => {
+  return apiData.map((order) => ({
+    id: `${order.order_id}`,
+    date: formatDate(order.order_date),
+    customerName: "Unknown", // Replace with actual customer name if available
+    shopName: "MJ Pharma", // Replace with actual shop name if available
+    amount: `₹${order.total_amount.toFixed(2)}`,
+    status: order.order_status.toLowerCase() as "pending" | "delivered" | "shipped",
+    shippingAddress: order.shipping_address,
+    items: order.items,
+  }));
+};
 
 export default function Component() {
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const { data, isLoading, isError, refetch } = useAllOrdersQuery(undefined);
+  const [deleteOrder] = useDeleteOrderMutation();
+  const [orders, setOrders] = useState<Order[]>([]);
   const [activeTab, setActiveTab] = useState("Today");
-  const [currentPage, setCurrentPage] = useState(2);
-  const totalPages = 24;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null); // State for modal
+  const itemsPerPage = 7;
+  const totalPages = Math.ceil((data?.data?.length || 0) / itemsPerPage);
+
+  // Update orders when API data changes
+  useEffect(() => {
+    if (data?.data) {
+      setOrders(mapApiToOrders(data.data));
+    }
+  }, [data]);
 
   const handleStatusChange = (
     orderIndex: number,
-    newStatus: "Pending" | "Delivered" | "Shipped"
+    newStatus: "pending" | "delivered" | "shipped"
   ) => {
     setOrders((prev) =>
       prev.map((order, index) =>
         index === orderIndex ? { ...order, status: newStatus } : order
       )
     );
+    // Optionally, make an API call to update the status
   };
 
   const handleAction = (
@@ -111,24 +106,44 @@ export default function Component() {
   ) => {
     switch (action) {
       case "approve":
-        handleStatusChange(orderIndex, "Delivered");
+        handleStatusChange(orderIndex, "delivered");
         break;
       case "info":
-        console.log("View order info:", orders[orderIndex]);
+        setSelectedOrder(orders[orderIndex]); // Open modal with order details
         break;
       case "delete":
-        setOrders((prev) => prev.filter((_, index) => index !== orderIndex));
+        const orderId = parseInt(orders[orderIndex].id.replace(/^#/, ""));
+        if (!isNaN(orderId)) {
+          handleDelete(orderId);
+        } else {
+          toast.error("Invalid order ID!", { position: "top-right" });
+        }
         break;
     }
   };
 
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteOrder(id).unwrap();
+      toast.success("Order deleted successfully!", {
+        position: "top-right",
+      });
+      setOrders((prev) => prev.filter((order) => parseInt(order.id.replace(/^#/, "")) !== id));
+      refetch();
+    } catch (error) {
+      toast.error("Failed to delete order!", {
+        position: "top-right",
+      });
+    }
+  };
+
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Pending":
+    switch (status.toLowerCase()) {
+      case "pending":
         return "text-red-400";
-      case "Delivered":
+      case "delivered":
         return "text-green-400";
-      case "Shipped":
+      case "shipped":
         return "text-blue-400";
       default:
         return "text-gray-400";
@@ -137,8 +152,6 @@ export default function Component() {
 
   const renderPagination = () => {
     const pages = [];
-
-    // Previous button
     pages.push(
       <Button
         key="prev"
@@ -152,8 +165,10 @@ export default function Component() {
       </Button>
     );
 
-    // Page numbers
-    for (let i = 1; i <= 6; i++) {
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, startPage + 4);
+
+    for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <Button
           key={i}
@@ -171,25 +186,25 @@ export default function Component() {
       );
     }
 
-    // Ellipsis and last page
-    pages.push(
-      <span key="ellipsis" className="text-gray-400 px-2">
-        ...
-      </span>
-    );
-    pages.push(
-      <Button
-        key={totalPages}
-        variant="ghost"
-        size="sm"
-        onClick={() => setCurrentPage(totalPages)}
-        className="text-white hover:bg-gray-700"
-      >
-        {totalPages}
-      </Button>
-    );
+    if (endPage < totalPages) {
+      pages.push(
+        <span key="ellipsis" className="text-gray-400 px-2">
+          ...
+        </span>
+      );
+      pages.push(
+        <Button
+          key={totalPages}
+          variant="ghost"
+          size="sm"
+          onClick={() => setCurrentPage(totalPages)}
+          className="text-white hover:bg-gray-700"
+        >
+          {totalPages}
+        </Button>
+      );
+    }
 
-    // Next button
     pages.push(
       <Button
         key="next"
@@ -206,14 +221,20 @@ export default function Component() {
     return pages;
   };
 
+  const paginatedOrders = orders.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  if (isLoading) return <div className="text-white">Loading...</div>;
+  if (isError) return <div className="text-red-400">Error loading orders</div>;
+
   return (
-    <div className="  text-white  pt-6">
+    <div className="text-white pt-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Order Details</h1>
-
         <div className="flex items-center gap-6">
-          {/* Notification */}
           <div className="flex items-center gap-2">
             <svg
               width="26"
@@ -243,9 +264,8 @@ export default function Component() {
                 fill="#DB811F"
               />
             </svg>
-
             <h1 className="text-xl font-medium text-white">
-              You have 3 new order
+              You have {orders.length} new order{orders.length !== 1 ? "s" : ""}
             </h1>
             <Button className="bg-[#44B46E] hover:bg-[#44B46E] rounded-full text-white px-6">
               Details
@@ -294,7 +314,7 @@ export default function Component() {
 
         {/* Table Body */}
         <div className="divide-y divide-gray-600">
-          {orders.map((order, index) => (
+          {paginatedOrders.map((order, index) => (
             <div
               key={index}
               className="grid grid-cols-7 gap-4 p-4 items-center hover:bg-gray-700/50 transition-colors"
@@ -307,7 +327,7 @@ export default function Component() {
               <div>
                 <Select
                   value={order.status}
-                  onValueChange={(value: "Pending" | "Delivered" | "Shipped") =>
+                  onValueChange={(value: "pending" | "delivered" | "shipped") =>
                     handleStatusChange(index, value)
                   }
                 >
@@ -318,13 +338,13 @@ export default function Component() {
                     <ChevronDown className="h-3 w-3 ml-1 text-gray-400" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#2a2a2a] border-gray-600">
-                    <SelectItem value="Pending" className="text-red-400">
+                    <SelectItem value="pending" className="text-red-400">
                       Pending
                     </SelectItem>
-                    <SelectItem value="Delivered" className="text-green-400">
+                    <SelectItem value="delivered" className="text-green-400">
                       Delivered
                     </SelectItem>
-                    <SelectItem value="Shipped" className="text-blue-400">
+                    <SelectItem value="shipped" className="text-blue-400">
                       Shipped
                     </SelectItem>
                   </SelectContent>
@@ -357,6 +377,77 @@ export default function Component() {
           ))}
         </div>
       </div>
+
+      {/* Modal for Order Details */}
+      <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
+        <DialogContent className="bg-[#23252b] text-white border-gray-600 max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Order Details - ID: {selectedOrder?.id}</DialogTitle>
+          </DialogHeader>
+          {selectedOrder && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-400">Date</p>
+                  <p>{selectedOrder.date}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Customer Name</p>
+                  <p>{selectedOrder.customerName}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Shop Name</p>
+                  <p>{selectedOrder.shopName}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Total Amount</p>
+                  <p>{selectedOrder.amount}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Status</p>
+                  <p className={`${getStatusColor(selectedOrder.status)} font-medium`}>
+                    {selectedOrder.status}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Shipping Address</p>
+                  <p>{selectedOrder.shippingAddress || "N/A"}</p>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-400 mb-2">Items</p>
+                <div className="bg-[#2c2e33] rounded-lg overflow-hidden">
+                  <div className="grid grid-cols-5 gap-4 p-4 text-sm font-medium text-gray-300 border-b border-gray-600">
+                    <div>Product Name</div>
+                    <div>Quantity</div>
+                    <div>MRP</div>
+                    <div>Discount</div>
+                    <div>Total</div>
+                  </div>
+                  {selectedOrder.items?.map((item, index) => (
+                    <div
+                      key={index}
+                      className="grid grid-cols-5 gap-4 p-4 text-sm border-b border-gray-600 last:border-b-0"
+                    >
+                      <div>{item.product_name}</div>
+                      <div>{item.quantity}</div>
+                      <div>₹{item.mrp}</div>
+                      <div>{item.discount_percent}% (₹{item.discount.toFixed(2)})</div>
+                      <div>₹{item.items_total.toFixed(2)}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogClose asChild>
+            <Button className="mt-4 bg-gray-700 hover:bg-gray-600">
+              Close
+            </Button>
+          </DialogClose>
+        </DialogContent>
+      </Dialog>
 
       {/* Pagination */}
       <div className="flex items-center justify-center gap-2 mt-6">

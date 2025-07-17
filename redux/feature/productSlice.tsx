@@ -16,10 +16,10 @@ export const productsApi = baseApi.injectEndpoints({
       providesTags: ["User"],
     }),
 
-    updateProfile: builder.mutation({
+    addPost: builder.mutation({
       query: (data) => ({
-        url: "/auth/update_user_profile/",
-        method: "PATCH",
+        url: "/products/products/",
+        method: "POST",
         body: data,
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -30,4 +30,4 @@ export const productsApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useAllProductsQuery, useUpdateProfileMutation } = productsApi;
+export const { useAllProductsQuery, useAddPostMutation } = productsApi;

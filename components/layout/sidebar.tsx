@@ -13,6 +13,8 @@ const sidebarItems = [
   { name: "Notice", href: "/notice" },
   { name: "User", href: "/user" },
   { name: "Area", href: "/area" },
+  { name: 'Category', href: '/category' },
+  { name: 'Company', href: '/company' },
   { name: "Settings", href: "/settings" },
 ];
 
@@ -43,11 +45,10 @@ export default function Sidebar({ className = "" }: { className?: string }) {
           return (
             <Link key={item.name} href={item.href}>
               <div
-                className={`flex items-center justify-between p-3 mb-2 rounded-lg cursor-pointer transition-colors ${
-                  isActive
+                className={`flex items-center justify-between p-3 mb-2 rounded-lg cursor-pointer transition-colors ${isActive
                     ? "bg-gray-700 text-white"
                     : "text-gray-400 hover:bg-gray-700 hover:text-white"
-                }`}
+                  }`}
               >
                 <div className="flex items-center space-x-3">
                   {/* <span className="text-lg">{item.icon}</span> */}

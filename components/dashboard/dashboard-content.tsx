@@ -7,14 +7,10 @@ import SalesChart from "@/components/charts/sales-chart";
 import RevenueChart from "@/components/charts/revenue-chart";
 import MostSellingChart from "@/components/charts/most-selling-chart";
 import NotificationsPanel from "../layout/notifications-panel";
+import { useAllProductsQuery } from "@/redux/feature/productSlice";
+import { useAllUsersQuery } from "@/redux/feature/userSlice";
 
-const statsCards = [
-  { title: "Total Users", value: "40,689", icon: "👥" },
-  { title: "Total Product", value: "40,689", icon: "📦" },
-  { title: "Total Sell", value: "40,689", icon: "💰" },
-  { title: "Total Revenue", value: "40,689", icon: "💵" },
-  { title: "Pending Order", value: "40", icon: "⏳" },
-];
+
 
 const mostSoldItems = [
   { name: "Jeans", percentage: 70, color: "bg-green-500" },
@@ -25,6 +21,17 @@ const mostSoldItems = [
 ];
 
 export default function DashboardContent() {
+  const { data } = useAllProductsQuery(undefined);
+  const { data: userData } = useAllUsersQuery(undefined); // Assuming this is the custom API query hook
+
+  const statsCards = [
+    { title: "Total Users", value: userData?.data?.length, icon: "👥" },
+    { title: "Total Product", value: data?.total_products, icon: "📦" },
+    { title: "Total Sell", value: "40,689", icon: "💰" },
+    { title: "Total Revenue", value: "40,689", icon: "💵" },
+    { title: "Pending Order", value: "40", icon: "⏳" },
+  ];
+
   const [selectedPeriod, setSelectedPeriod] = useState("Jan - Jun '22");
 
   return (
@@ -37,9 +44,8 @@ export default function DashboardContent() {
               <CardContent className="p-3 sm:p-4 flex items-center gap-2">
                 <div className="flex items-center justify-between mb-2">
                   <div
-                    className={`  rounded-lg flex items-center justify-center ${
-                      index === 4 ? "bg-red-500/20" : "bg-orange-500/20"
-                    }`}
+                    className={`  rounded-lg flex items-center justify-center ${index === 4 ? "bg-red-500/20" : "bg-orange-500/20"
+                      }`}
                   >
                     <svg
                       width="60"
@@ -77,9 +83,8 @@ export default function DashboardContent() {
                     {card.title}
                   </div>
                   <div
-                    className={`text-lg sm:text-2xl font-bold ${
-                      index === 4 ? "text-red-400" : "text-white"
-                    }`}
+                    className={`text-lg sm:text-2xl font-bold ${index === 4 ? "text-red-400" : "text-white"
+                      }`}
                   >
                     {card.value}
                   </div>

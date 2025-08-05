@@ -9,6 +9,8 @@ import MostSellingChart from "@/components/charts/most-selling-chart";
 import NotificationsPanel from "../layout/notifications-panel";
 import { useAllProductsQuery } from "@/redux/feature/productSlice";
 import { useAllUsersQuery } from "@/redux/feature/userSlice";
+import { usePendingProductsQuery } from "@/redux/feature/orderSlice";
+import { useAllDashboardQuery } from "@/redux/feature/dashboardSlice";
 
 
 
@@ -22,14 +24,18 @@ const mostSoldItems = [
 
 export default function DashboardContent() {
   const { data } = useAllProductsQuery(undefined);
-  const { data: userData } = useAllUsersQuery(undefined); // Assuming this is the custom API query hook
+  const { data: userData } = useAllUsersQuery(undefined); 
+  const { data: productData } = usePendingProductsQuery(undefined);
+
+  const {data: dashboard} =useAllDashboardQuery(undefined)
+  console.log("dashboard",dashboard?.data)
 
   const statsCards = [
-    { title: "Total Users", value: userData?.data?.length, icon: "👥" },
-    { title: "Total Product", value: data?.total_products, icon: "📦" },
-    { title: "Total Sell", value: "40,689", icon: "💰" },
-    { title: "Total Revenue", value: "40,689", icon: "💵" },
-    { title: "Pending Order", value: "40", icon: "⏳" },
+    { title: "Total Users", value: userData?.count, icon: "👥" },
+    { title: "Total Product", value: data?.count, icon: "📦" },
+    { title: "Total Sell", value: dashboard?.data?.total_sales || 0, icon: "💰" },
+    { title: "Total Revenue", value: dashboard?.data?.monthly_revenue[0].total_revenue || 0, icon: "💵" },
+    { title: "Pending Order", value: productData?.total || 0, icon: "⏳" },
   ];
 
   const [selectedPeriod, setSelectedPeriod] = useState("Jan - Jun '22");

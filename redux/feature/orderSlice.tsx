@@ -16,6 +16,17 @@ export const orderApi = baseApi.injectEndpoints({
             providesTags: ["Order"],
         }),
 
+        pendingProducts: builder.query({
+            query: () => ({
+                url: "/orders/pending_order/",
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+            }),
+            providesTags: ["Order"],
+        }),
+
         deleteOrder: builder.mutation({
             query: (id) => ({
                 url: `/orders/orders/${id}/`,
@@ -30,4 +41,4 @@ export const orderApi = baseApi.injectEndpoints({
     }),
 });
 
-export const { useAllOrdersQuery, useDeleteOrderMutation } = orderApi;
+export const { useAllOrdersQuery, useDeleteOrderMutation , usePendingProductsQuery } = orderApi;

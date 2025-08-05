@@ -1,5 +1,6 @@
 "use client";
 
+import { create } from "domain";
 import baseApi from "../Api/baseApi";
 
 export const categoriesApi = baseApi.injectEndpoints({
@@ -14,6 +15,30 @@ export const categoriesApi = baseApi.injectEndpoints({
             }),
 
             providesTags: ["Category"],
+        }),
+
+        createCategory: builder.mutation({
+            query: (data) => ({
+                url: "/products/categories/",
+                method: "POST",
+                body: data,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+            }),
+            invalidatesTags: ["Category"],
+        }),
+
+        updateCategory: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `/products/companies/${id}/`, // Ensure ID is part of the URL
+                method: "PATCH",
+                body: data,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+            }),
+            invalidatesTags: ["Category"],
         }),
 
         addPost: builder.mutation({
@@ -41,4 +66,4 @@ export const categoriesApi = baseApi.injectEndpoints({
     }),
 });
 
-export const { useAllCategoriesQuery, useAddPostMutation, useDeleteCategoryMutation } = categoriesApi;
+export const { useAllCategoriesQuery, useAddPostMutation, useDeleteCategoryMutation, useCreateCategoryMutation, useUpdateCategoryMutation } = categoriesApi;

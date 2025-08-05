@@ -16,6 +16,40 @@ export const companiesApi = baseApi.injectEndpoints({
             providesTags: ["Category"],
         }),
 
+        addCompany: builder.mutation({
+            query: (data) => ({
+                url: "/products/companies/",
+                method: "POST",
+                body: data,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+            }),
+            invalidatesTags: ["Category"],
+        }),
+        updateCompany: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `/products/companies/${id}/`, // Ensure ID is part of the URL
+                method: "PATCH",
+                body: data,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+            }),
+            invalidatesTags: ["Category"],
+        }),
+
+        deleteCompany: builder.mutation({
+            query: ({ id }) => ({
+                url: `/products/companies/${id}/`,
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+            }),
+            invalidatesTags: ["Category"],
+        }),
+
         addPost: builder.mutation({
             query: (data) => ({
                 url: "/products/products/",
@@ -41,4 +75,4 @@ export const companiesApi = baseApi.injectEndpoints({
     }),
 });
 
-export const { useAllCompaniesQuery, useAddPostMutation, useDeleteCategoryMutation } = companiesApi;
+export const { useAllCompaniesQuery, useAddPostMutation, useDeleteCategoryMutation, useAddCompanyMutation, useUpdateCompanyMutation, useDeleteCompanyMutation } = companiesApi;

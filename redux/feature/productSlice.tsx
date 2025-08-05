@@ -5,8 +5,8 @@ import baseApi from "../Api/baseApi";
 export const productsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     allProducts: builder.query({
-      query: () => ({
-        url: "/products/products/",
+      query: (limit) => ({
+        url: `/products/products/?limit=${limit}`,
         method: "GET",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

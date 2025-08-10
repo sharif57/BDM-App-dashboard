@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronRight, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { logout } from "@/service/authService";
+import { toast } from "sonner";
 
 const sidebarItems = [
   { name: "Dashboard", href: "/" },
@@ -20,10 +22,22 @@ const sidebarItems = [
 
 export default function Sidebar({ className = "" }: { className?: string }) {
   const pathname = usePathname();
+  const router = useRouter()
 
   if (pathname === "/auth/login" || pathname === "/register") {
     return null;
   }
+
+ const handleLogOut = async () => {
+    if (toast.info("Logging out...")) {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      await logout();
+      setTimeout(() => {
+        router.push("/auth/login");
+      }, 1000);
+    }
+  };
 
   return (
     <div className={`bg-[#2c2e34] p-4 flex flex-col h-full ${className}`}>
@@ -62,15 +76,16 @@ export default function Sidebar({ className = "" }: { className?: string }) {
       </nav>
 
       {/* Log Out */}
-      <Link href="/auth/login">
+      {/* <Link href="/auth/login"> */}
         <Button
+          onClick={handleLogOut}
           variant="ghost"
           className="text-red-400 hover:text-red-300 hover:bg-red-900/20 justify-start p-3"
         >
           <LogOut className="w-4 h-4 mr-2" />
           Log Out
         </Button>
-      </Link>
+      {/* </Link> */}
     </div>
   );
 }

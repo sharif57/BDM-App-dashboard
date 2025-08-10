@@ -7,7 +7,7 @@ export async function middleware(request: Request) {
 
   // If there's no token, redirect to login page
   if (!token) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+    return NextResponse.redirect(new URL("/auth/login", request.url));
   }
 
   // If user is authenticated, proceed with the request
@@ -16,5 +16,5 @@ export async function middleware(request: Request) {
 
 // Define which paths the middleware applies to
 export const config = {
-  matcher: ["/chat", "/chat/:page","/my-profile","/edit-profile"],
+  matcher: ['/', "/products", "/products/:page","/orders","/notice",'/notice/:page', '/user','/area', '/area/:page', '/category','/category/:page', '/company','/company/:page','/settings' ],
 };

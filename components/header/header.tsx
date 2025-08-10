@@ -1,3 +1,4 @@
+'use client';
 import { Sheet } from "lucide-react";
 import React from "react";
 import { Search, Bell, Menu } from "lucide-react";
@@ -8,8 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import NotificationsPanel from "@/components/layout/notifications-panel";
 import { SheetContent, SheetTrigger } from "../ui/sheet";
 import Sidebar from "../layout/sidebar";
+import { useUserProfileQuery } from "@/redux/feature/userSlice";
 
 export default function Header() {
+    const { data: profileData, isLoading, isError, refetch } = useUserProfileQuery(undefined);
+  
   return (
     <div>
       <header className="bg-[#2c2e34] p-4 rounded-lg mt-4 flex items-center justify-between border-b border-gray-700">

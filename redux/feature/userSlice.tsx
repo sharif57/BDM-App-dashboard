@@ -6,7 +6,7 @@ export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     userProfile: builder.query({
       query: () => ({
-        url: "/auth/get_user_profile/",
+        url: "/auth/user_profile/",
         method: "GET",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -18,7 +18,7 @@ export const userApi = baseApi.injectEndpoints({
 
     updateProfile: builder.mutation({
       query: (data) => ({
-        url: "/auth/update_user_profile/",
+        url: "/auth/user_profile/",
         method: "PATCH",
         body: data,
         headers: {
@@ -27,6 +27,7 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+
     allUsers: builder.query({
       query: () => ({
         url: "/auth/user/",
@@ -35,8 +36,19 @@ export const userApi = baseApi.injectEndpoints({
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       }),
-    })
+    }),
+
+settingData: builder.query({
+  query: () => ({
+    url: "/settings/site_info/",
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    },
+  }),
+})
+
   }),
 });
 
-export const { useUserProfileQuery, useUpdateProfileMutation , useAllUsersQuery} = userApi;
+export const { useUserProfileQuery, useUpdateProfileMutation , useAllUsersQuery,  } = userApi;

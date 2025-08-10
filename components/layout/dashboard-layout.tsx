@@ -12,6 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Sidebar from "@/components/layout/sidebar";
 import NotificationsPanel from "@/components/layout/notifications-panel";
+import { useUserProfileQuery } from "@/redux/feature/userSlice";
+import { useAllNotificationsQuery } from "@/redux/feature/notificationSlice";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -21,8 +23,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const pathname = usePathname();
+  const { data: profileData } = useUserProfileQuery(undefined);
+    const { data } = useAllNotificationsQuery(undefined)
+  
 
-  if(pathname === "/auth/login" || pathname === "/auth/forgot-password" || pathname === "/auth/verify-email") {
+  const IMAGE_BASE_URL = 'https://mehedidev.net';
+
+
+
+  if (pathname === "/auth/login" || pathname === "/auth/forgot-password" || pathname === "/auth/verify-email") {
     return children
   }
 
@@ -103,7 +112,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Button variant="ghost" size="sm" className="relative p-2">
                   <Bell className="w-5 h-5 text-gray-400" />
                   <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center p-0">
-                    1
+                    {data?.data?.length}
                   </Badge>
                 </Button>
               </SheetTrigger>
@@ -116,7 +125,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </Sheet>
 
             <Avatar className="w-8 h-8">
-              <AvatarImage src="/placeholder.svg?height=32&width=32" />
+              <AvatarImage src={IMAGE_BASE_URL + profileData?.image} />
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
           </div>
@@ -126,7 +135,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {/* Page Content */}
           <div className="flex-1 overflow-auto ">{children}</div>
 
-          
+
         </div>
       </div>
     </div>

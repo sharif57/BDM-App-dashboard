@@ -109,7 +109,7 @@ export default function DashboardContent() {
                   <CardTitle className="text-white text-lg">
                     Sales Analytics
                   </CardTitle>
-                  <div className="flex flex-wrap gap-1 sm:gap-2">
+                  {/* <div className="flex flex-wrap gap-1 sm:gap-2">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -138,7 +138,7 @@ export default function DashboardContent() {
                     >
                       Yearly
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
               </CardHeader>
               <CardContent>
@@ -177,7 +177,7 @@ export default function DashboardContent() {
                 Total Revenue
               </CardTitle>
               <div className="text-2xl sm:text-3xl font-bold text-white">
-                $50.4K
+                {dashboard?.data?.monthly_revenue[0].total_revenue || 0} BDT
               </div>
               <div className="text-sm text-green-400">↗ 5% than last month</div>
             </CardHeader>

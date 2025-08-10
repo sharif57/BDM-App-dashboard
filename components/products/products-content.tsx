@@ -480,6 +480,7 @@ export default function ProductsContent() {
   const [categories, setCategories] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [totalProducts, setTotalProducts] = useState(0);
+  const IMAGE = 'https://mehedidev.net'
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -728,7 +729,7 @@ export default function ProductsContent() {
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
                             <img
-                              src={product.product_image}
+                              src={`${IMAGE}${product.product_image}`}
                               alt={product.product_name}
                               className="w-10 h-10 rounded"
                               onError={(e) => {

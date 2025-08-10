@@ -830,7 +830,8 @@ export default function ProductsContent() {
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <img
-                  src={selectedProduct.product_image}
+                  // src={selectedProduct.product_image}
+                  src={`${IMAGE}${selectedProduct?.product_image}`}
                   alt={selectedProduct.product_name}
                   className="w-20 h-20 rounded"
                   onError={(e) => {

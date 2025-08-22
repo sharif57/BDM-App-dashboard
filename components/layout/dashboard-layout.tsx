@@ -93,7 +93,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </Sheet>
             <h1 className="text-xl font-semibold">{getPageTitle()}</h1>
           </div>
-          <div>
+          {/* <div>
             <div className="relative hidden sm:block">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
@@ -101,7 +101,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 className="pl-10 bg-gray-700 border-gray-600 text-white placeholder-gray-400 w-48 sm:w-60 lg:w-80"
               />
             </div>
-          </div>
+          </div> */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             <Button variant="ghost" size="sm" className="sm:hidden p-2">
               <Search className="w-5 h-5" />

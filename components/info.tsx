@@ -5,6 +5,9 @@ import React, { useState, useEffect } from 'react'
 export default function Info() {
   const { data, isLoading, error, refetch } = useSettingDataQuery(undefined)
   const [updateSetting, { isLoading: isUpdating }] = useUpdateSettingMutation()
+
+    const IMAGE_BASE_URL = 'https://mehedidev.net';
+
   
   const [formData, setFormData] = useState({
     name: '',
@@ -132,7 +135,7 @@ export default function Info() {
                 <div className="flex items-center">
                   <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
                     {logoPreview ? (
-                      <img src={logoPreview} alt="Logo" className="h-full w-full object-cover" />
+                      <img src={`${IMAGE_BASE_URL}${logoPreview}`} alt="Logo" className="h-full w-full object-cover" />
                     ) : (
                       <div className="h-full w-full flex items-center justify-center text-gray-400">
                         <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">

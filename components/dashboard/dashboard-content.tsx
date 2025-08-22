@@ -34,7 +34,7 @@ export default function DashboardContent() {
     { title: "Total Users", value: userData?.count, icon: "👥" },
     { title: "Total Product", value: data?.count, icon: "📦" },
     { title: "Total Sell", value: dashboard?.data?.total_sales || 0, icon: "💰" },
-    { title: "Total Revenue", value: dashboard?.data?.monthly_revenue[0].total_revenue || 0, icon: "💵" },
+    { title: "Total Revenue", value: dashboard?.data?.monthly_revenue[0]?.total_revenue || 0, icon: "💵" },
     { title: "Pending Order", value: productData?.total || 0, icon: "⏳" },
   ];
 
@@ -109,36 +109,6 @@ export default function DashboardContent() {
                   <CardTitle className="text-white text-lg">
                     Sales Analytics
                   </CardTitle>
-                  {/* <div className="flex flex-wrap gap-1 sm:gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-gray-400 text-xs sm:text-sm px-2 sm:px-3"
-                    >
-                      Daily
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-gray-400 text-xs sm:text-sm px-2 sm:px-3"
-                    >
-                      Weekly
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-gray-400 text-xs sm:text-sm px-2 sm:px-3"
-                    >
-                      Monthly
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-gray-400 text-xs sm:text-sm px-2 sm:px-3"
-                    >
-                      Yearly
-                    </Button>
-                  </div> */}
                 </div>
               </CardHeader>
               <CardContent>
@@ -177,9 +147,8 @@ export default function DashboardContent() {
                 Total Revenue
               </CardTitle>
               <div className="text-2xl sm:text-3xl font-bold text-white">
-                {dashboard?.data?.monthly_revenue[0].total_revenue || 0} BDT
+                {dashboard?.data?.monthly_revenue[0]?.total_revenue || 0} BDT
               </div>
-              <div className="text-sm text-green-400">↗ 5% than last month</div>
             </CardHeader>
             <CardContent>
               <RevenueChart />

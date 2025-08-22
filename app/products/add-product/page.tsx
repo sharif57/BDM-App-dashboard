@@ -196,23 +196,7 @@ export default function Component() {
     }
   };
 
-  const handleRemove = () => {
-    setFormData({
-      mainCategory: "",
-      companyName: "",
-      productName: "",
-      quantity: "",
-      description: "",
-      stock: "",
-      netPrice: "",
-      status: "",
-      grossPrice: "",
-      priceRegular: "",
-      discount: "",
-      company: "",
-    });
-    setUploadedFiles([]);
-  };
+
 
   return (
     <div className="text-white">

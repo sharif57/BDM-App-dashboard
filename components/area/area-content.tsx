@@ -444,28 +444,7 @@ export default function AreaContent() {
                 >
                   <div className="text-white text-sm">{area.id}</div>
                   <div className="text-white text-sm">{area.name}</div>
-                  <div>
-                    <Select
-                      value={area.status}
-                      onValueChange={(value: "Active" | "Inactive") =>
-                        handleStatusChange(index, value)
-                      }
-                    >
-                      <SelectTrigger
-                        className={`w-24 h-8 text-xs border-none ${
-                          area.status === "Active"
-                            ? "bg-green-600 text-white"
-                            : "bg-red-600 text-white"
-                        }`}
-                      >
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Active">Active</SelectItem>
-                        <SelectItem value="Inactive">Inactive</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <div className="text-white text-sm">{area.status}</div>
                   <div className="flex gap-2">
                     <Button
                       onClick={() => handleEdit(index)}

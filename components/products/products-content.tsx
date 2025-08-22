@@ -30,6 +30,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
+import { useAllGenericsQuery } from "@/redux/feature/genericSlice";
+import { useAllCategoriesQuery } from "@/redux/feature/categorieSlice";
+import { useAllCompaniesQuery } from "@/redux/feature/companySlice";
 
 interface Product {
   product_id: number;
@@ -76,6 +79,13 @@ export default function ProductsContent() {
   const { data: apiData, isLoading, isError, refetch } = useAllProductsQuery(pageSize);
   const [deleteProduct] = useDeleteProductMutation();
   const [updateProduct] = useUpdateProductMutation();
+
+    const { data: generics } = useAllGenericsQuery(undefined);
+    console.log("Generics:", generics);
+    const { data } = useAllCategoriesQuery(undefined);
+    console.log("Categories:", data);
+    const { data: companies } = useAllCompaniesQuery(undefined);
+    console.log("Companies:", companies);
 
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
@@ -128,8 +138,8 @@ export default function ProductsContent() {
       selectedCategory === "All" || 
       product.category_name.includes(selectedCategory);
     const matchesSearch = 
-      product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.generic_name.toLowerCase().includes(searchTerm.toLowerCase());
+      product?.product_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product?.generic_name?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 

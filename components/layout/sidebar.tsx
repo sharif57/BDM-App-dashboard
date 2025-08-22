@@ -17,6 +17,7 @@ const sidebarItems = [
   { name: "Area", href: "/area" },
   { name: 'Category', href: '/category' },
   { name: 'Company', href: '/company' },
+  { name: 'Generic', href: '/generic' },
   { name: "Settings", href: "/settings" },
 ];
 

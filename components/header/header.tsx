@@ -5,8 +5,6 @@ import { Search, Bell, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import NotificationsPanel from "@/components/layout/notifications-panel";
 import { SheetContent, SheetTrigger } from "../ui/sheet";
 import Sidebar from "../layout/sidebar";
 import { useUserProfileQuery } from "@/redux/feature/userSlice";

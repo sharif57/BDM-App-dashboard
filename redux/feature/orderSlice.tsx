@@ -38,7 +38,20 @@ export const orderApi = baseApi.injectEndpoints({
             invalidatesTags: ["Order"],
         }),
 
+        // /orders/orders/48/
+        updateOrders: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `/orders/orders/${id}/`,
+                method: "PATCH",
+                body: data,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+            }),
+            invalidatesTags: ["Order"],
+        })
+
     }),
 });
 
-export const { useAllOrdersQuery, useDeleteOrderMutation , usePendingProductsQuery } = orderApi;
+export const { useAllOrdersQuery, useDeleteOrderMutation , usePendingProductsQuery, useUpdateOrdersMutation } = orderApi;

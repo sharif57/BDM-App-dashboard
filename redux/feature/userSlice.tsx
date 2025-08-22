@@ -29,6 +29,17 @@ export const userApi = baseApi.injectEndpoints({
       invalidatesTags: ["User"],
     }),
 
+    deleteUser: builder.mutation({
+      query: (id) => ({
+        url: `/auth/user/${id}/`,
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }),
+      invalidatesTags: ["User"],
+    }),
+
     allUsers: builder.query({
       query: () => ({
         url: "/auth/user/",
@@ -68,4 +79,4 @@ export const userApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useUserProfileQuery, useUpdateProfileMutation, useAllUsersQuery, useSettingDataQuery, useUpdateSettingMutation } = userApi;
+export const { useUserProfileQuery, useUpdateProfileMutation, useAllUsersQuery, useSettingDataQuery, useUpdateSettingMutation , useDeleteUserMutation } = userApi;

@@ -31,7 +31,7 @@ export const categoriesApi = baseApi.injectEndpoints({
 
         updateCategory: builder.mutation({
             query: ({ id, data }) => ({
-                url: `/products/companies/${id}/`, // Ensure ID is part of the URL
+                url: `/products/categories/${id}/`, // Ensure ID is part of the URL
                 method: "PATCH",
                 body: data,
                 headers: {

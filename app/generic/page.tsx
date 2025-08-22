@@ -71,7 +71,8 @@ export default function Generic() {
     const handleDelete = async (id: number) => {
         try {
             await deleteGeneric(id).unwrap();
-            toast.success("Generic deleted successfully!", { position: "top-right" });
+            window.alert("Generic deleted successfully!");
+            // toast.success("Generic deleted successfully!", { position: "top-right" });
             refetch();
         } catch (error) {
             toast.error("Failed to delete generic!", { position: "top-right" });

@@ -30,7 +30,6 @@
 // import { Input } from "@/components/ui/input";
 // import { Label } from "@/components/ui/label";
 // import { toast } from "sonner";
-// import { Tooltip } from "../ui/tooltip";
 
 // interface AreaData {
 //   id: string;
@@ -42,6 +41,7 @@
 //   const { data, isLoading } = useAreaListQuery(undefined);
 //   const [updateArea] = useUpdateAreaMutation();
 //   const [deleteArea] = useDeleteAreaMutation();
+
 //   // Transform API data to match AreaData interface
 //   const apiAreas: AreaData[] =
 //     data?.data?.map((area: any) => ({
@@ -51,8 +51,8 @@
 //     })) || [];
 
 //   const [currentPage, setCurrentPage] = useState(1);
-//   const [localAreas, setLocalAreas] = useState<AreaData[]>([]); // for status toggle only
-//   const [editArea, setEditArea] = useState<AreaData | null>(null); // Area to be edited
+//   const [localAreas, setLocalAreas] = useState<AreaData[]>([]);
+//   const [editArea, setEditArea] = useState<AreaData | null>(null);
 
 //   const handleStatusChange = (
 //     index: number,
@@ -65,45 +65,49 @@
 
 //   const handleEdit = (index: number) => {
 //     const target = (localAreas.length ? localAreas : apiAreas)[index];
-//     setEditArea(target); // Set the area to edit
+//     setEditArea(target);
 //   };
-
-
 
 //   const handleAddNew = () => {
 //     console.log("Add new area");
 //   };
 
-//   const handleUpdateArea = async (id: string) => {
+//   const handleUpdateArea = async () => {
 //     if (editArea) {
 //       try {
-//         // Ensure id is set and log the API URL
-//         console.log("Updating area with ID:", editArea.id); // Log the ID
-
 //         const updatedArea = {
-//           id: editArea.id, // Ensure id is always a string
 //           area_name: editArea.name,
-//           is_active: editArea.status === "Active", // Send status as boolean
+//           is_active: editArea.status === "Active",
 //         };
-//         console.log("Updated Area:", updatedArea);
 
-//         console.log("Request Payload:", updatedArea); // Log the request payload
+//         console.log("Updating area with ID:", editArea.id);
+//         console.log("Request Payload:", updatedArea);
 
-//         // Send the updated area to the backend
-//       const response =  await updateArea({ updatedArea }).unwrap();
-//       console.log(response, 'response')
+//         // Call the updateArea mutation with proper structure
+//         const response = await updateArea({
+//           id: editArea.id, // Pass the ID separately
+//           data: updatedArea, // Pass the data separately
+//         }).unwrap();
 
-      
+//         console.log("Update response:", response);
+
+//         toast.success("Area updated successfully!", {
+//           position: "top-right",
+//         });
 
 //         // Close the dialog after update
 //         setEditArea(null);
-
-//         alert("Area updated successfully!");
 //       } catch (error) {
 //         console.error("Error updating area:", error);
-//         alert("Failed to update area.");
+//         toast.error("Failed to update area!", {
+//           position: "top-right",
+//         });
 //       }
 //     }
+//   };
+
+//   const handleCloseDialog = () => {
+//     setEditArea(null); // Close the dialog by resetting editArea
 //   };
 
 //   const displayedAreas = localAreas.length ? localAreas : apiAreas;
@@ -113,9 +117,9 @@
 //       <div className="w-full">
 //         {/* Header */}
 //         <div className="flex justify-between items-center mb-6">
-
-//           <h1 className="text-white text-xl font-medium " title="Area">Area</h1>
-   
+//           <h1 className="text-white text-xl font-medium" title="Area">
+//             Area
+//           </h1>
 //           <Link href={"add-area-form"}>
 //             <Button
 //               onClick={handleAddNew}
@@ -146,28 +150,7 @@
 //                 >
 //                   <div className="text-white text-sm">{area.id}</div>
 //                   <div className="text-white text-sm">{area.name}</div>
-//                   <div>
-//                     <Select
-//                       value={area.status}
-//                       onValueChange={(value: "Active" | "Inactive") =>
-//                         handleStatusChange(index, value)
-//                       }
-//                     >
-//                       <SelectTrigger
-//                         className={`w-24 h-8 text-xs border-none ${
-//                           area.status === "Active"
-//                             ? "bg-green-600 text-white"
-//                             : "bg-red-600 text-white"
-//                         }`}
-//                       >
-//                         <SelectValue />
-//                       </SelectTrigger>
-//                       <SelectContent>
-//                         <SelectItem value="Active">Active</SelectItem>
-//                         <SelectItem value="Inactive">Inactive</SelectItem>
-//                       </SelectContent>
-//                     </Select>
-//                   </div>
+//                   <div className="text-white text-sm">{area.status}</div>
 //                   <div className="flex gap-2">
 //                     <Button
 //                       onClick={() => handleEdit(index)}
@@ -202,7 +185,7 @@
 //           </div>
 //         </div>
 
-//         {/* Pagination (dummy for now) */}
+//         {/* Pagination */}
 //         <div className="flex justify-center items-center mt-6 gap-2">
 //           <Button
 //             variant="ghost"
@@ -232,7 +215,7 @@
 //       </div>
 
 //       {/* Edit Area Dialog */}
-//       <Dialog open={editArea !== null}>
+//       <Dialog open={editArea !== null} onOpenChange={setEditArea ? () => setEditArea(null) : undefined}>
 //         <DialogContent className="sm:max-w-md">
 //           <DialogHeader>
 //             <DialogTitle>Edit Area</DialogTitle>
@@ -282,7 +265,7 @@
 
 //           <DialogFooter>
 //             <DialogClose asChild>
-//               <Button type="button" variant="secondary">
+//               <Button type="button" variant="secondary" onClick={handleCloseDialog}>
 //                 Close
 //               </Button>
 //             </DialogClose>
@@ -293,6 +276,9 @@
 //     </div>
 //   );
 // }
+
+
+
 "use client";
 
 import { useState } from "react";
@@ -319,7 +305,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -347,6 +332,8 @@ export default function AreaContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [localAreas, setLocalAreas] = useState<AreaData[]>([]);
   const [editArea, setEditArea] = useState<AreaData | null>(null);
+  const [deleteAreaId, setDeleteAreaId] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleStatusChange = (
     index: number,
@@ -360,6 +347,32 @@ export default function AreaContent() {
   const handleEdit = (index: number) => {
     const target = (localAreas.length ? localAreas : apiAreas)[index];
     setEditArea(target);
+  };
+
+  const handleDeleteClick = (id: string) => {
+    setDeleteAreaId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deleteAreaId) {
+      try {
+        await deleteArea(deleteAreaId).unwrap();
+        toast.success("Area deleted successfully!", {
+          position: "top-right",
+        });
+        // Update localAreas if it exists to keep the UI in sync
+        if (localAreas.length) {
+          setLocalAreas(localAreas.filter((area) => area.id !== deleteAreaId));
+        }
+      } catch (error) {
+        toast.error("Failed to delete area!", {
+          position: "top-right",
+        });
+      }
+      setIsDeleteModalOpen(false);
+      setDeleteAreaId(null);
+    }
   };
 
   const handleAddNew = () => {
@@ -388,6 +401,15 @@ export default function AreaContent() {
         toast.success("Area updated successfully!", {
           position: "top-right",
         });
+
+        // Update localAreas if it exists
+        if (localAreas.length) {
+          setLocalAreas(
+            localAreas.map((area) =>
+              area.id === editArea.id ? editArea : area
+            )
+          );
+        }
 
         // Close the dialog after update
         setEditArea(null);
@@ -455,18 +477,7 @@ export default function AreaContent() {
                     </Button>
 
                     <Button
-                      onClick={async () => {
-                        try {
-                          await deleteArea(area.id);
-                          toast.success("Area deleted successfully!", {
-                            position: "top-right",
-                          });
-                        } catch (error) {
-                          toast.error("Failed to delete area!", {
-                            position: "top-right",
-                          });
-                        }
-                      }}
+                      onClick={() => handleDeleteClick(area.id)}
                       size="sm"
                       className="bg-red-500 hover:bg-red-600 text-white w-8 h-8 p-0"
                     >
@@ -509,11 +520,11 @@ export default function AreaContent() {
       </div>
 
       {/* Edit Area Dialog */}
-      <Dialog open={editArea !== null} onOpenChange={setEditArea ? () => setEditArea(null) : undefined}>
-        <DialogContent className="sm:max-w-md">
+      <Dialog open={editArea !== null} onOpenChange={() => setEditArea(null)}>
+        <DialogContent className="sm:max-w-md bg-[#23252b] text-white border-gray-600">
           <DialogHeader>
             <DialogTitle>Edit Area</DialogTitle>
-            <DialogDescription>Update the area details</DialogDescription>
+            <DialogDescription className="text-gray-300">Update the area details</DialogDescription>
           </DialogHeader>
 
           {editArea && (
@@ -531,6 +542,7 @@ export default function AreaContent() {
                       }))
                     }
                     placeholder="Enter area name"
+                    className="bg-gray-800 text-white border-gray-600"
                   />
                 </div>
                 <div>
@@ -544,10 +556,10 @@ export default function AreaContent() {
                       }))
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-gray-800 text-white border-gray-600">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-gray-800 text-white border-gray-600">
                       <SelectItem value="Active">Active</SelectItem>
                       <SelectItem value="Inactive">Inactive</SelectItem>
                     </SelectContent>
@@ -559,11 +571,39 @@ export default function AreaContent() {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="secondary" onClick={handleCloseDialog}>
+              <Button type="button" variant="ghost" onClick={handleCloseDialog} className="bg-gray-700 hover:bg-gray-600 text-white">
                 Close
               </Button>
             </DialogClose>
-            <Button onClick={handleUpdateArea}>Save</Button>
+            <Button onClick={handleUpdateArea} className="bg-green-600 hover:bg-green-700">Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteModalOpen} onOpenChange={() => setIsDeleteModalOpen(false)}>
+        <DialogContent className="sm:max-w-md bg-[#23252b] text-white border-gray-600">
+          <DialogHeader>
+            <DialogTitle>Confirm Delete</DialogTitle>
+            <DialogDescription className="text-gray-300">
+              Are you sure you want to delete the area "{displayedAreas.find(area => area.id === deleteAreaId)?.name}"? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="bg-gray-700 hover:bg-gray-600 text-white"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmDelete}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              Delete
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

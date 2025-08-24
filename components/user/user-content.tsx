@@ -516,7 +516,7 @@ export default function UserManagement() {
               <div className="flex justify-end pt-4">
                 <Button
                   variant="outline"
-                  className="border-gray-600 hover:bg-gray-700"
+                  className="border-gray-600 text-black hover:bg-gray-700"
                   onClick={closeDetailsModal}
                 >
                   Close

@@ -362,7 +362,7 @@
 //                           {product.category_name.join(", ")}
 //                         </td>
 //                         <td className="py-3 px-4 text-white font-medium">
-//                           ₹{product.selling_price}
+//                           ৳{product.selling_price}
 //                         </td>
 //                         <td className="py-3 px-4 text-gray-300">{product.stock_quantity}</td>
 //                         <td className="py-3 px-4">
@@ -471,19 +471,19 @@
 //                 </div>
 //                 <div>
 //                   <p className="text-sm text-gray-400">MRP</p>
-//                   <p>₹{selectedProduct.mrp}</p>
+//                   <p>৳{selectedProduct.mrp}</p>
 //                 </div>
 //                 <div>
 //                   <p className="text-sm text-gray-400">Selling Price</p>
-//                   <p>₹{selectedProduct.selling_price}</p>
+//                   <p>৳{selectedProduct.selling_price}</p>
 //                 </div>
 //                 <div>
 //                   <p className="text-sm text-gray-400">Discount</p>
-//                   <p>{selectedProduct.discount_percent}% (₹{(parseFloat(selectedProduct.mrp) - parseFloat(selectedProduct.selling_price)).toFixed(2)})</p>
+//                   <p>{selectedProduct.discount_percent}% (৳{(parseFloat(selectedProduct.mrp) - parseFloat(selectedProduct.selling_price)).toFixed(2)})</p>
 //                 </div>
 //                 <div>
 //                   <p className="text-sm text-gray-400">Cost Price</p>
-//                   <p>₹{selectedProduct.cost_price}</p>
+//                   <p>৳{selectedProduct.cost_price}</p>
 //                 </div>
 //                 <div>
 //                   <p className="text-sm text-gray-400">Stock</p>
@@ -1051,7 +1051,7 @@ export default function ProductsContent() {
                   className={
                     selectedCategory === category
                       ? "bg-blue-600 hover:bg-blue-700"
-                      : "text-gray-400 hover:text-white"
+                      : "text-gray-400 hover:text-black"
                   }
                 >
                   {category}
@@ -1136,7 +1136,7 @@ export default function ProductsContent() {
                           {product.category_name}
                         </td>
                         <td className="py-3 px-4 text-white font-medium">
-                          ₹{product.selling_price}
+                          ৳{product.selling_price}
                         </td>
                         <td className="py-3 px-4 text-gray-300">{product.stock_quantity}</td>
                         <td className="py-3 px-4">
@@ -1244,19 +1244,19 @@ export default function ProductsContent() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">MRP</p>
-                  <p>₹{selectedProduct.mrp}</p>
+                  <p>৳{selectedProduct.mrp}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Selling Price</p>
-                  <p>₹{selectedProduct.selling_price}</p>
+                  <p>৳{selectedProduct.selling_price}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Discount</p>
-                  <p>{selectedProduct.discount_percent}% (₹{(selectedProduct.mrp - selectedProduct.selling_price).toFixed(2)})</p>
+                  <p>{selectedProduct.discount_percent}% (৳{(selectedProduct.mrp - selectedProduct.selling_price).toFixed(2)})</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Cost Price</p>
-                  <p>₹{selectedProduct.cost_price}</p>
+                  <p>৳{selectedProduct.cost_price}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Stock</p>
@@ -1342,7 +1342,7 @@ export default function ProductsContent() {
                   <Label htmlFor="company_id">Company</Label>
                   <Select
                     onValueChange={(value) => form.setValue("company_id", parseInt(value))}
-                    defaultValue={form.getValues("company_id").toString()}
+                    defaultValue={form.getValues("company_id")?.toString()}
                   >
                     <SelectTrigger className="bg-gray-700 border-gray-600">
                       <SelectValue placeholder="Select company" />

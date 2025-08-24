@@ -147,16 +147,15 @@ export default function Component() {
     const netPrice = parseFloat(formData.netPrice);
     const grossPrice = parseFloat(formData.grossPrice);
     const priceRegular = parseFloat(formData.priceRegular);
-    const discount = parseInt(formData.discount);
 
-    if (isNaN(stock) || isNaN(quantity) || isNaN(netPrice) || isNaN(grossPrice) || isNaN(priceRegular) || isNaN(discount)) {
+    if (isNaN(stock) || isNaN(quantity) || isNaN(netPrice) || isNaN(grossPrice) || isNaN(priceRegular)) {
       toast.error("Please ensure all numeric fields are valid numbers!");
       return;
     }
 
     const formDataToSend = new FormData();
     formDataToSend.append("product_name", formData.productName);
-    formDataToSend.append("generic_name", formData.companyName.toLocaleLowerCase() || ""); // Assuming generic_name is still a string as per the image
+    formDataToSend.append("generic_name", selectedGeneric ? String(selectedGeneric.generic_id) : ""); // Assuming generic_name is still a string as per the image
     formDataToSend.append("product_description", formData.description || "");
     formDataToSend.append("category_id", selectedCategory ? String(selectedCategory.category_id) : "");
     formDataToSend.append("company_id", selectedCompany ? String(selectedCompany.company_id) : "");
@@ -165,7 +164,6 @@ export default function Component() {
     formDataToSend.append("mrp", grossPrice.toFixed(2));
     formDataToSend.append("selling_price", netPrice.toFixed(2));
     formDataToSend.append("regular_price", priceRegular.toFixed(2));
-    formDataToSend.append("discount_percent", String(discount));
     formDataToSend.append("is_active", formData.status === "Active" ? "true" : "false");
     formDataToSend.append("quantity_per_box", String(quantity));
     formDataToSend.append("product_image", uploadedFiles[0]);
@@ -207,12 +205,33 @@ export default function Component() {
           </Button>
           <h1 className="text-xl font-medium">Add Product</h1>
         </div>
-        
+
       </div>
 
       <div className="bg-[#23252b] p-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-[#23252b]">
           <div className="space-y-6">
+
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-300">Product Name</Label>
+              <Input
+                value={formData.productName}
+                onChange={(e) => handleInputChange("productName", e.target.value)}
+                className="bg-[#2a2a2a] border-gray-600 text-white placeholder:text-gray-500"
+                placeholder="Enter product name"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-300">Description</Label>
+              <Textarea
+                value={formData.description}
+                onChange={(e) => handleInputChange("description", e.target.value)}
+                className="bg-[#2a2a2a] border-gray-600 text-white placeholder:text-gray-500 min-h-[120px] resize-none"
+                placeholder="Enter product description"
+              />
+            </div>
+
             <div className="space-y-2">
               <Label className="text-sm text-gray-300">Main Category</Label>
               <Select value={formData.mainCategory} onValueChange={(value) => handleInputChange("mainCategory", value)}>
@@ -223,22 +242,6 @@ export default function Component() {
                   {categories?.data?.map((category: Category) => (
                     <SelectItem className="text-white" key={category.category_id} value={category.name}>
                       {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-sm text-gray-300">Generic Name</Label>
-              <Select value={formData.companyName} onValueChange={(value) => handleInputChange("companyName", value)}>
-                <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
-                  <SelectValue placeholder="Select a generic name" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#2a2a2a] border-gray-600">
-                  {generics?.data?.map((generic: Generic) => (
-                    <SelectItem className="text-white" key={generic.generic_id} value={generic.name}>
-                      {generic.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -262,14 +265,24 @@ export default function Component() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm text-gray-300">Product Name</Label>
-              <Input
-                value={formData.productName}
-                onChange={(e) => handleInputChange("productName", e.target.value)}
-                className="bg-[#2a2a2a] border-gray-600 text-white placeholder:text-gray-500"
-                placeholder="Enter product name"
-              />
+              <Label className="text-sm text-gray-300">Generic Name</Label>
+              <Select value={formData.companyName} onValueChange={(value) => handleInputChange("companyName", value)}>
+                <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
+                  <SelectValue placeholder="Select a generic name" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#2a2a2a] border-gray-600">
+                  {generics?.data?.map((generic: Generic) => (
+                    <SelectItem className="text-white" key={generic.generic_id} value={generic.name}>
+                      {generic.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+
+
+
+
 
             <div className="space-y-2">
               <Label className="text-sm text-gray-300">Quantity</Label>
@@ -282,15 +295,7 @@ export default function Component() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm text-gray-300">Description</Label>
-              <Textarea
-                value={formData.description}
-                onChange={(e) => handleInputChange("description", e.target.value)}
-                className="bg-[#2a2a2a] border-gray-600 text-white placeholder:text-gray-500 min-h-[120px] resize-none"
-                placeholder="Enter product description"
-              />
-            </div>
+
           </div>
 
           <div className="space-y-6">
@@ -356,6 +361,29 @@ export default function Component() {
                   className="bg-[#2a2a2a] border-gray-600 text-white"
                 />
               </div>
+
+<div className="space-y-2">
+                <Label className="text-sm text-gray-300">Cost Price</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={formData.grossPrice}
+                  onChange={(e) => handleInputChange("grossPrice", e.target.value)}
+                  className="bg-[#2a2a2a] border-gray-600 text-white"
+                />
+              </div>
+              
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-300">MRP</Label>
+              <Input
+                type="number"
+                step="0.01"
+                value={formData.priceRegular}
+                onChange={(e) => handleInputChange("priceRegular", e.target.value)}
+                className="bg-[#2a2a2a] border-gray-600 text-white"
+              />
+            </div>
+
               <div className="space-y-2">
                 <Label className="text-sm text-gray-300">Selling Price</Label>
                 <Input
@@ -368,7 +396,7 @@ export default function Component() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm text-gray-300">Status</Label>
                 <Select value={formData.status} onValueChange={(value) => handleInputChange("status", value)}>
@@ -381,43 +409,16 @@ export default function Component() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label className="text-sm text-gray-300">Cost Price</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formData.grossPrice}
-                  onChange={(e) => handleInputChange("grossPrice", e.target.value)}
-                  className="bg-[#2a2a2a] border-gray-600 text-white"
-                />
-              </div>
+              
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm text-gray-300">Price (Regular)</Label>
-              <Input
-                type="number"
-                step="0.01"
-                value={formData.priceRegular}
-                onChange={(e) => handleInputChange("priceRegular", e.target.value)}
-                className="bg-[#2a2a2a] border-gray-600 text-white"
-              />
-            </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm text-gray-300">Discount / Range (%)</Label>
-              <Input
-                type="number"
-                value={formData.discount}
-                onChange={(e) => handleInputChange("discount", e.target.value)}
-                className="bg-[#2a2a2a] border-gray-600 text-white"
-              />
-            </div>
+         
           </div>
         </div>
 
         <div className="flex justify-center gap-4 mt-8">
-  
+
           <Button onClick={handleSubmit} className="px-8 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white">
             Add Now
           </Button>

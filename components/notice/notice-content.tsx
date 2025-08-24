@@ -203,7 +203,7 @@ export default function Component() {
                           <Button
                             variant="outline"
                             onClick={handleCancelEdit}
-                            className="border-gray-600 text-white hover:bg-gray-700"
+                            className="border-gray-600 text-black hover:bg-gray-700"
                           >
                             Cancel
                           </Button>
@@ -231,12 +231,12 @@ export default function Component() {
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel className="border-gray-600 text-white hover:bg-gray-700">
+                        <AlertDialogCancel className="border-gray-600 text-black hover:bg-gray-700">
                           Cancel
                         </AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => handleDeleteNotice(notice.id)}
-                          className="bg-red-500 hover:bg-red-600 text-white"
+                          className="bg-red-500 hover:bg-red-600 text-black"
                         >
                           Delete
                         </AlertDialogAction>
@@ -288,7 +288,7 @@ export default function Component() {
               <Button
                 variant="outline"
                 onClick={handleCancelAdd}
-                className="border-gray-600 text-white hover:bg-gray-700"
+                className="border-gray-600 text-black hover:bg-gray-700"
               >
                 Cancel
               </Button>

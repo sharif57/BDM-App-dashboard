@@ -155,7 +155,7 @@ export default function Component() {
 
     const formDataToSend = new FormData();
     formDataToSend.append("product_name", formData.productName);
-    formDataToSend.append("generic_name", selectedGeneric ? String(selectedGeneric.generic_id) : ""); // Assuming generic_name is still a string as per the image
+    formDataToSend.append("generic_id", selectedGeneric ? String(selectedGeneric.generic_id) : ""); // Assuming generic_name is still a string as per the image
     formDataToSend.append("product_description", formData.description || "");
     formDataToSend.append("category_id", selectedCategory ? String(selectedCategory.category_id) : "");
     formDataToSend.append("company_id", selectedCompany ? String(selectedCompany.company_id) : "");

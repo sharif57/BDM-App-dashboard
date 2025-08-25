@@ -71,12 +71,20 @@ export const userApi = baseApi.injectEndpoints({
       }),
     }),
 
- 
-
-
+    updateUsers: builder.mutation({
+      query: ({data , id}) => ({
+        url: `/auth/user/${id}/`,
+        method: "PATCH",
+        body: data,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }),
+      invalidatesTags: ["User"],
+    }),
 
 
   }),
 });
 
-export const { useUserProfileQuery, useUpdateProfileMutation, useAllUsersQuery, useSettingDataQuery, useUpdateSettingMutation , useDeleteUserMutation } = userApi;
+export const { useUserProfileQuery, useUpdateProfileMutation, useAllUsersQuery, useSettingDataQuery, useUpdateSettingMutation , useDeleteUserMutation, useUpdateUsersMutation } = userApi;

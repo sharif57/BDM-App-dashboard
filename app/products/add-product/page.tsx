@@ -280,12 +280,8 @@ export default function Component() {
               </Select>
             </div>
 
-
-
-
-
             <div className="space-y-2">
-              <Label className="text-sm text-gray-300">Quantity</Label>
+              <Label className="text-sm text-gray-300">Quantity per Box</Label>
               <Input
                 type="number"
                 value={formData.quantity}

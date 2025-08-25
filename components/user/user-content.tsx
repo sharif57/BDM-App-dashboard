@@ -2,7 +2,7 @@
 // "use client";
 
 // import { useState, useEffect } from "react";
-// import { Info, Trash2, X } from "lucide-react";
+// import { Info, Trash2, X, Edit2 } from "lucide-react";
 // import { Button } from "@/components/ui/button";
 // import { useAllUsersQuery, useDeleteUserMutation, useUpdateUsersMutation } from "@/redux/feature/userSlice";
 // import {
@@ -15,6 +15,10 @@
 // } from "@/components/ui/dialog";
 // import { Badge } from "@/components/ui/badge";
 // import { toast } from "@/components/ui/use-toast";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+// import { useAreaListQuery } from "@/redux/feature/areaSlice";
 
 // interface User {
 //   id: string;
@@ -36,13 +40,26 @@
 //   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 //   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 //   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+//   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 //   const [userToDelete, setUserToDelete] = useState<User | null>(null);
+//   const [editForm, setEditForm] = useState({
+//     userName: "",
+//     emailId: "",
+//     phoneNum: "",
+//     shopName: "",
+//     area: "",
+//     address: "",
+//     status: "Pending" as "Pending" | "Inactive" | "Active",
+//     isStaff: false,
+//     isSuperuser: false,
+//   });
 
-//   const [updateUsers]= useUpdateUsersMutation();
-
-//   // Fetch users data from the API
 //   const { data, error, isLoading } = useAllUsersQuery(undefined);
 //   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
+//   const [updateUsers, { isLoading: isUpdating }] = useUpdateUsersMutation();
+
+
+//   const {data: area} = useAreaListQuery(undefined);
 
 //   useEffect(() => {
 //     if (data?.results?.data) {
@@ -76,6 +93,62 @@
 //     }
 //   };
 
+//   const handleEditClick = (user: User) => {
+//     setSelectedUser(user);
+//     setEditForm({
+//       userName: user.userName,
+//       emailId: user.emailId,
+//       phoneNum: user.phoneNum,
+//       shopName: user.shopName,
+//       area: user.area,
+//       address: user.address,
+//       status: user.status,
+//       isStaff: user.isStaff,
+//       isSuperuser: user.isSuperuser,
+//     });
+//     setIsEditModalOpen(true);
+//   };
+
+//   const handleEditSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     if (selectedUser) {
+//       try {
+//         const formData = new FormData();
+//         formData.append("full_name", editForm.userName);
+//         formData.append("email", editForm.emailId);
+//         formData.append("phone", editForm.phoneNum);
+//         formData.append("shop_name", editForm.shopName);
+//         formData.append("area_name", editForm.area);
+//         formData.append("shop_address", editForm.address);
+//         formData.append("is_active", editForm.status === "Active" ? "true" : "false");
+//         formData.append("is_approved", editForm.status === "Pending" ? "true" : "false");
+//         formData.append("is_staff", editForm.isStaff.toString());
+//         formData.append("is_superuser", editForm.isSuperuser.toString());
+
+//         await updateUsers({ id: selectedUser.id, data: formData }).unwrap();
+//         toast({
+//           title: "Success",
+//           description: `User ${editForm.userName} updated successfully.`,
+//         });
+
+//         // Update local state
+//         setUsers(users.map((user) =>
+//           user.id === selectedUser.id
+//             ? { ...user, ...editForm }
+//             : user
+//         ));
+//         setIsEditModalOpen(false);
+//         setSelectedUser(null);
+//       } catch (error) {
+//         toast({
+//           title: "Error",
+//           description: "Failed to update user. Please try again.",
+//           variant: "destructive",
+//         });
+//       }
+//     }
+//   };
+
 //   const handleDeleteClick = (user: User) => {
 //     setUserToDelete(user);
 //     setIsDeleteModalOpen(true);
@@ -105,6 +178,11 @@
 
 //   const closeDetailsModal = () => {
 //     setIsDetailsModalOpen(false);
+//     setSelectedUser(null);
+//   };
+
+//   const closeEditModal = () => {
+//     setIsEditModalOpen(false);
 //     setSelectedUser(null);
 //   };
 
@@ -190,6 +268,14 @@
 //                     onClick={() => handleDetailsClick(user.id)}
 //                   >
 //                     <Info className="h-4 w-4" />
+//                   </Button>
+//                   <Button
+//                     size="sm"
+//                     variant="ghost"
+//                     className="w-8 h-8 p-0 text-yellow-400 hover:bg-yellow-500/20"
+//                     onClick={() => handleEditClick(user)}
+//                   >
+//                     <Edit2 className="h-4 w-4" />
 //                   </Button>
 //                   <Button
 //                     size="sm"
@@ -284,6 +370,127 @@
 //         </DialogContent>
 //       </Dialog>
 
+//       {/* Edit User Dialog */}
+//       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+//         <DialogContent className="bg-gray-800 border-gray-700 max-w-2xl text-white">
+//           <DialogHeader>
+//             <DialogTitle>Edit User</DialogTitle>
+//           </DialogHeader>
+//           <form onSubmit={handleEditSubmit} className="space-y-4">
+//             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//               <div>
+//                 <Label htmlFor="userName">User Name</Label>
+//                 <Input
+//                   id="userName"
+//                   value={editForm.userName}
+//                   onChange={(e) => setEditForm({ ...editForm, userName: e.target.value })}
+//                   className="bg-gray-700 text-white border-gray-600"
+//                 />
+//               </div>
+//               <div>
+//                 <Label htmlFor="emailId">Email</Label>
+//                 <Input
+//                   id="emailId"
+//                   type="email"
+//                   value={editForm.emailId}
+//                   onChange={(e) => setEditForm({ ...editForm, emailId: e.target.value })}
+//                   className="bg-gray-700 text-white border-gray-600"
+//                 />
+//               </div>
+//               <div>
+//                 <Label htmlFor="phoneNum">Phone</Label>
+//                 <Input
+//                   id="phoneNum"
+//                   value={editForm.phoneNum}
+//                   onChange={(e) => setEditForm({ ...editForm, phoneNum: e.target.value })}
+//                   className="bg-gray-700 text-white border-gray-600"
+//                 />
+//               </div>
+//               <div>
+//                 <Label htmlFor="shopName">Shop Name</Label>
+//                 <Input
+//                   id="shopName"
+//                   value={editForm.shopName}
+//                   onChange={(e) => setEditForm({ ...editForm, shopName: e.target.value })}
+//                   className="bg-gray-700 text-white border-gray-600"
+//                 />
+//               </div>
+//               <div>
+//                 <Label htmlFor="area">Area</Label>
+//                 <Input
+//                   id="area"
+//                   value={editForm.area}
+//                   onChange={(e) => setEditForm({ ...editForm, area: e.target.value })}
+//                   className="bg-gray-700 text-white border-gray-600"
+//                 />
+//               </div>
+//               <div className="md:col-span-2">
+//                 <Label htmlFor="address">Address</Label>
+//                 <Input
+//                   id="address"
+//                   value={editForm.address}
+//                   onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+//                   className="bg-gray-700 text-white border-gray-600"
+//                 />
+//               </div>
+//               <div>
+//                 <Label htmlFor="status">Status</Label>
+//                 <Select
+//                   value={editForm.status}
+//                   onValueChange={(value: "Pending" | "Inactive" | "Active") =>
+//                     setEditForm({ ...editForm, status: value })
+//                   }
+//                 >
+//                   <SelectTrigger className="bg-gray-700 text-white border-gray-600">
+//                     <SelectValue placeholder="Select status" />
+//                   </SelectTrigger>
+//                   <SelectContent className="bg-gray-700 text-white border-gray-600">
+//                     <SelectItem value="Active">Active</SelectItem>
+//                     <SelectItem value="Pending">Pending</SelectItem>
+//                     <SelectItem value="Inactive">Inactive</SelectItem>
+//                   </SelectContent>
+//                 </Select>
+//               </div>
+//               <div className="flex items-center gap-4">
+//                 <div className="flex items-center">
+//                   <input
+//                     type="checkbox"
+//                     id="isStaff"
+//                     checked={editForm.isStaff}
+//                     onChange={(e) => setEditForm({ ...editForm, isStaff: e.target.checked })}
+//                     className="mr-2"
+//                   />
+//                   <Label htmlFor="isStaff">Staff</Label>
+//                 </div>
+//                 <div className="flex items-center">
+//                   <input
+//                     type="checkbox"
+//                     id="isSuperuser"
+//                     checked={editForm.isSuperuser}
+//                     onChange={(e) => setEditForm({ ...editForm, isSuperuser: e.target.checked })}
+//                     className="mr-2"
+//                   />
+//                   <Label htmlFor="isSuperuser">Superuser</Label>
+//                 </div>
+//               </div>
+//             </div>
+//             <DialogFooter>
+//               <Button
+//                 variant="outline"
+//                 className="border-gray-600 text-black hover:bg-gray-700"
+//                 onClick={closeEditModal}
+//                 disabled={isUpdating}
+//               >
+//                 Cancel
+//               </Button>
+//               <Button type="submit" disabled={isUpdating}>
+//                 {isUpdating ? "Updating..." : "Update"}
+//               </Button>
+//             </DialogFooter>
+//           </form>
+//         </DialogContent>
+//       </Dialog>
+
 //       {/* Delete Confirmation Dialog */}
 //       <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
 //         <DialogContent className="bg-gray-800 border-gray-700 text-white">
@@ -315,6 +522,7 @@
 //     </div>
 //   );
 // }
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -334,6 +542,13 @@ import { toast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAreaListQuery } from "@/redux/feature/areaSlice";
+
+interface Area {
+  area_id: number;
+  area_name: string;
+  is_active: boolean;
+}
 
 interface User {
   id: string;
@@ -348,6 +563,7 @@ interface User {
   image: string | null;
   isStaff: boolean;
   isSuperuser: boolean;
+  isApproved: boolean;
 }
 
 export default function UserManagement() {
@@ -367,11 +583,13 @@ export default function UserManagement() {
     status: "Pending" as "Pending" | "Inactive" | "Active",
     isStaff: false,
     isSuperuser: false,
+    isApproved: false,
   });
 
   const { data, error, isLoading } = useAllUsersQuery(undefined);
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [updateUsers, { isLoading: isUpdating }] = useUpdateUsersMutation();
+  const { data: areaData } = useAreaListQuery(undefined);
 
   useEffect(() => {
     if (data?.results?.data) {
@@ -392,6 +610,7 @@ export default function UserManagement() {
         image: user.image ? `https://mehedidev.net${user.image}` : null,
         isStaff: user.is_staff,
         isSuperuser: user.is_superuser,
+        isApproved: user.is_approved,
       }));
       setUsers(mappedUsers);
     }
@@ -417,6 +636,7 @@ export default function UserManagement() {
       status: user.status,
       isStaff: user.isStaff,
       isSuperuser: user.isSuperuser,
+      isApproved: user.isApproved,
     });
     setIsEditModalOpen(true);
   };
@@ -433,7 +653,7 @@ export default function UserManagement() {
         formData.append("area_name", editForm.area);
         formData.append("shop_address", editForm.address);
         formData.append("is_active", editForm.status === "Active" ? "true" : "false");
-        formData.append("is_approved", editForm.status === "Pending" ? "true" : "false");
+        formData.append("is_approved", editForm.isApproved.toString());
         formData.append("is_staff", editForm.isStaff.toString());
         formData.append("is_superuser", editForm.isSuperuser.toString());
 
@@ -443,7 +663,6 @@ export default function UserManagement() {
           description: `User ${editForm.userName} updated successfully.`,
         });
 
-        // Update local state
         setUsers(users.map((user) =>
           user.id === selectedUser.id
             ? { ...user, ...editForm }
@@ -541,7 +760,6 @@ export default function UserManagement() {
 
       {/* Users Table */}
       <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
-        {/* Table Header */}
         <div className="grid grid-cols-8 gap-4 p-4 border-b border-gray-700 text-sm font-medium text-gray-300 bg-gray-900">
           <div>User Name</div>
           <div>Joining Date</div>
@@ -553,7 +771,6 @@ export default function UserManagement() {
           <div>Actions</div>
         </div>
 
-        {/* Table Body */}
         <div className="divide-y divide-gray-700">
           {users.length === 0 ? (
             <div className="p-4 text-center text-gray-400">
@@ -637,6 +854,9 @@ export default function UserManagement() {
                     {selectedUser.isStaff && !selectedUser.isSuperuser && (
                       <Badge className="bg-blue-500/20 text-blue-400">Staff</Badge>
                     )}
+                    <Badge className={selectedUser.isApproved ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}>
+                      {selectedUser.isApproved ? "Approved" : "Not Approved"}
+                    </Badge>
                   </div>
                 </div>
               </div>
@@ -729,12 +949,21 @@ export default function UserManagement() {
               </div>
               <div>
                 <Label htmlFor="area">Area</Label>
-                <Input
-                  id="area"
+                <Select
                   value={editForm.area}
-                  onChange={(e) => setEditForm({ ...editForm, area: e.target.value })}
-                  className="bg-gray-700 text-white border-gray-600"
-                />
+                  onValueChange={(value) => setEditForm({ ...editForm, area: value })}
+                >
+                  <SelectTrigger className="bg-gray-700 text-white border-gray-600">
+                    <SelectValue placeholder="Select area" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-700 text-white border-gray-600">
+                    {areaData?.data?.map((area: Area) => (
+                      <SelectItem key={area.area_id} value={area.area_name}>
+                        {area.area_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="md:col-span-2">
                 <Label htmlFor="address">Address</Label>
@@ -783,6 +1012,16 @@ export default function UserManagement() {
                     className="mr-2"
                   />
                   <Label htmlFor="isSuperuser">Superuser</Label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="isApproved"
+                    checked={editForm.isApproved}
+                    onChange={(e) => setEditForm({ ...editForm, isApproved: e.target.checked })}
+                    className="mr-2"
+                  />
+                  <Label htmlFor="isApproved">Approved</Label>
                 </div>
               </div>
             </div>

@@ -655,7 +655,7 @@ export default function ProductsContent() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="quantity_per_box">Quantity per Box</Label>
+                  <Label htmlFor="quantity_per_box"> Stock Quantity</Label>
                   <Input
                     id="quantity_per_box"
                     type="number"
@@ -670,7 +670,7 @@ export default function ProductsContent() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="stock_quantity">Stock Quantity</Label>
+                  <Label htmlFor="stock_quantity">Quantity per Box</Label>
                   <Input
                     id="stock_quantity"
                     type="number"

@@ -223,21 +223,22 @@ export default function DashboardContent() {
   const { data: userData } = useAllUsersQuery(undefined);
   const { data: productData } = usePendingProductsQuery(undefined);
   const { data: dashboard, isLoading, isError } = useAllDashboardQuery(undefined);
+  console.log(dashboard,'dashboard')
 
   // Handle loading and error states
   if (isLoading) return <div>Loading...</div>;
   if (isError || !dashboard?.data) return <div>Error loading data</div>;
 
   const statsCards = [
-    { title: "Total Users", value: userData?.count || 0, icon: "👥" },
-    { title: "Total Product", value: data?.count || 0, icon: "📦" },
+    { title: "Total Users", value: dashboard?.data?.total_customers || 0, icon: "👥" },
+    { title: "Total Product", value: dashboard?.data?.total_products || 0, icon: "📦" },
     { title: "Total Sell", value: dashboard?.data?.total_sales || 0, icon: "💰" },
     {
       title: "Total Revenue",
       value: dashboard?.data?.monthly_revenue[0]?.total_revenue || 0,
       icon: "💵",
     },
-    { title: "Pending Order", value: productData?.total || 0, icon: "⏳" },
+    { title: "Pending Order", value: dashboard?.data?.total_pending_orders || 0, icon: "⏳" },
   ];
 
   // Calculate total quantity sold for percentage calculation

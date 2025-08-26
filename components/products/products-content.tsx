@@ -739,6 +739,8 @@ export default function ProductsContent() {
                     type="number"
                     {...form.register("discount_percent", { valueAsNumber: true })}
                     className="bg-gray-700 border-gray-600"
+                    disabled
+                    
                   />
                   {form.formState.errors.discount_percent && (
                     <p className="text-sm text-red-400">

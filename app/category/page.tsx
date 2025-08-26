@@ -352,7 +352,7 @@ export default function Component() {
             <tbody>
               {data?.data.map((category: any, index: number) => (
                 <tr key={index} className="border-b border-gray-700 hover:bg-gray-750">
-                  <td className="py-4 px-6 text-gray-300">{category.category_id}</td>
+                  <td className="py-4 px-6 text-gray-300">{index + 1}</td>
                   <td className="py-4 px-6 text-white">{category.name}</td>
                   <td className="py-4 px-6 text-white">{category.description || "N/A"}</td>
                   <td className="py-4 px-6">

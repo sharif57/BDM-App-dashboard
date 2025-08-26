@@ -464,7 +464,7 @@ export default function AreaContent() {
                   key={index}
                   className="grid grid-cols-4 gap-4 p-4 items-center"
                 >
-                  <div className="text-white text-sm">{area.id}</div>
+                  <div className="text-white text-sm">{index +1}</div>
                   <div className="text-white text-sm">{area.name}</div>
                   <div className="text-white text-sm">{area.status}</div>
                   <div className="flex gap-2">

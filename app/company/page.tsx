@@ -344,7 +344,7 @@ export default function Company() {
                         <tbody>
                             {data?.data.map((company: any, index: number) => (
                                 <tr key={index} className="border-b border-gray-700 hover:bg-gray-750">
-                                    <td className="py-4 px-6 text-gray-300">{company.company_id}</td>
+                                    <td className="py-4 px-6 text-gray-300">{index +1}</td>
                                     <td className="py-4 px-6 text-white">{company.company_name}</td>
                                     <td className="py-4 px-6">
                                         <span className={`text-sm ${company.is_active ? "text-green-400" : "text-red-400"}`}>

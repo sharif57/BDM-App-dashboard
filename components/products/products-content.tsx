@@ -382,7 +382,7 @@ export default function ProductsContent() {
                         </td>
                         <td className="py-3 px-4 text-gray-300">{product.category_name}</td>
                         <td className="py-3 px-4 text-white font-medium">৳{product.selling_price}</td>
-                        <td className="py-3 px-4 text-gray-300">{product.stock_quantity}</td>
+                        <td className="py-3 px-4 text-gray-300">{product?.quantity_per_box}</td>
                         <td className="py-3 px-4">
                           <Badge className={getStatusColor(getStatus(product))}>
                             {getStatus(product)}

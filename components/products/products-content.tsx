@@ -18,6 +18,7 @@ import Link from "next/link";
 import {
   useAllProductsQuery,
   useDeleteProductMutation,
+  useSearchProductsQuery,
   useUpdateProductMutation
 } from "@/redux/feature/productSlice";
 import { Input } from "@/components/ui/input";
@@ -119,6 +120,11 @@ export default function ProductsContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const IMAGE = 'https://mehedidev.net';
+
+  // search products
+
+  const {data: searchResults} = useSearchProductsQuery(searchTerm)
+  console.log(searchResults,'search results')
 
 
 
@@ -382,7 +388,7 @@ export default function ProductsContent() {
                         </td>
                         <td className="py-3 px-4 text-gray-300">{product.category_name}</td>
                         <td className="py-3 px-4 text-white font-medium">৳{product.selling_price}</td>
-                        <td className="py-3 px-4 text-gray-300">{product?.quantity_per_box}</td>
+                        <td className="py-3 px-4 text-gray-300">{product?.stock_quantity}</td>
                         <td className="py-3 px-4">
                           <Badge className={getStatusColor(getStatus(product))}>
                             {getStatus(product)}
@@ -655,7 +661,7 @@ export default function ProductsContent() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="quantity_per_box"> Stock Quantity</Label>
+                  <Label htmlFor="quantity_per_box"> Quantity per Box</Label>
                   <Input
                     id="quantity_per_box"
                     type="number"
@@ -670,7 +676,7 @@ export default function ProductsContent() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="stock_quantity">Quantity per Box</Label>
+                  <Label htmlFor="stock_quantity"> Stock Quantity</Label>
                   <Input
                     id="stock_quantity"
                     type="number"

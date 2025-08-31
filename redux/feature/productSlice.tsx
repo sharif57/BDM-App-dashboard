@@ -62,7 +62,18 @@ export const productsApi = baseApi.injectEndpoints({
       providesTags: ["User"],
     }),
 
+    searchProducts: builder.query({
+      query: (searchTerm) => ({
+        url: `/products/products/search/?q=${searchTerm}`,
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }),
+      providesTags: ["User"],
+    }),
+
   }),
 });
 
-export const { useAllProductsQuery, useAddPostMutation, useDeleteProductMutation, useUpdateProductMutation, useSingleProductQuery } = productsApi;
+export const { useAllProductsQuery, useAddPostMutation, useDeleteProductMutation, useUpdateProductMutation, useSingleProductQuery , useSearchProductsQuery } = productsApi;

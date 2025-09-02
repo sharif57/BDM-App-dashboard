@@ -257,7 +257,7 @@ export default function ProductsContent() {
     try {
       const formData = new FormData();
       formData.append("product_name", data.product_name);
-      formData.append("generic_id", data.generic_id.toString());
+      formData.append("generic_name", data.generic_id.toString());
       formData.append("product_description", data.product_description || "");
       formData.append("sku", data.sku);
       formData.append("quantity_per_box", data.quantity_per_box.toString());
@@ -388,7 +388,7 @@ export default function ProductsContent() {
                         </td>
                         <td className="py-3 px-4 text-gray-300">{product.category_name}</td>
                         <td className="py-3 px-4 text-white font-medium">৳{product.selling_price}</td>
-                        <td className="py-3 px-4 text-gray-300">{product?.quantity_per_box}</td>
+                        <td className="py-3 px-4 text-gray-300">{product?.stock_quantity}</td>
                         <td className="py-3 px-4">
                           <Badge className={getStatusColor(getStatus(product))}>
                             {getStatus(product)}

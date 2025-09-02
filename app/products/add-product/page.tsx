@@ -69,7 +69,7 @@ export default function Component() {
     description: "",
     stock: "",
     netPrice: "",
-    status: "",
+    status: "Active",
     grossPrice: "",
     priceRegular: "",
     discount: "",
@@ -398,7 +398,7 @@ export default function Component() {
             </div>
 
             <div className="grid grid-cols-1 gap-4">
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label className="text-sm text-gray-300">Status</Label>
                 <Select value={formData.status} onValueChange={(value) => handleInputChange("status", value)}>
                   <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
@@ -409,7 +409,22 @@ export default function Component() {
                     <SelectItem className="text-white" value="Inactive">Inactive</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </div> */}
+              <div className="space-y-2">
+  <Label className="text-sm text-gray-300">Status</Label>
+  <Select
+    value={formData.status}
+    onValueChange={(value) => handleInputChange("status", value)}
+  >
+    <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
+      <SelectValue placeholder="Select status" />
+    </SelectTrigger>
+    <SelectContent className="bg-[#2a2a2a] border-gray-600">
+      <SelectItem className="text-white" value="Active">Active</SelectItem>
+      <SelectItem className="text-white" value="Inactive">Inactive</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
 
             </div>
 

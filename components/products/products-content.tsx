@@ -123,8 +123,8 @@ export default function ProductsContent() {
 
   // search products
 
-  const {data: searchResults} = useSearchProductsQuery(searchTerm)
-  console.log(searchResults,'search results')
+  const { data: searchResults } = useSearchProductsQuery(searchTerm)
+  console.log(searchResults, 'search results')
 
 
 
@@ -181,10 +181,36 @@ export default function ProductsContent() {
     return matchesCategory && matchesSearch;
   });
 
-  const getStatus = (product: Product) => {
-    if (product.out_of_stock) return "Out of Stock";
-    if (product.stock_quantity < 10) return "Low Stock";
-    return "Active";
+  // const getStatus = (product: Product) => {
+  //   if (product.out_of_stock) return "Out of Stock";
+  //   if (product.stock_quantity < 10) return "Low Stock";
+  //   return "Active";
+  // };
+
+  // const getStatusColor = (status: string) => {
+  //   switch (status) {
+  //     case "Active":
+  //       return "bg-green-500/20 text-green-400";
+  //     case "Low Stock":
+  //       return "bg-yellow-500/20 text-yellow-400";
+  //     case "Out of Stock":
+  //       return "bg-red-500/20 text-red-400";
+  //     default:
+  //       return "bg-gray-500/20 text-gray-400";
+  //   }
+  // };
+
+  // ✅ Helper function to get status based on stock
+  const getStatus = (product: any) => {
+    if (product.stock_quantity === 0 || product.out_of_stock) {
+      return "Out of Stock";
+    } else if (product.stock_quantity <= 10) {
+      return "Low Stock";
+    } else if (product.is_active) {
+      return "Active";
+    } else {
+      return "Inactive";
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -389,6 +415,12 @@ export default function ProductsContent() {
                         <td className="py-3 px-4 text-gray-300">{product.category_name}</td>
                         <td className="py-3 px-4 text-white font-medium">৳{product.selling_price}</td>
                         <td className="py-3 px-4 text-gray-300">{product?.stock_quantity}</td>
+                        {/* <td className="py-3 px-4">
+                          <Badge className={getStatusColor(getStatus(product))}>
+                            {getStatus(product)}
+                            {product?.stock_quantity === 0 && " (Out of Stock)"}
+                          </Badge>
+                        </td> */}
                         <td className="py-3 px-4">
                           <Badge className={getStatusColor(getStatus(product))}>
                             {getStatus(product)}
@@ -746,7 +778,7 @@ export default function ProductsContent() {
                     {...form.register("discount_percent", { valueAsNumber: true })}
                     className="bg-gray-700 border-gray-600"
                     disabled
-                    
+
                   />
                   {form.formState.errors.discount_percent && (
                     <p className="text-sm text-red-400">

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { logout } from "@/service/authService";
 import { toast } from "sonner";
+import { useSettingDataQuery } from "@/redux/feature/userSlice";
 
 const sidebarItems = [
   { name: "Dashboard", href: "/" },
@@ -26,12 +27,19 @@ const sidebarItems = [
 export default function Sidebar({ className = "" }: { className?: string }) {
   const pathname = usePathname();
   const router = useRouter()
+  const { data, isLoading, error, refetch } = useSettingDataQuery(undefined)
+
+  console.log(data?.data[0].logo,'setting')
+
+  const IMAGE_BASE_URL = 'https://mehedidev.net';
+
+
 
   if (pathname === "/auth/login" || pathname === "/register") {
     return null;
   }
 
- const handleLogOut = async () => {
+  const handleLogOut = async () => {
     if (toast.info("Logging out...")) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
@@ -47,7 +55,8 @@ export default function Sidebar({ className = "" }: { className?: string }) {
       {/* Logo */}
       <div className="flex items-center justify-center mt-16 mb-7">
         <Image
-          src="/image 3.png"
+          // src="/image 3.png"
+          src= {`${IMAGE_BASE_URL}/${data?.data[0].logo}` || '/image 3.png'}
           alt="Logo"
           width={400}
           height={400}
@@ -63,8 +72,8 @@ export default function Sidebar({ className = "" }: { className?: string }) {
             <Link key={item.name} href={item.href}>
               <div
                 className={`flex items-center justify-between p-3 mb-2 rounded-lg cursor-pointer transition-colors ${isActive
-                    ? "bg-gray-700 text-white"
-                    : "text-gray-400 hover:bg-gray-700 hover:text-white"
+                  ? "bg-gray-700 text-white"
+                  : "text-gray-400 hover:bg-gray-700 hover:text-white"
                   }`}
               >
                 <div className="flex items-center space-x-3">
@@ -80,14 +89,14 @@ export default function Sidebar({ className = "" }: { className?: string }) {
 
       {/* Log Out */}
       {/* <Link href="/auth/login"> */}
-        <Button
-          onClick={handleLogOut}
-          variant="ghost"
-          className="text-red-400 hover:text-red-300 hover:bg-red-900/20 justify-start p-3"
-        >
-          <LogOut className="w-4 h-4 mr-2" />
-          Log Out
-        </Button>
+      <Button
+        onClick={handleLogOut}
+        variant="ghost"
+        className="text-red-400 hover:text-red-300 hover:bg-red-900/20 justify-start p-3"
+      >
+        <LogOut className="w-4 h-4 mr-2" />
+        Log Out
+      </Button>
       {/* </Link> */}
     </div>
   );

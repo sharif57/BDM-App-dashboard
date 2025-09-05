@@ -60,8 +60,19 @@ export const stockApi = baseApi.injectEndpoints({
         }),
         invalidatesTags: ["Stock"],
     }),
+// /products/products/search/?q=napa
+    searchProduct: builder.query({
+        query: (query) => ({
+            url: `/products/products/search/?q=${query}`,
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+        }),
+        providesTags: ["User"],
+    })
 
   }),
 });
 
-export const { useAllStockProductsQuery , useCreateStockMutation , useStockDataQuery , useConfirmStockMutation , useCancelStockMutation } = stockApi;
+export const { useAllStockProductsQuery , useCreateStockMutation , useStockDataQuery , useConfirmStockMutation , useCancelStockMutation , useSearchProductQuery } = stockApi;

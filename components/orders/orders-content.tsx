@@ -46,8 +46,10 @@ interface Order {
   date: string;
   customerName: string;
   shopName: string;
+  invoiceNumber: string;
   amount: string;
   status: "pending" | "delivered" | "shipped" | "cancelled";
+
   shippingAddress?: string;
   items?: Array<{
     product: number;
@@ -81,7 +83,10 @@ const mapApiToOrders = (apiData: any[]): Order[] =>
     status: order.order_status.toLowerCase() as "pending" | "delivered" | "shipped" | "cancelled",
     shippingAddress: order.shipping_address,
     items: order.items,
-    name: order.full_name
+    name: order.full_name,
+    invoiceNumber: order.invoice_number,
+    delivery_charge: order.delivery_charge,
+    total_amount: order.total_amount
 
   }));
 
@@ -231,43 +236,43 @@ export default function Component() {
   // };
 
   const handleDownloadInvoice = (order: Order) => {
-  if (invoiceRef.current && order) {
-    html2canvas(invoiceRef.current, { scale: 2, useCORS: true }).then((canvas) => {
-      const imgData = canvas.toDataURL("image/jpeg", 1.0); // Use JPEG for better PDF quality
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      });
+    if (invoiceRef.current && order) {
+      html2canvas(invoiceRef.current, { scale: 2, useCORS: true }).then((canvas) => {
+        const imgData = canvas.toDataURL("image/jpeg", 1.0); // Use JPEG for better PDF quality
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4",
+        });
 
-      const imgWidth = 190; // Width of the image in the PDF (A4 width - margins)
-      const pageHeight = 295; // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width; // Calculate proportional height
-      let heightLeft = imgHeight;
-      let position = 10; // Top margin
+        const imgWidth = 190; // Width of the image in the PDF (A4 width - margins)
+        const pageHeight = 295; // A4 height in mm
+        const imgHeight = (canvas.height * imgWidth) / canvas.width; // Calculate proportional height
+        let heightLeft = imgHeight;
+        let position = 10; // Top margin
 
-      // Add image to PDF
-      pdf.addImage(imgData, "JPEG", 10, position, imgWidth, imgHeight);
-
-      // Handle multi-page PDF if content is too long
-      heightLeft -= pageHeight;
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight + 10; // Adjust position for next page
-        pdf.addPage();
+        // Add image to PDF
         pdf.addImage(imgData, "JPEG", 10, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
 
-      // Download the PDF
-      pdf.save(`invoice_${order.id.replace("#", "")}.pdf`);
-    }).catch((error) => {
-      console.error("Error generating invoice PDF:", error);
-      toast.error("Failed to generate invoice PDF!", { position: "top-right" });
-    });
-  } else {
-    toast.error("Invoice content not found!", { position: "top-right" });
-  }
-};
+        // Handle multi-page PDF if content is too long
+        heightLeft -= pageHeight;
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight + 10; // Adjust position for next page
+          pdf.addPage();
+          pdf.addImage(imgData, "JPEG", 10, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        // Download the PDF
+        pdf.save(`invoice_${order.id.replace("#", "")}.pdf`);
+      }).catch((error) => {
+        console.error("Error generating invoice PDF:", error);
+        toast.error("Failed to generate invoice PDF!", { position: "top-right" });
+      });
+    } else {
+      toast.error("Invoice content not found!", { position: "top-right" });
+    }
+  };
 
 
   const renderPagination = () => {
@@ -452,26 +457,23 @@ export default function Component() {
                 <div>
                   <img src="/invoicelogo.jpg" alt="BDM Logo" className="h-12" />
                 </div>
-                <h2 className="text-2xl font-bold">{selectedOrder?.id}</h2>
+                <h2 className="text-2xl font-bold">{selectedOrder?.invoiceNumber}</h2>
               </div>
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div>
                   <p><strong>Bill from:</strong></p>
-                  <p>BDM</p>
-                  <p>Bangladeshi Medicine Wholesale Supplier</p>
+                  <p>Bangladesh Medicine (BDM)</p>
+                  <p>Wholesale Supplier</p>
                 </div>
                 <div>
-                  <p><strong>Shop Name:</strong> {selectedOrder.shopName}</p>
+                  <p><strong>Bill to:</strong> </p>
                   <p><strong>Customer Name:</strong> {selectedOrder.name}</p>
-                  <p><strong>Bill to:</strong> {selectedOrder.id}</p>
-                  <p>{selectedOrder.customerName}</p>
-                  <p>{selectedOrder.shippingAddress || "N/A"}</p>
+                  <p><strong>Shop Name:</strong> {selectedOrder.shopName}</p>
+                  <p> <strong>Address:</strong> {selectedOrder.shippingAddress || "N/A"}</p>
                 </div>
                 <div>
-                  <p><strong>Invoice Number:</strong> {selectedOrder.id}</p>
+                  {/* <p><strong>Invoice:</strong> {selectedOrder.invoiceNumber}</p> */}
                   <p><strong>Date:</strong> {selectedOrder.date}</p>
-                  <p><strong>Due Date:</strong> {formatDate(new Date().toISOString())}</p>
-                  <p><strong>Total:</strong> {selectedOrder.amount}</p>
                 </div>
               </div>
               <table className="w-full mt-4 border-collapse">
@@ -487,22 +489,42 @@ export default function Component() {
                   {selectedOrder.items?.map((item, idx) => (
                     <tr key={idx} className="border-t">
                       <td className="border p-2">{item.product_name}</td>
-                      <td className="border p-2">৳{item.mrp}</td>
+                      <td className="border p-2">{item.selling_price}</td>
                       <td className="border p-2">{item.quantity}</td>
-                      <td className="border p-2">৳{item.items_total.toFixed(2)}</td>
+                      <td className="border p-2">{item.items_total.toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              <div className="mt-4 text-right">
-                <p><strong>Subtotal:</strong> {selectedOrder.amount}</p>
-                <p><strong>Total:</strong> {selectedOrder.amount}</p>
-                {/* <p>shop name {selectedOrder.shop_name}</p> */}
+              <div className="mt-4 ">
+                {/* <ul>
+                  <li><strong>Subtotal:</strong> {selectedOrder.total_amount}</li>
+                  <li><strong>Delivery Charge:</strong> {selectedOrder.delivery_charge}</li>
+                  <li><strong>Total:</strong> {selectedOrder.amount}</li>
+                </ul> */}
+                <ul className="divide-y divide-gray-200  p-4 w-full  flex flex-col justify-end  ">
+                  <li className="flex justify-between py-2">
+                    <span className="text-gray-600 font-medium">Subtotal</span>
+                    <span className="text-gray-800">{selectedOrder.total_amount}</span>
+                  </li>
+                  <li className="flex justify-between py-2">
+                    <span className="text-gray-600 font-medium">Delivery Charge</span>
+                    <span className="text-gray-800">{selectedOrder.delivery_charge}</span>
+                  </li>
+                  <li className="flex justify-between py-2 font-semibold text-lg">
+                    <span className="text-gray-900">Total</span>
+                    <span className="text-green-600">{selectedOrder.amount}</span>
+                  </li>
+                </ul>
 
               </div>
-              <p className="mt-4"><strong>Terms & Conditions:</strong> # BDM আপনাদের সঠিক সময়ে পণ্য ডেলিভারি দিতে প্রতিশ্রুতিবদ্ধ, তাই যত দ্রুত সম্ভব দয়া করে ডেলিভারি ভাইকে ছেড়ে দিবেন।
+              <p className="mt-4"><strong>Terms & Conditions:
+
+              </strong>  <br /> # BDM আপনাদের সঠিক সময়ে পণ্য ডেলিভারি দিতে প্রতিশ্রুতিবদ্ধ, তাই যত দ্রুত সম্ভব দয়া করে ডেলিভারি ভাইকে ছেড়ে দিবেন। <br />
                 # অডারকৃত পণ্য ফেরৎ দিলে ডিসকাউন্ট প্রযোজ্য নহে। সর্বোচ্চ ২৫% পণ্য ফেরৎ প্রযোজ্য।
+                <br />
                 # BDM সিস্টেমে বকেয়া রেখে পণ্য বিক্রির ব্যবস্থা নেই। তাই এমন বিব্রতকর প্রস্তাব না দেবার জন্য বিশেষভাবে অনুরোধ করছি।
+                <br />
                 # সকাল ১০টার আগে অডার পাঠিয়ে দিবেন। শুক্রবার ডেলিভারি কার্যক্রম বন্ধ থাকিবে।
               </p>
             </div>
@@ -516,11 +538,11 @@ export default function Component() {
             </Button> */}
 
             <Button
-  className="bg-gray-700 hover:bg-gray-600 mr-2"
-  onClick={() => selectedOrder && handleDownloadInvoice(selectedOrder)}
->
-  Download Invoice (PDF)
-</Button>
+              className="bg-gray-700 hover:bg-gray-600 mr-2"
+              onClick={() => selectedOrder && handleDownloadInvoice(selectedOrder)}
+            >
+              Download Invoice (PDF)
+            </Button>
 
             <DialogClose asChild>
               <Button className="bg-gray-700 hover:bg-gray-600">Close</Button>

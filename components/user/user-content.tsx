@@ -584,9 +584,11 @@ export default function UserManagement() {
     isStaff: false,
     isSuperuser: false,
     isApproved: false,
+    password: "",
   });
 
   const { data, error, isLoading } = useAllUsersQuery(undefined);
+  console.log(data,'user data')
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [updateUsers, { isLoading: isUpdating }] = useUpdateUsersMutation();
   const { data: areaData } = useAreaListQuery(undefined);
@@ -605,8 +607,8 @@ export default function UserManagement() {
         status: user.is_active
           ? "Active"
           : user.is_approved
-          ? "Pending"
-          : "Inactive",
+            ? "Pending"
+            : "Inactive",
         image: user.image ? `https://mehedidev.net${user.image}` : null,
         isStaff: user.is_staff,
         isSuperuser: user.is_superuser,
@@ -637,6 +639,8 @@ export default function UserManagement() {
       isStaff: user.isStaff,
       isSuperuser: user.isSuperuser,
       isApproved: user.isApproved,
+      password: "",
+
     });
     setIsEditModalOpen(true);
   };
@@ -656,6 +660,8 @@ export default function UserManagement() {
         formData.append("is_approved", editForm.isApproved.toString());
         formData.append("is_staff", editForm.isStaff.toString());
         formData.append("is_superuser", editForm.isSuperuser.toString());
+        formData.append('password', editForm.password.toString());
+
 
         await updateUsers({ id: selectedUser.id, data: formData }).unwrap();
         toast({
@@ -947,23 +953,41 @@ export default function UserManagement() {
                   className="bg-gray-700 text-white border-gray-600"
                 />
               </div>
-              <div>
-                <Label htmlFor="area">Area</Label>
-                <Select
-                  value={editForm.area}
-                  onValueChange={(value) => setEditForm({ ...editForm, area: value })}
-                >
-                  <SelectTrigger className="bg-gray-700 text-white border-gray-600">
-                    <SelectValue placeholder="Select area" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-700 text-white border-gray-600">
-                    {areaData?.data?.map((area: Area) => (
-                      <SelectItem key={area.area_id} value={area.area_name}>
-                        {area.area_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="md:col-span-2 space-y-2">
+                <div>
+                  <Label htmlFor="area">Area</Label>
+                  <Select
+                    value={editForm.area}
+                    onValueChange={(value) => setEditForm({ ...editForm, area: value })}
+                  >
+                    <SelectTrigger className="bg-gray-700 text-white border-gray-600">
+                      <SelectValue placeholder="Select area" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-700 text-white border-gray-600">
+                      {areaData?.data?.map((area: Area) => (
+                        <SelectItem key={area.area_id} value={area.area_name}>
+                          {area.area_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* change password */}
+                <div>
+                      <label htmlFor="changePassword">Change Password</label>
+                      <Input
+                        id="password"
+                        type="number"
+                        value={editForm.password}
+                        onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                        className="bg-gray-700 text-white border-gray-600"
+                      />
+                </div>
+
+                <div>
+
+                </div>
               </div>
               <div className="md:col-span-2">
                 <Label htmlFor="address">Address</Label>

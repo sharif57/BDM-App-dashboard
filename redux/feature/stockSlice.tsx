@@ -70,9 +70,21 @@ export const stockApi = baseApi.injectEndpoints({
             },
         }),
         providesTags: ["User"],
-    })
+    }),
+
+    batchIdSearch: builder.query({
+        query: (id) => ({
+            url: `/products/batch/${id}/get_summary/`,
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+        }),
+        providesTags: ["Stock"],
+    }),
+
 
   }),
 });
 
-export const { useAllStockProductsQuery , useCreateStockMutation , useStockDataQuery , useConfirmStockMutation , useCancelStockMutation , useSearchProductQuery } = stockApi;
+export const { useAllStockProductsQuery , useCreateStockMutation , useStockDataQuery , useConfirmStockMutation , useCancelStockMutation , useSearchProductQuery , useBatchIdSearchQuery } = stockApi;

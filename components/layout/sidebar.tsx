@@ -21,6 +21,7 @@ const sidebarItems = [
   { name: 'Generic', href: '/generic' },
   { name: "Banner", href: "/banner" },
   { name: "Stock", href: "/stock" },
+  {name: 'Batch', href: '/batch'},
   { name: "Settings", href: "/settings" },
 ];
 

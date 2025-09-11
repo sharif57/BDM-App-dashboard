@@ -54,6 +54,7 @@ interface Product {
   is_active: boolean;
   created_on: string;
   updated_on: string;
+
 }
 
 interface Generic {
@@ -95,6 +96,7 @@ const productFormSchema = z.object({
   selling_price: z.number().min(0, "Selling price must be positive"),
   discount_percent: z.number().min(0, "Discount cannot be negative"),
   is_active: z.boolean(),
+  out_of_stock: z.boolean(),
 });
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
@@ -103,6 +105,7 @@ export default function ProductsContent() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const { data: apiData, isLoading, isError, refetch } = useAllProductsQuery({ limit: pageSize, page });
+  console.log(apiData, 'all products');
   const [deleteProduct] = useDeleteProductMutation();
   const [updateProduct] = useUpdateProductMutation();
 
@@ -120,6 +123,7 @@ export default function ProductsContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const IMAGE = 'https://mehedidev.net';
+  const [productImageFile, setProductImageFile] = useState<File | null>(null);
 
   // search products
 
@@ -181,30 +185,13 @@ export default function ProductsContent() {
     return matchesCategory && matchesSearch;
   });
 
-  // const getStatus = (product: Product) => {
-  //   if (product.out_of_stock) return "Out of Stock";
-  //   if (product.stock_quantity < 10) return "Low Stock";
-  //   return "Active";
-  // };
 
-  // const getStatusColor = (status: string) => {
-  //   switch (status) {
-  //     case "Active":
-  //       return "bg-green-500/20 text-green-400";
-  //     case "Low Stock":
-  //       return "bg-yellow-500/20 text-yellow-400";
-  //     case "Out of Stock":
-  //       return "bg-red-500/20 text-red-400";
-  //     default:
-  //       return "bg-gray-500/20 text-gray-400";
-  //   }
-  // };
 
   // ✅ Helper function to get status based on stock
   const getStatus = (product: any) => {
     if (product.stock_quantity === 0 || product.out_of_stock) {
       return "Out of Stock";
-    } else if (product.stock_quantity <= 10) {
+    } else if (product.stock_quantity <= 1) {
       return "Low Stock";
     } else if (product.is_active) {
       return "Active";
@@ -255,6 +242,8 @@ export default function ProductsContent() {
       selling_price: product.selling_price,
       discount_percent: product.discount_percent,
       is_active: product.is_active,
+      product_image: product.product_image,
+      out_of_stock: product.out_of_stock
     });
     setIsEditModalOpen(true);
   };
@@ -280,6 +269,8 @@ export default function ProductsContent() {
   const onSubmit = async (data: ProductFormValues) => {
     if (!selectedProduct) return;
 
+
+
     try {
       const formData = new FormData();
       formData.append("product_name", data.product_name);
@@ -295,14 +286,22 @@ export default function ProductsContent() {
       formData.append("selling_price", data.selling_price.toString());
       formData.append("discount_percent", data.discount_percent.toString());
       formData.append("is_active", data.is_active.toString());
+      formData.append('out_of_stock', data.out_of_stock.toString());
+
+
+      if (productImageFile) {
+        formData.append("product_image", productImageFile);
+      }
 
       await updateProduct({
         id: selectedProduct.product_id,
         data: formData,
       }).unwrap();
 
+
       toast.success("Product updated successfully");
       refetch();
+      
       setIsEditModalOpen(false);
     } catch (error) {
       toast.error("Failed to update product");
@@ -579,6 +578,21 @@ export default function ProductsContent() {
           {selectedProduct && (
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <div className="space-y-2">
+                  <Label htmlFor="product_image">Product Image</Label>
+                  <Input
+                    id="product_image"
+                    type="file"
+                    accept="image/*"
+                    className="bg-gray-700 border-gray-600"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      setProductImageFile(file);
+                    }}
+                  />
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="product_name">Product Name</Label>
                   <Input
@@ -801,6 +815,23 @@ export default function ProductsContent() {
                       <SelectItem value="false">Inactive</SelectItem>
                     </SelectContent>
                   </Select>
+
+                  
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="out_of_stock">Out of Stock</Label>
+                  <div className="flex items-center">
+                    <input
+                      id="out_of_stock"
+                      type="checkbox"
+                      checked={form.watch("out_of_stock")}
+                      onChange={(e) => form.setValue("out_of_stock", e.target.checked)}
+                      className="h-4 w-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-gray-300">
+                      {form.watch("out_of_stock") ? "Out of Stock" : "In Stock"}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="md:col-span-2 space-y-2">

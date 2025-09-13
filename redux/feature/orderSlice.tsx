@@ -5,8 +5,8 @@ import baseApi from "../Api/baseApi";
 export const orderApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         allOrders: builder.query({
-            query: ({ from_datetime, to_datetime, area }) => ({
-                url: `/orders/orders/`,
+            query: ({   limit, page }) => ({
+                url: `/orders/orders/?limit=${limit}&page=${page}`,
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -17,8 +17,8 @@ export const orderApi = baseApi.injectEndpoints({
         }),
 
         pendingProducts: builder.query({
-            query: () => ({
-                url: "/orders/pending_order/",
+            query: ({limit, page}) => ({
+                url: `/orders/pending_order/?limit=${limit}&page=${page}`,
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

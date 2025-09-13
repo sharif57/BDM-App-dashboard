@@ -83,8 +83,20 @@ export const stockApi = baseApi.injectEndpoints({
         providesTags: ["Stock"],
     }),
 
+    batchIdSearchapi: builder.query({
+        query: (id) => ({
+          // /products/batches/search/?q=dd4afc89-e837-4105-a60e-4c387d256fde
+            url: `/products/batches/search/?q=${id}`,
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+        }),
+        providesTags: ["Stock"],
+    }),
+
 
   }),
 });
 
-export const { useAllStockProductsQuery , useCreateStockMutation , useStockDataQuery , useConfirmStockMutation , useCancelStockMutation , useSearchProductQuery , useBatchIdSearchQuery } = stockApi;
+export const { useAllStockProductsQuery , useCreateStockMutation , useStockDataQuery , useConfirmStockMutation , useCancelStockMutation , useSearchProductQuery , useBatchIdSearchQuery , useBatchIdSearchapiQuery } = stockApi;

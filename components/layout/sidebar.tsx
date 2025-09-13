@@ -21,7 +21,7 @@ const sidebarItems = [
   { name: 'Generic', href: '/generic' },
   { name: "Banner", href: "/banner" },
   { name: "Stock", href: "/stock" },
-  {name: 'Batch', href: '/batch'},
+  { name: 'Batch', href: '/batch' },
   { name: "Settings", href: "/settings" },
 ];
 
@@ -30,9 +30,9 @@ export default function Sidebar({ className = "" }: { className?: string }) {
   const router = useRouter()
   const { data, isLoading, error, refetch } = useSettingDataQuery(undefined)
 
-  console.log(data?.data[0].logo,'setting')
+  console.log(data?.data[0].logo, 'setting')
 
-  const IMAGE_BASE_URL = 'https://mehedidev.net';
+  const IMAGE_BASE_URL = 'http://147.93.104.182:8000';
 
 
 
@@ -57,7 +57,7 @@ export default function Sidebar({ className = "" }: { className?: string }) {
       <div className="flex items-center justify-center mt-16 mb-7">
         <Image
           // src="/image 3.png"
-          src= {`${IMAGE_BASE_URL}/${data?.data[0].logo}` || '/image 3.png'}
+          src={`${IMAGE_BASE_URL}${data?.data[0].logo}`}
           alt="Logo"
           width={400}
           height={400}

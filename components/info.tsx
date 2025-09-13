@@ -6,9 +6,9 @@ export default function Info() {
   const { data, isLoading, error, refetch } = useSettingDataQuery(undefined)
   const [updateSetting, { isLoading: isUpdating }] = useUpdateSettingMutation()
 
-    const IMAGE_BASE_URL = 'https://mehedidev.net';
+  const IMAGE_BASE_URL = 'http://147.93.104.182:8000';
 
-  
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -62,7 +62,7 @@ export default function Info() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setMessage({ text: '', type: '' })
-    
+
     try {
       const formDataToSend = new FormData()
 
@@ -74,14 +74,14 @@ export default function Info() {
       formDataToSend.append('contact_phone', formData.contact_phone)
       // Append all text fields
 
-      
+
       // Append logo file if selected
       if (logoFile) {
         formDataToSend.append('logo', logoFile)
       }
-      
+
       const result = await updateSetting(formDataToSend).unwrap()
-      
+
       if (result.status === 'success') {
         setMessage({ text: 'Settings updated successfully!', type: 'success' })
         refetch() // Refetch the latest data
@@ -107,7 +107,7 @@ export default function Info() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-red-500 text-center">
           <p>Error loading settings</p>
-          <button 
+          <button
             onClick={() => refetch()}
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
@@ -126,8 +126,8 @@ export default function Info() {
             <h3 className="text-lg font-medium leading-6 text-gray-900">Platform Settings</h3>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">Manage your platform configuration</p>
           </div>
-          
- 
+
+
           <form onSubmit={handleSubmit} className="px-4 py-5 sm:p-6">
             <div className="grid grid-cols-1 gap-6">
               {/* Logo Upload */}
@@ -146,9 +146,9 @@ export default function Info() {
                   </div>
                   <label className="ml-5 relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
                     <span>Change logo</span>
-                    <input 
-                      type="file" 
-                      className="sr-only" 
+                    <input
+                      type="file"
+                      className="sr-only"
                       onChange={handleFileChange}
                       accept="image/*"
                     />

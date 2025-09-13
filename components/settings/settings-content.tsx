@@ -23,7 +23,7 @@ export default function MyProfile() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-  const IMAGE_BASE_URL = 'https://mehedidev.net';
+  const IMAGE_BASE_URL = 'http://147.93.104.182:8000';
 
   useEffect(() => {
     if (profileData) {

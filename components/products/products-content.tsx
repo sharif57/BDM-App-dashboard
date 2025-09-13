@@ -104,8 +104,9 @@ type ProductFormValues = z.infer<typeof productFormSchema>;
 export default function ProductsContent() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
-  const { data: apiData, isLoading, isError, refetch } = useAllProductsQuery({ limit: pageSize, page });
-  console.log(apiData, 'all products');
+  const [searchTerm, setSearchTerm] = useState("");
+  const { data: apiData, isLoading, isError, refetch } = useAllProductsQuery({ limit: pageSize, page, src: searchTerm });
+  console.log(apiData, 'all products==============');
   const [deleteProduct] = useDeleteProductMutation();
   const [updateProduct] = useUpdateProductMutation();
 
@@ -114,7 +115,6 @@ export default function ProductsContent() {
   const { data: companiesData } = useAllCompaniesQuery(undefined);
 
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -122,13 +122,11 @@ export default function ProductsContent() {
   const [categories, setCategories] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [totalProducts, setTotalProducts] = useState(0);
-  const IMAGE = 'https://mehedidev.net';
+  const IMAGE = 'http://147.93.104.182:8000';
   const [productImageFile, setProductImageFile] = useState<File | null>(null);
 
-  // search products
-
-  const { data: searchResults } = useSearchProductsQuery(searchTerm)
-  console.log(searchResults, 'search results')
+  // const { data: searchResults } = useSearchProductsQuery(searchTerm)
+  // console.log(searchResults, 'search results')
 
 
 
@@ -301,7 +299,7 @@ export default function ProductsContent() {
 
       toast.success("Product updated successfully");
       refetch();
-      
+
       setIsEditModalOpen(false);
     } catch (error) {
       toast.error("Failed to update product");
@@ -816,7 +814,7 @@ export default function ProductsContent() {
                     </SelectContent>
                   </Select>
 
-                  
+
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="out_of_stock">Out of Stock</Label>

@@ -40,7 +40,7 @@ const BannerSection: React.FC = () => {
   const [bannerToDelete, setBannerToDelete] = useState<number | null>(null);
   const [formData, setFormData] = useState<FormDataState>({ name: '', image: null, imagePreview: '' });
 
-  const baseUrl = 'https://mehedidev.net';
+  const baseUrl = 'http://147.93.104.182:8000';
 
   const handleDeleteInitiate = (bannerId: number) => {
     setBannerToDelete(bannerId);
@@ -145,7 +145,7 @@ const BannerSection: React.FC = () => {
               <p className="text-sm text-gray-300 pt-3">
                 Created: {new Date(banner.created_on).toLocaleDateString()}
               </p>
-         
+
               <div className="mt-4 flex gap-4">
                 <button
                   onClick={() => handleEdit(banner)}

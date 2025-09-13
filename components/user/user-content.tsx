@@ -77,7 +77,7 @@
 //           : user.is_approved
 //           ? "Pending"
 //           : "Inactive",
-//         image: user.image ? `https://mehedidev.net${user.image}` : null,
+//         image: user.image ? `http://147.93.104.182:8000${user.image}` : null,
 //         isStaff: user.is_staff,
 //         isSuperuser: user.is_superuser,
 //       }));
@@ -588,7 +588,7 @@ export default function UserManagement() {
   });
 
   const { data, error, isLoading } = useAllUsersQuery(undefined);
-  console.log(data,'user data')
+  console.log(data, 'user data')
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [updateUsers, { isLoading: isUpdating }] = useUpdateUsersMutation();
   const { data: areaData } = useAreaListQuery(undefined);
@@ -609,7 +609,7 @@ export default function UserManagement() {
           : user.is_approved
             ? "Pending"
             : "Inactive",
-        image: user.image ? `https://mehedidev.net${user.image}` : null,
+        image: user.image ? `http://147.93.104.182:8000${user.image}` : null,
         isStaff: user.is_staff,
         isSuperuser: user.is_superuser,
         isApproved: user.is_approved,
@@ -975,14 +975,14 @@ export default function UserManagement() {
 
                 {/* change password */}
                 <div>
-                      <label htmlFor="changePassword">Change Password</label>
-                      <Input
-                        id="password"
-                        type="number"
-                        value={editForm.password}
-                        onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
-                        className="bg-gray-700 text-white border-gray-600"
-                      />
+                  <label htmlFor="changePassword">Change Password</label>
+                  <Input
+                    id="password"
+                    type="number"
+                    value={editForm.password}
+                    onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                    className="bg-gray-700 text-white border-gray-600"
+                  />
                 </div>
 
                 <div>

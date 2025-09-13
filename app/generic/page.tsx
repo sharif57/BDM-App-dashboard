@@ -93,65 +93,7 @@ export default function GenericName() {
         setPage(newPage);
     };
 
-    const renderPagination = () => {
-        const totalPages = Math.ceil(totalGenerics / itemsPerPage);
 
-        return (
-            <div className="flex items-center justify-center gap-2 mt-6">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handlePageChange(Math.max(1, page - 1))}
-                    disabled={page === 1}
-                    className="text-white hover:bg-gray-700"
-                >
-                    <ChevronDownIcon className="h-4 w-4 rotate-90" />
-                </Button>
- {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    const pageNum = Math.max(1, Math.min(totalPages, page - 2 + i));
-                    return (
-                        <Button
-                            key={pageNum}
-                            variant={page === pageNum ? "default" : "ghost"}
-                            size="sm"
-                            onClick={() => handlePageChange(pageNum)}
-                            className={
-                                page === pageNum
-                                    ? "bg-green-500 hover:bg-green-600 text-white"
-                                    : "text-white hover:bg-gray-700"
-                            }
-                        >
-                            {pageNum}
-                        </Button>
-                    );
-                })}
-                {totalPages > 5 && page + 2 < totalPages && (
-                    <>
-                        <span key="ellipsis" className="text-gray-400 px-2">
-                            ...
-                        </span>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handlePageChange(totalPages)}
-                            className="text-white hover:bg-gray-700"
-                        >
-                            {totalPages}
-                        </Button>
-                    </>
-                )}
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handlePageChange(Math.min(totalPages, page + 1))}
-                    disabled={page === totalPages}
-                    className="text-white hover:bg-gray-700"
-                >
-                    <ChevronDownIcon className="h-4 w-4 -rotate-90" />
-                </Button>
-            </div>
-        );
-    };
 
     if (isLoading) return <div className="text-white">Loading...</div>;
     if (isError) return <div className="text-red-400">Error loading generics</div>;
@@ -212,8 +154,7 @@ export default function GenericName() {
                 </div>
             </div>
 
-            {/* Pagination */}
-            {renderPagination()}
+          
 
             {/* Modal for Single Generic */}
             <Dialog open={!!selectedGeneric} onOpenChange={() => setSelectedGeneric(null)}>

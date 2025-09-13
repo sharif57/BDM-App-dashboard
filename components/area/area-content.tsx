@@ -329,20 +329,12 @@ export default function AreaContent() {
       status: area.is_active ? "Active" : "Inactive",
     })) || [];
 
-  const [currentPage, setCurrentPage] = useState(1);
   const [localAreas, setLocalAreas] = useState<AreaData[]>([]);
   const [editArea, setEditArea] = useState<AreaData | null>(null);
   const [deleteAreaId, setDeleteAreaId] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const handleStatusChange = (
-    index: number,
-    newStatus: "Active" | "Inactive"
-  ) => {
-    const updated = [...(localAreas.length ? localAreas : apiAreas)];
-    updated[index].status = newStatus;
-    setLocalAreas(updated);
-  };
+
 
   const handleEdit = (index: number) => {
     const target = (localAreas.length ? localAreas : apiAreas)[index];
@@ -490,33 +482,7 @@ export default function AreaContent() {
           </div>
         </div>
 
-        {/* Pagination */}
-        <div className="flex justify-center items-center mt-6 gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-white hover:bg-gray-700"
-            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
-
-          <Button
-            size="sm"
-            className="bg-green-600 hover:bg-green-700 text-white w-8 h-8 p-0"
-          >
-            {currentPage}
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-white hover:bg-gray-700"
-            onClick={() => setCurrentPage(currentPage + 1)}
-          >
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-        </div>
+       
       </div>
 
       {/* Edit Area Dialog */}

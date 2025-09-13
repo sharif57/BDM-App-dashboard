@@ -53,8 +53,8 @@ export const orderApi = baseApi.injectEndpoints({
 
         // /orders/orders/filter/?from_datetime=2025-09-01T00:00:00&to_datetime=2025-09-10T23:59:59&area=1
         filterOrders: builder.query({
-            query: ({ from_datetime, to_datetime, area }) => ({
-                url: `/orders/orders/?from_datetime=${from_datetime}&to_datetime=${to_datetime}&area=${area}`,
+            query: ({ from_datetime, to_datetime, area , limit, page }) => ({
+                url: `/orders/orders/?from_datetime=${from_datetime}&to_datetime=${to_datetime}&area=${area}&limit=${limit}&page=${page}`,
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

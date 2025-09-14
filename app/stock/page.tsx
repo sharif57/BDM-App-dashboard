@@ -25,6 +25,7 @@ export default function Stock() {
     const [sellingPrice, setSellingPrice] = useState("");
     const [stockData, setStockData] = useState(null);
     const [mrp, setMrp] = useState("");
+    const [stockQuantity, setStockQuantity] = useState(0);
 
     const { data: products } = useAllStockProductsQuery(undefined);
     const { data: searchResults } = useSearchProductQuery(searchQuery, { skip: !searchQuery });
@@ -62,7 +63,7 @@ export default function Stock() {
 
         const stockDataPayload = {
             product_id: Number(selectedProduct.product_id),
-            new_stock_quantity: Number(stock),
+            new_stock_quantity: Number(stockQuantity),
             new_cost_price: Number(costPrice),
             new_selling_price: Number(sellingPrice),
             mrp: Number(mrp),
@@ -79,6 +80,8 @@ export default function Stock() {
             setCostPrice("");
             setSellingPrice("");
             setSearchQuery("");
+            setMrp("");
+            setStockQuantity("");
 
         } catch (error) {
             console.error("Failed to add stock:", error);
@@ -158,10 +161,12 @@ export default function Stock() {
                     <Label htmlFor="stock-quantity" className="text-white">Stock Quantity</Label>
                     <Input
                         id="stock-quantity"
+                        type="number"
                         className="bg-[#2c2e34] text-white"
                         placeholder="Stock Quantity"
-                        value={stock}
-                        onChange={(e) => setStock(e.target.value)}
+                        defaultValue={0}
+                        value={stockQuantity}
+                        onChange={(e) => setStockQuantity(e.target.value)}
                     />
                 </div>
                 <div className="w-full flex flex-col gap-2">

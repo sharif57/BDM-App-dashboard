@@ -494,7 +494,7 @@
 // }, [page, totalOrders, handlePageChange]);
 
 
-  
+
 //   const isLoading = isFilterApplied ? filterLoading : activeTab === 'all' ? allOrdersLoading : pendingLoading;
 //   const isError = isFilterApplied ? filterError : activeTab === 'all' ? allOrdersError : pendingError;
 
@@ -942,7 +942,11 @@ const formatDate = (dateString: string) =>
 
 const formatDateTimeForAPI = (date: Date | null, time: string | null) => {
   if (!date) return undefined;
-  const dateStr = date.toISOString().split('T')[0];
+
+  const dateStr = date.toLocaleDateString("en-CA")
+
+  console.log(dateStr)
+
   return time ? `${dateStr}T${time}:00` : `${dateStr}T00:00:00`;
 };
 
@@ -965,13 +969,13 @@ const mapApiToOrders = (apiData: any[]): Order[] =>
   }));
 
 const getStatusColor = (status: string) =>
-  ({
-    pending: 'text-red-400',
-    delivered: 'text-green-400',
-    shipped: 'text-blue-400',
-    cancelled: 'text-gray-400',
-    default: 'text-gray-400',
-  }[status.toLowerCase()] || 'text-gray-400');
+({
+  pending: 'text-red-400',
+  delivered: 'text-green-400',
+  shipped: 'text-blue-400',
+  cancelled: 'text-gray-400',
+  default: 'text-gray-400',
+}[status.toLowerCase()] || 'text-gray-400');
 
 export default function Component() {
   const [activeTab, setActiveTab] = useState<'all' | 'pending'>('all');
@@ -994,6 +998,7 @@ export default function Component() {
     endTime: null,
     areaId: null,
   });
+  console.log(filters?.startDate, '===========================', filters?.endDate);
   const [isFilterApplied, setIsFilterApplied] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [totalOrders, setTotalOrders] = useState(0);

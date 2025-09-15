@@ -1481,7 +1481,7 @@ export default function Component() {
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
         <DialogContent className="bg-[#23252b] text-white border-gray-600 max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Order Details - ID: {selectedOrder?.id}</DialogTitle>
+            {/* <DialogTitle>Order Details - ID: {selectedOrder?.id}</DialogTitle> */}
           </DialogHeader>
           {selectedOrder && (
             <div ref={invoiceRef} className="space-y-4 p-2 bg-white text-black rounded-lg">
@@ -1500,6 +1500,7 @@ export default function Component() {
                 <div>
                   <p><strong>Bill to:</strong></p>
                   <p><strong>Customer Name:</strong> {selectedOrder.name || 'N/A'}</p>
+                  <p><strong>Phone:</strong> {selectedOrder.phone || 'N/A'}</p>
                   <p><strong>Shop Name:</strong> {selectedOrder.shopName}</p>
                   <p><strong>Address:</strong> {selectedOrder.shippingAddress || 'N/A'}</p>
                 </div>
@@ -1545,7 +1546,7 @@ export default function Component() {
                   </li>
                 </ul>
               </div>
-              <p className="mt-2 text-[8px]">
+              <p className="mt-2 text-[10px]">
                 <strong>Terms & Conditions:</strong> <br />
                 # BDM আপনাদের সঠিক সময়ে পণ্য ডেলিভারি দিতে প্রতিশ্রুতিবদ্ধ, তাই যত দ্রুত সম্ভব দয়া করে ডেলিভারি ভাইকে ছেড়ে দিবেন। <br />
                 # অডারকৃত পণ্য ফেরৎ দিলে ডিসকাউন্ট প্রযোজ্য নহে। সর্বোচ্চ ২৫% পণ্য ফেরৎ প্রযোজ্য। <br />

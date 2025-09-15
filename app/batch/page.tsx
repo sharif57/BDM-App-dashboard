@@ -14,12 +14,13 @@ export default function Batch() {
     skip: !searchQuery.trim(), // prevent unnecessary queries when searchQuery is empty
   })
 
-  console.log(batch?.data, 'search')
+  // console.log(batch?.data, 'search')
 
   // Fetch product data for selected batch ID
   const { data, isLoading, error } = useBatchIdSearchQuery(finalBatchId, {
     skip: !finalBatchId,
   })
+  console.log(data, 'is')
 
   const handleSearch = (e) => {
     e.preventDefault()

@@ -2,6 +2,7 @@
 'use client';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Swal from "sweetalert2";
 import {
     Table,
     TableBody,
@@ -16,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { useAllStockProductsQuery, useConfirmStockMutation, useCreateStockMutation, useStockDataQuery, useCancelStockMutation, useSearchProductQuery } from "@/redux/feature/stockSlice";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Trash } from "lucide-react";
 
 export default function Stock() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -127,6 +129,30 @@ export default function Stock() {
         }
     };
 
+  const handleRemoveProduct = async (product) => {
+  try {
+    // Confirmation alert
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: `Do you want to remove ${product.name}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, remove it!",
+    });
+
+    if (result.isConfirmed) {
+      // Here you can call your API or remove logic
+      // await api.removeProduct(product.id);
+
+      Swal.fire("Removed!", "Product removed successfully.", "success");
+    }
+  } catch (error) {
+    console.error("Failed to remove product:", error);
+    Swal.fire("Error!", "Failed to remove product. Please try again.", "error");
+  }
+};
     return (
         <div>
             <div className="lg:flex justify-between items-center w-full gap-8 mt-8">
@@ -232,6 +258,7 @@ export default function Stock() {
                         <TableHead className="text-white text-xl">MRP</TableHead>
                         <TableHead className="text-white text-xl">Selling Price</TableHead>
                         <TableHead className="text-white text-xl">Total</TableHead>
+                        <TableHead className="text-white text-xl">Action</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -244,6 +271,18 @@ export default function Stock() {
                             <TableCell>{item?.mrp}</TableCell>
                             <TableCell>${item.selling_price}</TableCell>
                             <TableCell>${item.total}</TableCell>
+                            <TableCell>
+                                {/* <Button
+                                    className="bg-red-500 px-2 py-2 w-full text-black hover:bg-red-400"
+                                    // onClick={() => handleRemoveProduct(item.id)}
+                                >Delete
+                                    </Button> */}
+
+                                    <Trash
+                                        className="cursor-pointer  text-red-500"
+                                        onClick={() => handleRemoveProduct(item.id)}
+                                    />
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

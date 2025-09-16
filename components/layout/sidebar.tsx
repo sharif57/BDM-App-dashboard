@@ -57,7 +57,7 @@ export default function Sidebar({ className = "" }: { className?: string }) {
       <div className="flex items-center justify-center mt-16 mb-7">
         <Image
           // src="/image 3.png"
-          src={`${IMAGE_BASE_URL}?${data?.data[0].logo}`}
+          src={`${IMAGE_BASE_URL}${data?.data[0].logo}`}
           alt="Logo"
           width={400}
           height={400}

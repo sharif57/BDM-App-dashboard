@@ -1485,7 +1485,7 @@ export default function Component() {
             {/* <DialogTitle>Order Details - ID: {selectedOrder?.id}</DialogTitle> */}
           </DialogHeader>
           {selectedOrder && (
-            <div ref={invoiceRef} className="space-y-4 p-2 bg-white text-black rounded-lg">
+            <div ref={invoiceRef} className="space-y-2 p-2 bg-white text-black rounded-lg">
               <div className="flex justify-between items-center">
                 <div>
                   <img src="/invoicelogo.jpg" alt="BDM Logo" className="h-12" />
@@ -1493,14 +1493,15 @@ export default function Component() {
                 <h2 className="text-2xl font-bold">{selectedOrder.invoiceNumber}</h2>
               </div>
               <div className="grid grid-cols-2 gap-4 mt-2">
-                <div>
+                <div className=''>
                   <p><strong>Bill from:</strong></p>
                   <p>Bangladesh Medicine (BDM)</p>
-                  <p>Wholesale Supplier</p>
+                  <p><strong>phone</strong>: 01558920438</p>
+                  <p><strong>Address</strong>:House#42/3 Rd#17/A Dhanmondi, Dhaka-1205</p>
                 </div>
-                <div>
+                <div className=''>
                   <p><strong>Bill to:</strong></p>
-                  <p><strong>Customer Name:</strong> {selectedOrder.name || 'N/A'}</p>
+                  <p><strong>Name:</strong> {selectedOrder.name || 'N/A'}</p>
                   <p><strong>Phone:</strong> {selectedOrder.phone || 'N/A'}</p>
                   <p><strong>Shop Name:</strong> {selectedOrder.shopName}</p>
                   <p><strong>Address:</strong> {selectedOrder.shippingAddress || 'N/A'}</p>
@@ -1509,7 +1510,7 @@ export default function Component() {
                   <p><strong>Date:</strong> {selectedOrder.date}</p>
                 </div>
               </div>
-              <table className="w-full mt-2 border-collapse">
+              <table className="w-full text-xs mt-2 border-collapse">
                 <thead>
                   <tr className="bg-gray-200">
                     <th className="border p-2">Item</th>

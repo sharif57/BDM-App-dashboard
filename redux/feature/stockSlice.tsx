@@ -97,7 +97,7 @@ export const stockApi = baseApi.injectEndpoints({
     deleteBatch: builder.mutation({
         query: (id) => ({
             // /products/batch/delete/71/
-            url: `/products/batch/${id}/`,
+            url: `/products/batch/delete/${id}/`,
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

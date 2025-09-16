@@ -20,7 +20,7 @@ export default function Batch() {
   const { data, isLoading, error } = useBatchIdSearchQuery(finalBatchId, {
     skip: !finalBatchId,
   })
-  console.log(data, 'is')
+  console.log(data?.created_on, 'is')
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -46,8 +46,8 @@ export default function Batch() {
   return (
     <div className="p-4">
       {/* Search Input Form */}
-       {!selectedBatchId ? (
-        <form  className="mb-4">
+      {!selectedBatchId ? (
+        <form className="mb-4">
           <div className="flex gap-2">
             <input
               type="text"
@@ -66,19 +66,32 @@ export default function Batch() {
           </div>
         </form>
       ) : (
-        <div className="mb-4 flex items-center gap-2">
-          <input
-            type="text"
-            value={selectedBatchId}
-            // readOnly
-            className="w-full max-w-md text-black p-2 border border-green-500 rounded-md bg-gray-100 cursor-not-allowed"
-          />
-          <button
-            onClick={resetSearch}
-            className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-          >
-            ✕
-          </button>
+        <div className="mb-4 flex items-center gap-2 w-full">
+          <div className='flex-1'>
+            <input
+              type="text"
+              value={selectedBatchId}
+              // readOnly
+              className="w-full max-w-md text-black p-2 border border-green-500 rounded-md bg-gray-100 cursor-not-allowed"
+            />
+            <button
+              onClick={resetSearch}
+              className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+            >
+              ✕
+            </button>
+          </div>
+          <p className='text-end flex-1'> <strong>Date: </strong>
+            {new Date(data?.created_on).toLocaleString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+            })}
+          </p>
+
         </div>
       )}
 
@@ -92,7 +105,7 @@ export default function Batch() {
               <h3 className="text-lg font-medium mb-2">Matching Batch IDs</h3>
               <ul className="list-disc pl-5">
                 {batch.data.map((batchItem) => (
-                  <div    
+                  <div
                     key={batchItem.batch_id}
                     onClick={() => handleBatchClick(batchItem.batch_id)}
                     className={`cursor-pointer p-2 hover:bg-gray-100 hover:text-black rounded-md ${selectedBatchId === batchItem.batch_id ? ' font-semibold' : ''

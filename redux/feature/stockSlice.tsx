@@ -94,9 +94,20 @@ export const stockApi = baseApi.injectEndpoints({
         }),
         providesTags: ["Stock"],
     }),
+    deleteBatch: builder.mutation({
+        query: (id) => ({
+            // /products/batch/delete/71/
+            url: `/products/batch/${id}/`,
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+        }),
+        invalidatesTags: ["Stock"],
+    }),
 
 
   }),
 });
 
-export const { useAllStockProductsQuery , useCreateStockMutation , useStockDataQuery , useConfirmStockMutation , useCancelStockMutation , useSearchProductQuery , useBatchIdSearchQuery , useBatchIdSearchapiQuery } = stockApi;
+export const { useAllStockProductsQuery , useCreateStockMutation , useStockDataQuery , useConfirmStockMutation , useCancelStockMutation , useSearchProductQuery , useBatchIdSearchQuery , useBatchIdSearchapiQuery, useDeleteBatchMutation } = stockApi;

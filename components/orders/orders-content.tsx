@@ -966,6 +966,7 @@ const mapApiToOrders = (apiData: any[]): Order[] =>
     total_amount: order.total_amount,
     invoice_number: order.invoice_number,
     full_name: order.full_name,
+    phone: order.phone
   }));
 
 const getStatusColor = (status: string) =>

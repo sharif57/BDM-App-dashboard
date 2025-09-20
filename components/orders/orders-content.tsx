@@ -858,7 +858,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Label } from '@/components/ui/label';
-import { ChevronLeft, ChevronRight, Check, Info, Trash2, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight,Edit, Check, FileText, Trash2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -894,6 +894,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { Input } from '@/components/ui/input';
 import { debounce } from 'lodash';
+
 
 // Define interfaces
 interface OrderItem {
@@ -1455,14 +1456,14 @@ export default function Component() {
                     onClick={() => handleAction(index, 'approve')}
                     className="w-8 h-8 p-0 bg-green-500 hover:bg-green-600 rounded-full"
                   >
-                    <Check className="h-4 w-4" />
+                    <Edit className="h-4 w-4" />
                   </Button>
                   <Button
                     size="sm"
                     onClick={() => handleAction(index, 'info')}
                     className="w-8 h-8 p-0 bg-blue-500 hover:bg-blue-600 rounded-full"
                   >
-                    <Info className="h-4 w-4" />
+                    <FileText className="h-4 w-4" />
                   </Button>
                   <Button
                     size="sm"
@@ -1480,12 +1481,12 @@ export default function Component() {
 
       {/* Order Details Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-        <DialogContent className="bg-[#23252b] text-white border-gray-600 max-w-2xl">
+        <DialogContent className="bg-[#23252b] text-white border-gray-600 max-w-2xl max-h-[800px] overflow-y-auto">
           <DialogHeader>
             {/* <DialogTitle>Order Details - ID: {selectedOrder?.id}</DialogTitle> */}
           </DialogHeader>
           {selectedOrder && (
-            <div ref={invoiceRef} className="space-y-2 p-2 bg-white text-black rounded-lg">
+            <div ref={invoiceRef} className="space-y-2 p-2 bg-white text-black rounded-lg ">
               <div className="flex justify-between items-center">
                 <div>
                   <img src="/invoicelogo.jpg" alt="BDM Logo" className="h-12" />
@@ -1496,7 +1497,8 @@ export default function Component() {
                 <div className=''>
                   <p><strong>Bill from:</strong></p>
                   <p>Bangladesh Medicine (BDM)</p>
-                  <p><strong>phone</strong>: 01558920438</p>
+                  <p>Wholesale Supplier</p>
+                  <p><strong>Phone</strong>: 01558920438</p>
                   <p><strong>Address</strong>:House#42/3 Rd#17/A Dhanmondi, Dhaka-1205</p>
                 </div>
                 <div className=''>
@@ -1510,50 +1512,54 @@ export default function Component() {
                   <p><strong>Date:</strong> {selectedOrder.date}</p>
                 </div>
               </div>
-              <table className="w-full text-xs mt-2 border-collapse">
+              <div>
+              <table className="w-full text-xs border-collapse">
                 <thead>
-                  <tr className="bg-gray-200">
-                    <th className="border p-2">Item</th>
-                    <th className="border p-2">MRP</th>
-                    <th className="border p-2">Rate</th>
-                    <th className="border p-2">Quantity</th>
-                    <th className="border p-2">Total</th>
+                  <tr className="bg-[#3b55a0]">
+                    <th className="border p-2 border-black text-white text-center align-middle">Item</th>
+                    <th className="border p-2 border-black text-white text-center align-middle">MRP</th>
+                    <th className="border p-2 border-black text-white text-center align-middle">Rate</th>
+                    <th className="border p-2 border-black text-white text-center align-middle">Quantity</th>
+                    <th className="border p-2 border-black text-white text-center align-middle">Total</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {selectedOrder.items?.map((item, idx) => (
                     <tr key={idx} className="border-t">
-                      <td className="border p-2">{item.product_name || `Product ID: ${item.product}`}</td>
-                      <td className="border p-2">{item?.mrp ?? 'N/A'}</td>
-                      <td className="border p-2">{item.selling_price || 'N/A'}</td>
-                      <td className="border p-2">{item.quantity}</td>
-                      <td className="border p-2">{item.items_total ? item.items_total.toFixed(2) : 'N/A'}</td>
+                      <td className="border p-2 border-black text-black font-bold">{item.product_name || `Product ID: ${item.product}`}</td>
+                      <td className="border p-2 border-black text-black text-right">{item?.mrp ?? 'N/A'}</td>
+                      <td className="border p-2 border-black text-black text-right">{item.selling_price || 'N/A'}</td>
+                      <td className="border p-2 border-black text-black text-center w-[50px]">{item.quantity}</td>
+                      <td className="border p-2 border-black text-black text-right">{item.items_total ? item.items_total.toFixed(2) : 'N/A'}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+            </div>
+
               <div className="mt-2">
                 <ul className="divide-y divide-gray-200 p-4 w-full flex flex-col justify-end">
                   <li className="flex justify-between py-2">
-                    <span className="text-gray-600 font-medium">Subtotal</span>
-                    <span className="text-gray-800">{selectedOrder.total_amount?.toFixed(2) || 'N/A'}</span>
+                    <span className="text-gray-900 font-medium">Subtotal</span>
+                    <span className="text-gray-900">{selectedOrder.total_amount?.toFixed(2) || 'N/A'}</span>
                   </li>
                   <li className="flex justify-between py-2">
-                    <span className="text-gray-600 font-medium">Delivery Charge</span>
-                    <span className="text-gray-800">{selectedOrder.delivery_charge?.toFixed(2) || 'N/A'}</span>
+                    <span className="text-gray-900 font-medium">Delivery Charge</span>
+                    <span className="text-gray-900">{selectedOrder.delivery_charge?.toFixed(2) || 'N/A'}</span>
                   </li>
                   <li className="flex justify-between py-2 font-semibold text-lg">
                     <span className="text-gray-900">Total</span>
-                    <span className="text-green-600">{selectedOrder.amount}</span>
+                    <span className="text-gray-900">{selectedOrder.amount}</span>
                   </li>
                 </ul>
               </div>
-              <p className="mt-2 text-[10px]">
+              <p className="mt-2 text-[11px]">
                 <strong>Terms & Conditions:</strong> <br />
                 # BDM আপনাদের সঠিক সময়ে পণ্য ডেলিভারি দিতে প্রতিশ্রুতিবদ্ধ, তাই যত দ্রুত সম্ভব দয়া করে ডেলিভারি ভাইকে ছেড়ে দিবেন। <br />
                 # অডারকৃত পণ্য ফেরৎ দিলে ডিসকাউন্ট প্রযোজ্য নহে। সর্বোচ্চ ২৫% পণ্য ফেরৎ প্রযোজ্য। <br />
                 # BDM সিস্টেমে বকেয়া রেখে পণ্য বিক্রির ব্যবস্থা নেই। তাই এমন বিব্রতকর প্রস্তাব না দেবার জন্য বিশেষভাবে অনুরোধ করছি। <br />
-                # সকাল ১০টার আগে অডার পাঠিয়ে দিবেন। শুক্রবার ডেলিভারি কার্যক্রম বন্ধ থাকিবে।
+                # সকাল ৮টার আগে অডার পাঠিয়ে দিবেন। শুক্রবার ডেলিভারি কার্যক্রম বন্ধ থাকিবে।
               </p>
             </div>
           )}
@@ -1573,7 +1579,7 @@ export default function Component() {
 
       {/* Update Order Status Dialog */}
       <Dialog open={!!statusOrder} onOpenChange={() => setStatusOrder(null)}>
-        <DialogContent className="bg-[#23252b] text-white border-gray-600 max-w-xl">
+        <DialogContent className="bg-[#23252b] text-white border-gray-600 max-w-xl max-h-[800px] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Update Order Status - ID: {statusOrder?.id}</DialogTitle>
           </DialogHeader>
@@ -1602,9 +1608,10 @@ export default function Component() {
                   <div>
                     <Label className="text-sm text-white">Product</Label>
                     <Input
-                      type="number"
-                      placeholder="Product ID"
-                      value={item.product}
+                      type="text"
+                      placeholder="Product name"
+                      value={item.product_name}
+                      disabled 
                       onChange={(e) => handleUpdateItem(index, 'product', parseInt(e.target.value))}
                       className="bg-[#2c2e33] border-gray-600 text-white"
                     />
@@ -1620,13 +1627,11 @@ export default function Component() {
                     />
                   </div>
                   <Button variant="destructive" size="sm" onClick={() => handleRemoveItem(index)} className="mt-6">
-                    Remove
+                    X
                   </Button>
                 </div>
               ))}
-              <Button variant="outline" size="sm" onClick={handleAddItem} className="mt-2 text-black">
-                Add Item
-              </Button>
+              
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setStatusOrder(null)} className="bg-gray-700 hover:bg-gray-600">

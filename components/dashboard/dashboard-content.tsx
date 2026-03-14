@@ -11,16 +11,33 @@ import MostSellingChart from "../most-selling-chart";
 export default function DashboardContent() {
 
   const { data: dashboard, isLoading, isError } = useAllDashboardQuery(undefined);
-  console.log(dashboard,'dashboard')
+  console.log(dashboard, 'dashboard')
 
   // Handle loading and error states
   if (isLoading) return <div>Loading...</div>;
   if (isError || !dashboard?.data) return <div>Error loading data</div>;
 
+  const formatStatValue = (title: string, value: number) => {
+    const safeValue = Number(value) || 0;
+    const isMoney = title === "Total Sell" || title === "Total Revenue" || title === "Grand Total";
+
+    if (isMoney) {
+      return `${new Intl.NumberFormat("en-BD", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      }).format(safeValue)} BDT`;
+    }
+
+    return new Intl.NumberFormat("en-BD", {
+      maximumFractionDigits: 0,
+    }).format(safeValue);
+  };
+
   const statsCards = [
     { title: "Total Users", value: dashboard?.data?.total_customers || 0, icon: "👥" },
     { title: "Total Product", value: dashboard?.data?.total_products || 0, icon: "📦" },
     { title: "Total Sell", value: dashboard?.data?.total_sales || 0, icon: "💰" },
+    { title: "Grand Total", value: dashboard?.data?.grand_total_product_cost_price || 0, icon: "💰" },
     {
       title: "Total Revenue",
       value: dashboard?.data?.monthly_revenue || 0,
@@ -31,12 +48,19 @@ export default function DashboardContent() {
 
   // Calculate total quantity sold for percentage calculation
   const totalSold = dashboard.data.top_selling_product.reduce(
-    (sum, item) => sum + item.total_quantity_sold,
+    (sum: number, item: { total_quantity_sold: number }) =>
+      sum + item.total_quantity_sold,
     0
   );
 
   // Map top_selling_product to mostSoldItems with percentage and color
-  const mostSoldItems = dashboard.data.top_selling_product.map((item, index) => {
+  type MostSoldItem = {
+    name: string;
+    percentage: number;
+    color: string;
+  };
+
+  const mostSoldItems: MostSoldItem[] = dashboard.data.top_selling_product.map((item: { product_name: string; total_quantity_sold: number }, index: number) => {
     const colors = [
       "bg-blue-500",
       "bg-green-500",
@@ -46,24 +70,26 @@ export default function DashboardContent() {
     ];
     return {
       name: item.product_name,
-      percentage: totalSold > 0 ? ((item.total_quantity_sold / totalSold) * 100).toFixed(1) : 0,
+      percentage:
+        totalSold > 0
+          ? Number(((item.total_quantity_sold / totalSold) * 100).toFixed(1))
+          : 0,
       color: colors[index % colors.length], // Cycle through colors
     };
   });
 
   return (
-    <div className="p-3 sm:p-4 lg:p-6 flex gap-4">
-      <div>
+    <div className="p-3 sm:p-4 lg:p-6 flex gap-4 ">
+      <div className="flex-1 min-w-0 w-full">
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
           {statsCards.map((card, index) => (
             <Card key={card.title} className="bg-gray-800 border-gray-700">
-              <CardContent className="p-3 sm:p-4 flex items-center gap-2">
-                <div className="flex items-center justify-between mb-2">
+              <CardContent className="p-3 sm:p-4 flex items-center gap-2 min-w-0">
+                <div className="flex items-center justify-between mb-2 shrink-0">
                   <div
-                    className={`rounded-lg flex items-center justify-center ${
-                      index === 4 ? "bg-red-500/20" : "bg-orange-500/20"
-                    }`}
+                    className={`rounded-lg flex items-center justify-center ${index === 4 ? "bg-red-500/20" : "bg-orange-500/20"
+                      }`}
                   >
                     <svg
                       width="60"
@@ -96,16 +122,15 @@ export default function DashboardContent() {
                     </svg>
                   </div>
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col min-w-0 w-full">
                   <div className="text-xs sm:text-sm text-gray-400 mb-1">
                     {card.title}
                   </div>
                   <div
-                    className={`text-lg sm:text-2xl font-bold ${
-                      index === 4 ? "text-red-400" : "text-white"
-                    }`}
+                    className={`text-sm sm:text-xl lg:text-2xl font-bold leading-tight break-words min-w-0 ${index === 4 ? "text-red-400" : "text-white"
+                      }`}
                   >
-                    {card.value}
+                    {formatStatValue(card.title, Number(card.value))}
                   </div>
                 </div>
               </CardContent>
@@ -167,7 +192,7 @@ export default function DashboardContent() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 sm:space-y-4">
-              {mostSoldItems.map((item) => (
+              {mostSoldItems.map((item: MostSoldItem) => (
                 <div key={item.name} className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-300">{item.name}</span>
@@ -176,7 +201,7 @@ export default function DashboardContent() {
                   <div className="w-full bg-gray-700 rounded-full h-2">
                     <div
                       className={`h-2 rounded-full ${item.color}`}
-                      style={{ width: `${item.percentage}%` }}
+                      style={{ inlineSize: item.percentage + "%" }}
                     />
                   </div>
                 </div>
@@ -185,7 +210,7 @@ export default function DashboardContent() {
           </Card>
         </div>
       </div>
-      <div className="hidden xl:block w-80 border-l border-gray-700">
+      <div className="hidden xl:block w-80  border-gray-700">
         <NotificationsPanel />
       </div>
     </div>

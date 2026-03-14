@@ -39,7 +39,18 @@ export const notificationsApi = baseApi.injectEndpoints({
       invalidatesTags: ["Notification"],
     }),
 
+    // /products/products/low_stock/count/
+    lowStockCount: builder.query({
+      query: () => ({
+        url: `/products/products/low_stock/count/`,
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }),
+    }),
+
   }),
 });
 
-export const { useAllNotificationsQuery, useMakeasReadMutation, useMakeasAllReadMutation , } = notificationsApi;
+export const { useAllNotificationsQuery, useMakeasReadMutation, useMakeasAllReadMutation, useLowStockCountQuery } = notificationsApi;

@@ -11,6 +11,7 @@ import { useUserProfileQuery } from "@/redux/feature/userSlice";
 
 export default function Header() {
     const { data: profileData, isLoading, isError, refetch } = useUserProfileQuery(undefined);
+    const IMAGE = process.env.NEXT_PUBLIC_IMAGE_URL;
   
   return (
     <div>
@@ -45,8 +46,18 @@ export default function Header() {
             <Search className="w-5 h-5" />
           </Button>
 
+          
+
           <Avatar className="w-8 h-8">
-            <AvatarImage src="/placeholder.svg?height=32&width=32" />
+             {/* <Image
+                      // src="/image 3.png"
+                      src={`${IMAGE}${data?.data[0].logo}`}
+                      alt="Logo"
+                      width={400}
+                      height={400}
+                      className="size-[80px] flex items-center justify-center "
+                    /> */}
+            <AvatarImage src={`${IMAGE}${profileData?.data[0].logo}`} />
             <AvatarFallback>U</AvatarFallback>
           </Avatar>
         </div>

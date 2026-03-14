@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Label } from '@/components/ui/label';
-import { ChevronLeft, ChevronRight,Edit, Check, FileText, Trash2, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Edit, Check, FileText, Trash2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -47,6 +47,8 @@ interface OrderItem {
   product_name?: string;
   selling_price?: string;
   items_total?: number;
+  mrp?: number;
+  discount?: number;
 }
 
 interface Order {
@@ -56,7 +58,7 @@ interface Order {
   shopName: string;
   invoiceNumber: string;
   amount: string;
-  status: 'pending' | 'delivered' | 'shipped' | 'cancelled';
+  status: 'pending' | 'delivered' | 'shipped' | 'cancelled' | 'completed';
   shippingAddress?: string;
   items?: OrderItem[];
   name?: string;
@@ -64,10 +66,13 @@ interface Order {
   total_amount?: number;
   invoice_number: string;
   full_name: string;
+  discount?: number;
+  mrp?: number;
+  phone?: string;
 }
 
 interface OrderUpdateFormValues {
-  order_status: 'pending' | 'delivered' | 'shipped' | 'cancelled';
+  order_status: 'pending' | 'delivered' | 'shipped' | 'cancelled' | 'completed';
   items: OrderItem[];
 }
 
@@ -119,6 +124,7 @@ const getStatusColor = (status: string) =>
   pending: 'text-red-400',
   delivered: 'text-green-400',
   shipped: 'text-blue-400',
+  completed: 'text-green-400',
   cancelled: 'text-gray-400',
   default: 'text-gray-400',
 }[status.toLowerCase()] || 'text-gray-400');
@@ -128,7 +134,7 @@ export default function Component() {
   const [page, setPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [statusOrder, setStatusOrder] = useState<Order | null>(null);
-  const [newStatus, setNewStatus] = useState<'pending' | 'delivered' | 'shipped' | 'cancelled' | ''>('');
+  const [newStatus, setNewStatus] = useState<'pending' | 'delivered' | 'shipped' | 'cancelled' | 'completed' | ''>('');
   const [items, setItems] = useState<OrderItem[]>([]);
   const [deleteConfirmOrder, setDeleteConfirmOrder] = useState<Order | null>(null);
   const [filters, setFilters] = useState<{
@@ -349,81 +355,81 @@ export default function Component() {
 
 
 
-const handleDownloadInvoice = useCallback(
-  async (order: Order) => {
-    if (invoiceRef.current && order) {
-      try {
-        const pdf = new jsPDF({
-          orientation: "portrait",
-          unit: "mm",
-          format: "a5",
-        });
+  const handleDownloadInvoice = useCallback(
+    async (order: Order) => {
+      if (invoiceRef.current && order) {
+        try {
+          const pdf = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: "a5",
+          });
 
-        const rows = Array.from(invoiceRef.current.querySelectorAll("tbody tr"));
-        const chunkSize = 15; // max rows per page
-        const totalPages = Math.ceil(rows.length / chunkSize);
+          const rows = Array.from(invoiceRef.current.querySelectorAll("tbody tr"));
+          const chunkSize = 15; // max rows per page
+          const totalPages = Math.ceil(rows.length / chunkSize);
 
-        for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
-          const chunkRows = rows.slice(
-            pageIndex * chunkSize,
-            (pageIndex + 1) * chunkSize
-          );
+          for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+            const chunkRows = rows.slice(
+              pageIndex * chunkSize,
+              (pageIndex + 1) * chunkSize
+            );
 
-          // Clone invoice for this page
-          const tableClone = invoiceRef.current.cloneNode(true) as HTMLElement;
+            // Clone invoice for this page
+            const tableClone = invoiceRef.current.cloneNode(true) as HTMLElement;
 
-          const tbody = tableClone.querySelector("tbody");
-          if (tbody) {
-            tbody.innerHTML = "";
-            chunkRows.forEach((row) => tbody.appendChild(row.cloneNode(true)));
+            const tbody = tableClone.querySelector("tbody");
+            if (tbody) {
+              tbody.innerHTML = "";
+              chunkRows.forEach((row) => tbody.appendChild(row.cloneNode(true)));
+            }
+
+
+            // Remove totals section for all but last page
+            const totals = tableClone.querySelector(".totals-section");
+            if (pageIndex < totalPages - 1 && totals) totals.remove();
+
+            // Hide cloned node offscreen
+            tableClone.style.position = "fixed";
+            tableClone.style.left = "-9999px";
+            document.body.appendChild(tableClone);
+            tableClone.style.transform = "scale(1.5)"; // <-- ADD THIS LINE
+            tableClone.style.transformOrigin = "top left"; // <-- ADD THIS LINE TOO
+            tableClone.style.width = "625px"; // Compensate for scale
+
+            // Render to canvas
+            const canvas = await html2canvas(tableClone, { scale: 3, useCORS: true });
+
+            // Cleanup
+            document.body.removeChild(tableClone);
+
+            // Add image to PDF
+            const pagePadding = 10;
+            const imgWidth = 148 - 2 * pagePadding; // A5 width
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            if (pageIndex > 0) pdf.addPage();
+            pdf.addImage(
+              canvas.toDataURL("image/jpeg", 1.0),
+              "JPEG",
+              pagePadding,
+              pagePadding,
+              imgWidth,
+              imgHeight
+            );
           }
 
-
-          // Remove totals section for all but last page
-          const totals = tableClone.querySelector(".totals-section");
-          if (pageIndex < totalPages - 1 && totals) totals.remove();
-
-          // Hide cloned node offscreen
-          tableClone.style.position = "fixed";
-          tableClone.style.left = "-9999px";
-          document.body.appendChild(tableClone);
-          tableClone.style.transform = "scale(1.5)"; // <-- ADD THIS LINE
-          tableClone.style.transformOrigin = "top left"; // <-- ADD THIS LINE TOO
-          tableClone.style.width = "625px"; // Compensate for scale
-
-          // Render to canvas
-          const canvas = await html2canvas(tableClone, { scale: 3, useCORS: true });
-
-          // Cleanup
-          document.body.removeChild(tableClone);
-
-          // Add image to PDF
-          const pagePadding = 10;
-          const imgWidth = 148 - 2 * pagePadding; // A5 width
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-          if (pageIndex > 0) pdf.addPage();
-          pdf.addImage(
-            canvas.toDataURL("image/jpeg", 1.0),
-            "JPEG",
-            pagePadding,
-            pagePadding,
-            imgWidth,
-            imgHeight
-          );
+          pdf.save(`invoice_${order.id.replace("#", "")}.pdf`);
+        } catch (error) {
+          console.error("Error generating invoice PDF:", error);
+          toast.error("Failed to generate invoice PDF!", { position: "top-right" });
         }
-
-        pdf.save(`invoice_${order.id.replace("#", "")}.pdf`);
-      } catch (error) {
-        console.error("Error generating invoice PDF:", error);
-        toast.error("Failed to generate invoice PDF!", { position: "top-right" });
+      } else {
+        toast.error("Invoice content not found!", { position: "top-right" });
       }
-    } else {
-      toast.error("Invoice content not found!", { position: "top-right" });
-    }
-  },
-  []
-);
+    },
+    []
+  );
 
 
 
@@ -663,109 +669,113 @@ const handleDownloadInvoice = useCallback(
           </div>
         </div>
       )}
-{/* Order Details Dialog */}
-<Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-  <DialogContent className="bg-[#23252b] text-white border-gray-600 max-w-2xl max-h-[800px] overflow-y-auto">
-    <DialogHeader></DialogHeader>
-    {selectedOrder && (
-      <div ref={invoiceRef} className="space-y-2 p-2 bg-white text-black rounded-lg" style={{ fontSize: "16px" }}>
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <img src="/invoicelogo.jpg" alt="BDM Logo" className="h-12" />
-          </div>
-          <h2 className="text-2xl font-bold">{selectedOrder.invoiceNumber}</h2>
-        </div>
+      {/* Order Details Dialog */}
+      <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
+        <DialogContent className="bg-[#23252b] text-white border-gray-600 max-w-2xl max-h-[800px] overflow-y-auto">
+          <DialogHeader></DialogHeader>
+          {selectedOrder && (
+            <div ref={invoiceRef} className="space-y-2 p-2 bg-white text-black rounded-lg" style={{ fontSize: "16px" }}>
+              {/* Header */}
+              <div className="flex justify-between items-center">
+                <div>
+                  <img src="/invoicelogo.jpg" alt="BDM Logo" className="h-12" />
+                </div>
+                <h2 className="text-2xl font-bold">{selectedOrder.invoiceNumber}</h2>
+              </div>
 
-        {/* Billing Info */}
-        <div className="grid grid-cols-2 gap-4 mt-2">
-          <div>
-            <p><strong>Bill from:</strong></p>
-            <p>Bangladesh Medicine (BDM)</p>
-            <p>Wholesale Supplier</p>
-            <p><strong>Phone</strong>: 01558920438</p>
-            <p><strong>Address</strong>:House#42/3 Rd#17/A Dhanmondi, Dhaka-1205</p>
-          </div>
-          <div>
-            <p><strong>Bill to:</strong></p>
-            <p><strong>Name:</strong> {selectedOrder.name || 'N/A'}</p>
-            <p><strong>Phone:</strong> {selectedOrder.phone || 'N/A'}</p>
-            <p><strong>Shop Name:</strong> {selectedOrder.shopName}</p>
-            <p><strong>Address:</strong> {selectedOrder.shippingAddress || 'N/A'}</p>
-          </div>
-          <div>
-            <p><strong>Date:</strong> {selectedOrder.date}</p>
-          </div>
-        </div>
+              {/* Billing Info */}
+              <div className="grid grid-cols-2 gap-4 mt-2">
+                <div>
+                  <p><strong>Bill from:</strong></p>
+                  <p>Bangladesh Medicine (BDM)</p>
+                  <p>Wholesale Supplier</p>
+                  <p><strong>Phone</strong>: 01558920438</p>
+                  <p><strong>Address</strong>:House#42/3 Rd#17/A Dhanmondi, Dhaka-1205</p>
+                </div>
+                <div>
+                  <p><strong>Bill to:</strong></p>
+                  <p><strong>Name:</strong> {selectedOrder.name || 'N/A'}</p>
+                  <p><strong>Phone:</strong> {selectedOrder.phone || 'N/A'}</p>
+                  <p><strong>Shop Name:</strong> {selectedOrder.shopName}</p>
+                  <p><strong>Address:</strong> {selectedOrder.shippingAddress || 'N/A'}</p>
+                </div>
+                <div>
+                  <p><strong>Date:</strong> {selectedOrder.date}</p>
+                </div>
+              </div>
 
-        {/* Items Table */}
-        <table className="w-full text-xs border-collapse">
-          <thead>
-            <tr className="bg-[#3b55a0]">
-              <th className="border p-2 border-black text-white text-center align-middle">Item</th>
-              <th className="border p-2 border-black text-white text-center align-middle">MRP</th>
-              <th className="border p-2 border-black text-white text-center align-middle">Rate</th>
-              <th className="border p-2 border-black text-white text-center align-middle">Quantity</th>
-              <th className="border p-2 border-black text-white text-center align-middle">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {selectedOrder.items?.map((item, idx) => (
-              <tr key={idx} className="border-t">
-                <td className="border p-2 border-black text-black font-bold">
-                  {item.product_name || `Product ID: ${item.product}`}
-                </td>
-                <td className="border p-2 border-black text-black text-right">{item?.mrp ?? 'N/A'}</td>
-                <td className="border p-2 border-black text-black text-right">{item.selling_price || 'N/A'}</td>
-                <td className="border p-2 border-black text-black text-center w-[50px]">{item.quantity}</td>
-                <td className="border p-2 border-black text-black text-right">{item.items_total?.toFixed(2) || 'N/A'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+              {/* Items Table */}
+              <table className="w-full text-xs border-collapse">
+                <thead>
+                  <tr className="bg-[#3b55a0]">
+                    <th className="border p-2 border-black text-white text-center align-middle">Serial</th>
+                    <th className="border p-2 border-black text-white text-center align-middle">Item</th>
+                    <th className="border p-2 border-black text-white text-center align-middle">MRP</th>
+                    <th className="border p-2 border-black text-white text-center align-middle">Discount</th>
+                    <th className="border p-2 border-black text-white text-center align-middle">Rate</th>
+                    <th className="border p-2 border-black text-white text-center align-middle">Quantity</th>
+                    <th className="border p-2 border-black text-white text-center align-middle">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedOrder.items?.map((item, idx) => (
+                    <tr key={idx} className="border-t">
+                      <td className="border p-2 border-black text-black text-center">{idx + 1}</td>
+                      <td className="border p-2 border-black text-black font-bold">
+                        {item.product_name || `Product ID: ${item.product}`}
+                      </td>
+                      <td className="border p-2 border-black text-black text-right">{item?.mrp ?? 'N/A'}</td>
+                      <td className="border p-2 border-black text-black text-right">{item.discount || 'N/A'}%</td>
+                      <td className="border p-2 border-black text-black text-right">{item.selling_price || 'N/A'}</td>
+                      <td className="border p-2 border-black text-black text-center w-[50px]">{item.quantity}</td>
+                      <td className="border p-2 border-black text-black text-right">{item.items_total?.toFixed(2) || 'N/A'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-        {/* Totals Section – wrap in totals-section */}
-        <div className="totals-section mt-2">
-          <ul className="divide-y divide-gray-200 p-4 w-full flex flex-col justify-end">
-            <li className="flex justify-between py-2">
-              <span className="text-gray-900 font-medium">Subtotal</span>
-              <span className="text-gray-900">{selectedOrder.total_amount?.toFixed(2) || 'N/A'}</span>
-            </li>
-            <li className="flex justify-between py-2">
-              <span className="text-gray-900 font-medium">Delivery Charge</span>
-              <span className="text-gray-900">{selectedOrder.delivery_charge?.toFixed(2) || 'N/A'}</span>
-            </li>
-            <li className="flex justify-between py-2 font-semibold text-lg">
-              <span className="text-gray-900">Total</span>
-              <span className="text-gray-900">{selectedOrder.amount}</span>
-            </li>
-          </ul>
-          {/* Terms */}
-        <p className="mt-2 text-[11px]">
-          <strong>Terms & Conditions:</strong> <br />
-          # BDM আপনাদের সঠিক সময়ে পণ্য ডেলিভারি দিতে প্রতিশ্রুতিবদ্ধ, তাই যত দ্রুত সম্ভব দয়া করে ডেলিভারি ভাইকে ছেড়ে দিবেন। <br />
-          # অডারকৃত পণ্য ফেরৎ দিলে ডিসকাউন্ট প্রযোজ্য নহে। সর্বোচ্চ ২৫% পণ্য ফেরৎ প্রযোজ্য। <br />
-          # BDM সিস্টেমে বকেয়া রেখে পণ্য বিক্রির ব্যবস্থা নেই। তাই এমন বিব্রতকর প্রস্তাব না দেবার জন্য বিশেষভাবে অনুরোধ করছি। <br />
-          # সকাল ৮টার আগে অডার পাঠিয়ে দিবেন। শুক্রবার ডেলিভারি কার্যক্রম বন্ধ থাকিবে।
-        </p>
-        </div>
+              {/* Totals Section – wrap in totals-section */}
+              <div className="totals-section mt-2">
+                <ul className="divide-y divide-gray-200 p-4 w-full flex flex-col justify-end">
+                  <li className="flex justify-between py-2">
+                    <span className="text-gray-900 font-medium">Subtotal</span>
+                    <span className="text-gray-900">{selectedOrder.total_amount?.toFixed(2) || 'N/A'}</span>
+                  </li>
+                  <li className="flex justify-between py-2">
+                    <span className="text-gray-900 font-medium">Delivery Charge</span>
+                    <span className="text-gray-900">{selectedOrder.delivery_charge?.toFixed(2) || 'N/A'}</span>
+                  </li>
+                  <li className="flex justify-between py-2 font-semibold text-lg">
+                    <span className="text-gray-900">Total</span>
+                    <span className="text-gray-900">{selectedOrder.amount}</span>
+                  </li>
+                </ul>
+                {/* Terms */}
+                <p className="mt-2 text-[11px]">
+                  <strong>Terms & Conditions:</strong> <br />
+                  # BDM আপনাদের সঠিক সময়ে পণ্য ডেলিভারি দিতে প্রতিশ্রুতিবদ্ধ, তাই যত দ্রুত সম্ভব দয়া করে ডেলিভারি ভাইকে ছেড়ে দিবেন। <br />
+                  # অডারকৃত পণ্য ফেরৎ দিলে ডিসকাউন্ট প্রযোজ্য নহে। সর্বোচ্চ ২৫% পণ্য ফেরৎ প্রযোজ্য। <br />
+                  # BDM সিস্টেমে বকেয়া রেখে পণ্য বিক্রির ব্যবস্থা নেই। তাই এমন বিব্রতকর প্রস্তাব না দেবার জন্য বিশেষভাবে অনুরোধ করছি। <br />
+                  # সকাল ৮টার আগে অডার পাঠিয়ে দিবেন। শুক্রবার ডেলিভারি কার্যক্রম বন্ধ থাকিবে।
+                </p>
+              </div>
 
-        
-      </div>
-    )}
-    <DialogFooter className="mt-4">
-      <Button
-        className="bg-gray-700 hover:bg-gray-600 mr-2"
-        onClick={() => selectedOrder && handleDownloadInvoice(selectedOrder)}
-      >
-        Download Invoice (PDF)
-      </Button>
-      <DialogClose asChild>
-        <Button className="bg-gray-700 hover:bg-gray-600">Close</Button>
-      </DialogClose>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
+
+            </div>
+          )}
+          <DialogFooter className="mt-4">
+            <Button
+              className="bg-gray-700 hover:bg-gray-600 mr-2"
+              onClick={() => selectedOrder && handleDownloadInvoice(selectedOrder)}
+            >
+              Download Invoice (PDF)
+            </Button>
+            <DialogClose asChild>
+              <Button className="bg-gray-700 hover:bg-gray-600">Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
 
       {/* Update Order Status Dialog */}
@@ -802,7 +812,7 @@ const handleDownloadInvoice = useCallback(
                       type="text"
                       placeholder="Product name"
                       value={item.product_name}
-                      disabled 
+                      disabled
                       onChange={(e) => handleUpdateItem(index, 'product', parseInt(e.target.value))}
                       className="bg-[#2c2e33] border-gray-600 text-white"
                     />
@@ -822,7 +832,7 @@ const handleDownloadInvoice = useCallback(
                   </Button>
                 </div>
               ))}
-              
+
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setStatusOrder(null)} className="bg-gray-700 hover:bg-gray-600">

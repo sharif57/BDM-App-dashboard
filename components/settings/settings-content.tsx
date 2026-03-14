@@ -23,7 +23,7 @@ export default function MyProfile() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-  const IMAGE_BASE_URL = 'http://147.93.104.182:8000';
+  const IMAGE_BASE_URL = 'https://api.bdmpharmacy.store';
 
   useEffect(() => {
     if (profileData) {

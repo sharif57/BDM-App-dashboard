@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Filter, Edit, Trash2, Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Filter, Edit, Trash2, Eye, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -115,6 +115,7 @@ export default function ProductsContent() {
   const { data: companiesData } = useAllCompaniesQuery(undefined);
 
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [showLowStockOnly, setShowLowStockOnly] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -122,7 +123,7 @@ export default function ProductsContent() {
   const [categories, setCategories] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [totalProducts, setTotalProducts] = useState(0);
-  const IMAGE = 'http://147.93.104.182:8000';
+  const IMAGE = 'https://api.bdmpharmacy.store';
   const [productImageFile, setProductImageFile] = useState<File | null>(null);
 
   // const { data: searchResults } = useSearchProductsQuery(searchTerm)
@@ -173,18 +174,6 @@ export default function ProductsContent() {
     }
   }, [apiData]);
 
-  const filteredProducts = products.filter((product) => {
-    const matchesCategory =
-      selectedCategory === "All" ||
-      product.category_name === selectedCategory;
-    const matchesSearch =
-      product?.product_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product?.generic_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-
-
   // ✅ Helper function to get status based on stock
   const getStatus = (product: any) => {
     if (product.stock_quantity === 0 || product.out_of_stock) {
@@ -210,6 +199,17 @@ export default function ProductsContent() {
         return "bg-gray-500/20 text-gray-400";
     }
   };
+
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      selectedCategory === "All" ||
+      product.category_name === selectedCategory;
+    const matchesSearch =
+      product?.product_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product?.generic_name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLowStock = !showLowStockOnly || getStatus(product) === "Low Stock";
+    return matchesCategory && matchesSearch && matchesLowStock;
+  });
 
   const handleView = (productId: number) => {
     const product = products.find(p => p.product_id === productId);
@@ -306,8 +306,24 @@ export default function ProductsContent() {
     }
   };
 
-  const handlePageChange = (num: number) => {
-    setPage((page) => Math.max(1, page + num));
+  const totalPages = Math.max(1, Math.ceil(totalProducts / pageSize));
+
+  const goToPage = (p: number) => setPage(Math.min(Math.max(1, p), totalPages));
+
+  // Reset to page 1 whenever search, category or low-stock filter changes
+  useEffect(() => { setPage(1); }, [searchTerm, selectedCategory, showLowStockOnly]);
+
+  const getPaginationRange = (): (number | "...")[] => {
+    const delta = 2;
+    const range: (number | "...")[] = [];
+    const left = Math.max(2, page - delta);
+    const right = Math.min(totalPages - 1, page + delta);
+    range.push(1);
+    if (left > 2) range.push("...");
+    for (let i = left; i <= right; i++) range.push(i);
+    if (right < totalPages - 1) range.push("...");
+    if (totalPages > 1) range.push(totalPages);
+    return range;
   };
 
   if (isLoading) return <div className="text-white p-6">Loading...</div>;
@@ -383,7 +399,21 @@ export default function ProductsContent() {
                       <th className="text-left py-3 px-4 text-gray-400 font-medium">Category</th>
                       <th className="text-left py-3 px-4 text-gray-400 font-medium">Price</th>
                       <th className="text-left py-3 px-4 text-gray-400 font-medium">Stock</th>
-                      <th className="text-left py-3 px-4 text-gray-400 font-medium">Status</th>
+                      <th
+                        className={`text-left py-3 px-4 font-medium cursor-pointer select-none transition-colors duration-150 ${showLowStockOnly
+                            ? "text-yellow-400 underline underline-offset-4"
+                            : "text-gray-400 hover:text-yellow-300"
+                          }`}
+                        onClick={() => setShowLowStockOnly((prev) => !prev)}
+                        title={showLowStockOnly ? "Click to show all" : "Click to filter Low Stock"}
+                      >
+                        Status
+                        {showLowStockOnly && (
+                          <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-yellow-500/20 text-yellow-400">
+                            Low Stock
+                          </span>
+                        )}
+                      </th>
                       <th className="text-left py-3 px-4 text-gray-400 font-medium">Actions</th>
                     </tr>
                   </thead>
@@ -460,26 +490,84 @@ export default function ProductsContent() {
                 </table>
               </div>
 
-              <div className="flex items-center justify-between mt-4">
-                <div className="text-sm text-gray-400">
-                  Showing {((page - 1) * pageSize) + 1} to {Math.min(page * pageSize, totalProducts)} of {totalProducts} products
-                </div>
-                <div className="flex space-x-2">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-6 pt-4 border-t border-gray-700">
+                {/* Showing info */}
+                <p className="text-sm text-gray-400 shrink-0">
+                  {totalProducts === 0
+                    ? "No products"
+                    : `Showing ${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, totalProducts)} of ${totalProducts} products`}
+                </p>
+
+                {/* Page navigation */}
+                <div className="flex items-center gap-1">
+                  {/* First */}
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handlePageChange(-1)}
-                    disabled={!apiData?.previous}
+                    className="h-8 w-8 p-0 border-gray-600 text-gray-400 hover:text-white hover:bg-gray-700"
+                    onClick={() => goToPage(1)}
+                    disabled={page === 1}
+                    aria-label="First page"
+                  >
+                    <ChevronsLeft className="w-4 h-4" />
+                  </Button>
+
+                  {/* Previous */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 p-0 border-gray-600 text-gray-400 hover:text-white hover:bg-gray-700"
+                    onClick={() => goToPage(page - 1)}
+                    disabled={page === 1}
+                    aria-label="Previous page"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
+
+                  {/* Page numbers */}
+                  {getPaginationRange().map((item, idx) =>
+                    item === "..." ? (
+                      <span key={`ellipsis-${idx}`} className="px-2 text-gray-500 select-none">…</span>
+                    ) : (
+                      <Button
+                        key={item}
+                        variant={item === page ? "default" : "outline"}
+                        size="sm"
+                        className={`h-8 w-8 p-0 ${item === page
+                            ? "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
+                            : "border-gray-600 text-gray-400 hover:text-white hover:bg-gray-700"
+                          }`}
+                        onClick={() => goToPage(item as number)}
+                        aria-label={`Page ${item}`}
+                        aria-current={item === page ? "page" : undefined}
+                      >
+                        {item}
+                      </Button>
+                    )
+                  )}
+
+                  {/* Next */}
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handlePageChange(1)}
-                    disabled={!apiData?.next}
+                    className="h-8 w-8 p-0 border-gray-600 text-gray-400 hover:text-white hover:bg-gray-700"
+                    onClick={() => goToPage(page + 1)}
+                    disabled={page === totalPages}
+                    aria-label="Next page"
                   >
                     <ChevronRight className="w-4 h-4" />
+                  </Button>
+
+                  {/* Last */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 p-0 border-gray-600 text-gray-400 hover:text-white hover:bg-gray-700"
+                    onClick={() => goToPage(totalPages)}
+                    disabled={page === totalPages}
+                    aria-label="Last page"
+                  >
+                    <ChevronsRight className="w-4 h-4" />
                   </Button>
                 </div>
               </div>

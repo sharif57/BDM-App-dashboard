@@ -83,8 +83,30 @@ export const userApi = baseApi.injectEndpoints({
       invalidatesTags: ["User"],
     }),
 
+    // /settings/privacy-policy/
+    privacyPolicy: builder.query({
+      query: () => ({
+        url: "/settings/privacy-policy/",
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }),
+    }),
+
+    updatePrivacyPolicy: builder.mutation({
+      query: ({data, id}) => ({
+        url: `/settings/privacy-policy-detail/${id}/`,
+        method: "PATCH",
+        body: data,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }),
+    }),
+
 
   }),
 });
 
-export const { useUserProfileQuery, useUpdateProfileMutation, useAllUsersQuery, useSettingDataQuery, useUpdateSettingMutation , useDeleteUserMutation, useUpdateUsersMutation } = userApi;
+export const { useUserProfileQuery, useUpdateProfileMutation, useAllUsersQuery, useSettingDataQuery, useUpdateSettingMutation , useDeleteUserMutation, useUpdateUsersMutation , usePrivacyPolicyQuery , useUpdatePrivacyPolicyMutation } = userApi;

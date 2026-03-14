@@ -95,13 +95,13 @@ export default function NotificationsPanel({ className = "" }: { className?: str
   }
 
   return (
-    <div className={`bg-gray-800 p-4 ${className}`}>
+    <div className={`bg-gray-800 rounded-lg p-4 ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Notifications</h2>
         <div className="flex space-x-2">
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className="text-gray-400"
             onClick={handleMarkAllAsRead}
             disabled={!data?.data?.some((notification: Notification) => !notification.is_read)}
@@ -114,16 +114,17 @@ export default function NotificationsPanel({ className = "" }: { className?: str
         </div>
       </div>
 
-      <div className="space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto">
+      {/* <div className="space-y-3 max-h-[calc(100vh-100px)] overflow-y-auto"> */}
+      <div className="space-y-3  overflow-y-auto">
+
         {data?.data?.length === 0 ? (
           <div className="text-center text-gray-400">No notifications</div>
         ) : (
           data?.data?.map((notification: Notification) => (
-            <div 
-              key={notification.id} 
-              className={`flex items-center space-x-3 p-3 rounded-lg ${
-                notification.is_read ? 'bg-gray-700' : 'bg-gray-600'
-              }`}
+            <div
+              key={notification.id}
+              className={`flex items-center space-x-3 p-3 rounded-lg ${notification.is_read ? 'bg-gray-700' : 'bg-gray-600'
+                }`}
             >
               {/* <Avatar className="w-8 h-8 flex-shrink-0">
                 <AvatarImage src={`/placeholder.svg?height=32&width=32`} />
@@ -148,9 +149,9 @@ export default function NotificationsPanel({ className = "" }: { className?: str
                 >
                   <Trash2 className="w-3 h-3" />
                 </Button> */}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="p-1 h-6 w-6 text-gray-400"
                   onClick={() => handleMarkAsRead(notification.id)}
                   disabled={notification.is_read}

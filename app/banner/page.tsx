@@ -40,7 +40,7 @@ const BannerSection: React.FC = () => {
   const [bannerToDelete, setBannerToDelete] = useState<number | null>(null);
   const [formData, setFormData] = useState<FormDataState>({ name: '', image: null, imagePreview: '' });
 
-  const baseUrl = 'http://147.93.104.182:8000';
+  const baseUrl = 'https://api.bdmpharmacy.store';
 
   const handleDeleteInitiate = (bannerId: number) => {
     setBannerToDelete(bannerId);

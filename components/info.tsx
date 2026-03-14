@@ -6,7 +6,7 @@ export default function Info() {
   const { data, isLoading, error, refetch } = useSettingDataQuery(undefined)
   const [updateSetting, { isLoading: isUpdating }] = useUpdateSettingMutation()
 
-  const IMAGE_BASE_URL = 'http://147.93.104.182:8000';
+  const IMAGE_BASE_URL = 'https://api.bdmpharmacy.store';
 
 
   const [formData, setFormData] = useState({

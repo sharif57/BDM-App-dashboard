@@ -77,7 +77,7 @@
 //           : user.is_approved
 //           ? "Pending"
 //           : "Inactive",
-//         image: user.image ? `http://147.93.104.182:8000${user.image}` : null,
+//         image: user.image ? `https://api.bdmpharmacy.store${user.image}` : null,
 //         isStaff: user.is_staff,
 //         isSuperuser: user.is_superuser,
 //       }));
@@ -609,7 +609,7 @@ export default function UserManagement() {
           : user.is_approved
             ? "Pending"
             : "Inactive",
-        image: user.image ? `http://147.93.104.182:8000${user.image}` : null,
+        image: user.image ? `https://api.bdmpharmacy.store${user.image}` : null,
         isStaff: user.is_staff,
         isSuperuser: user.is_superuser,
         isApproved: user.is_approved,

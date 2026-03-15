@@ -86,8 +86,8 @@ export const stockApi = baseApi.injectEndpoints({
         batchIdSearchapi: builder.query({
             query: ({
                 q = '',
-                start_date = new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0],
-                end_date = new Date().toISOString().split('T')[0],
+                start_date = '',
+                end_date = '',
             }: { q?: string; start_date?: string; end_date?: string }) => {
                 const params = new URLSearchParams();
                 if (q) params.append('q', q);

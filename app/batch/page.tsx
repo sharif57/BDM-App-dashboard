@@ -1,5 +1,5 @@
 'use client'
-import { useBatchIdSearchapiQuery } from '@/redux/feature/stockSlice'
+import { useBatchIdSearchQuery, useBatchIdSearchapiQuery } from '@/redux/feature/stockSlice'
 import React, { useState } from 'react'
 
 interface Product {
@@ -21,42 +21,121 @@ interface BatchEntry {
 }
 
 interface BatchSearchResponse {
-  start_date: string
-  end_date: string
-  grand_total_products: number
-  grand_total_value: string
-  batches: BatchEntry[]
+  status?: string
+  data?: Array<{ batch_id: string }>
+  start_date?: string
+  end_date?: string
+  grand_total_products?: number
+  grand_total_value?: string
+  batches?: BatchEntry[]
 }
 
 export default function Batch() {
-  const today = new Date().toISOString().split('T')[0]
-  const firstOfYear = `${new Date().getFullYear()}-01-01`
-
   const [searchQuery, setSearchQuery] = useState('')
-  const [startDate, setStartDate] = useState(firstOfYear)
-  const [endDate, setEndDate] = useState(today)
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
   const [activeFilter, setActiveFilter] = useState<{ q: string; start_date: string; end_date: string } | null>(null)
+  const [showSuggestions, setShowSuggestions] = useState(false)
 
   const { data: raw, isLoading: isBatchLoading, error: batchError } = useBatchIdSearchapiQuery(
     activeFilter ?? { q: '', start_date: '', end_date: '' },
     { skip: !activeFilter }
   ) as { data: BatchSearchResponse | undefined; isLoading: boolean; error: unknown }
 
+  const isBatchIdOnlySearch = Boolean(activeFilter?.q && !activeFilter?.start_date && !activeFilter?.end_date)
+
+  const {
+    data: singleBatchRaw,
+    isLoading: isSingleBatchLoading,
+    error: singleBatchError,
+  } = useBatchIdSearchQuery(activeFilter?.q ?? '', { skip: !isBatchIdOnlySearch }) as {
+    data: {
+      batch_id?: string
+      total_products?: number
+      total_value?: string
+      products?: Product[]
+      batches?: BatchEntry[]
+    } | undefined
+    isLoading: boolean
+    error: unknown
+  }
+
+  const { data: suggestionRaw } = useBatchIdSearchapiQuery(
+    { q: searchQuery.trim(), start_date: '', end_date: '' },
+    { skip: !searchQuery.trim() }
+  ) as { data: BatchSearchResponse | undefined }
+
+  const batchSuggestions = Array.from(
+    new Set(
+      [
+        ...(suggestionRaw?.data?.map((item) => item.batch_id) ?? []),
+        ...(suggestionRaw?.batches?.map((batch) => batch.batch_id) ?? []),
+      ].filter((id) => id?.toLowerCase().includes(searchQuery.trim().toLowerCase()))
+    )
+  ).slice(0, 10)
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    setActiveFilter({ q: searchQuery.trim(), start_date: startDate, end_date: endDate })
+    const query = searchQuery.trim()
+
+    // Batch ID only search: ignore date filter and search globally by batch id.
+    if (query) {
+      setActiveFilter({ q: query, start_date: '', end_date: '' })
+      setShowSuggestions(false)
+      return
+    }
+
+    // Date only search
+    setActiveFilter({ q: '', start_date: startDate, end_date: endDate })
+  }
+
+  const handleSuggestionClick = (batchId: string) => {
+    setSearchQuery(batchId)
+    setActiveFilter({ q: batchId, start_date: '', end_date: '' })
+    setShowSuggestions(false)
   }
 
   const handleReset = () => {
     setSearchQuery('')
-    setStartDate(firstOfYear)
-    setEndDate(today)
+    setStartDate('')
+    setEndDate('')
+    setShowSuggestions(false)
     setActiveFilter(null)
   }
 
   const showResults = !!activeFilter
 
-  const tableRows = raw?.batches?.flatMap((batch) =>
+  const normalizedBatches: BatchEntry[] = isBatchIdOnlySearch
+    ? (() => {
+      if (!singleBatchRaw) return []
+      if (Array.isArray(singleBatchRaw?.batches)) return singleBatchRaw.batches
+      if (Array.isArray(singleBatchRaw?.products)) {
+        return [
+          {
+            batch_id: singleBatchRaw.batch_id || activeFilter?.q || '-',
+            products: singleBatchRaw.products,
+            total_products: singleBatchRaw.total_products ?? singleBatchRaw.products.length,
+            total_value: singleBatchRaw.total_value ?? '0.00',
+          },
+        ]
+      }
+      return []
+    })()
+    : raw?.batches ?? []
+
+  const summaryTotalBatches = normalizedBatches.length
+  const summaryTotalProducts = normalizedBatches.reduce(
+    (sum, batch) => sum + (batch.total_products ?? batch.products?.length ?? 0),
+    0
+  )
+  const summaryGrandTotalValue = normalizedBatches
+    .reduce((sum, batch) => sum + Number(batch.total_value ?? 0), 0)
+    .toFixed(2)
+
+  const effectiveIsLoading = isBatchLoading || (isBatchIdOnlySearch && isSingleBatchLoading)
+  const effectiveError = batchError || (isBatchIdOnlySearch ? singleBatchError : null)
+
+  const tableRows = normalizedBatches.flatMap((batch) =>
     batch.products.map((product) => ({
       batch_id: batch.batch_id,
       total_products: batch.total_products,
@@ -197,9 +276,9 @@ export default function Batch() {
           </div>
 
           <div class="summary">
-            <div class="chip">Total Batches: ${raw?.batches?.length ?? 0}</div>
-            <div class="chip">Grand Total Products: ${raw?.grand_total_products ?? 0}</div>
-            <div class="chip">Grand Total Value: BDT ${raw?.grand_total_value ?? '0.00'}</div>
+            <div class="chip">Total Batches: ${summaryTotalBatches}</div>
+            <div class="chip">Grand Total Products: ${summaryTotalProducts}</div>
+            <div class="chip">Grand Total Value: BDT ${summaryGrandTotalValue}</div>
           </div>
 
           <table>
@@ -229,8 +308,12 @@ export default function Batch() {
     printWindow.print()
   }
 
+  // Derived disable flags
+  const isBatchIdTyped = Boolean(searchQuery.trim())
+  const isDatesSet = Boolean(startDate || endDate)
+
   return (
-    <div className="min-h-screen  p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen p-4 md:p-6 lg:p-8">
       <div className="mx-auto container">
 
         {/* Page Header */}
@@ -244,40 +327,82 @@ export default function Batch() {
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-400">Search Filters</h2>
           <form onSubmit={handleSearch}>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {/* Start Date */}
+
+              {/* Start Date — disabled when batch ID is typed */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-slate-400">Start Date</label>
+                <label className="text-xs font-medium text-slate-400">
+                  Start Date
+                  {isBatchIdTyped && (
+                    <span className="ml-1 text-slate-500">(cleared by Batch ID)</span>
+                  )}
+                </label>
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                   max={endDate}
-                  className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  disabled={isBatchIdTyped}
+                  className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-40 disabled:select-none"
                 />
               </div>
 
-              {/* End Date */}
+              {/* End Date — disabled when batch ID is typed */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-slate-400">End Date</label>
+                <label className="text-xs font-medium text-slate-400">
+                  End Date
+                  {isBatchIdTyped && (
+                    <span className="ml-1 text-slate-500">(cleared by Batch ID)</span>
+                  )}
+                </label>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
                   min={startDate}
-                  className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  disabled={isBatchIdTyped}
+                  className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-40 disabled:select-none"
                 />
               </div>
 
-              {/* Search Query */}
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-slate-400">Batch ID / Keyword</label>
+              {/* Search Query — disabled when dates are set; dropdown fixed with z-50 + top-full */}
+              <div className="relative flex flex-col gap-1">
+                <label className="text-xs font-medium text-slate-400">
+                  Batch ID / Keyword
+                  {isDatesSet && (
+                    <span className="ml-1 text-slate-500">(cleared by Date)</span>
+                  )}
+                </label>
                 <input
                   type="text"
                   placeholder="e.g. bat, uuid..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value)
+                    setShowSuggestions(Boolean(e.target.value.trim()))
+                  }}
+                  onFocus={() => setShowSuggestions(Boolean(searchQuery.trim()))}
+                  onBlur={() => {
+                    setTimeout(() => setShowSuggestions(false), 150)
+                  }}
+                  disabled={isDatesSet}
+                  className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-40 disabled:select-none"
                 />
+
+                {/* Suggestions dropdown — z-50, top-full, w-full scoped to relative parent */}
+                {showSuggestions && batchSuggestions.length > 0 && (
+                  <div className="absolute top-full left-0 z-50 mt-1 max-h-36 w-full overflow-y-auto rounded-lg border border-slate-600 bg-slate-900 shadow-lg">
+                    {batchSuggestions.map((batchId) => (
+                      <button
+                        key={batchId}
+                        type="button"
+                        onMouseDown={() => handleSuggestionClick(batchId)}
+                        className="block w-full border-b border-slate-800 px-3 py-2 text-left text-sm text-slate-200 transition hover:bg-slate-800"
+                      >
+                        {batchId}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Actions */}
@@ -322,16 +447,16 @@ export default function Batch() {
         </div>
 
         {/* Grand Summary Bar */}
-        {showResults && raw && (
+        {showResults && (
           <div className="mb-4 flex flex-wrap gap-4 rounded-xl border border-slate-700/50 bg-slate-800/60 px-5 py-3">
             <p className="text-sm text-slate-400">
-              Total Batches: <span className="font-semibold text-slate-100">{raw.batches?.length ?? 0}</span>
+              Total Batches: <span className="font-semibold text-slate-100">{summaryTotalBatches}</span>
             </p>
             <p className="text-sm text-slate-400">
-              Grand Total Products: <span className="font-semibold text-slate-100">{raw.grand_total_products}</span>
+              Grand Total Products: <span className="font-semibold text-slate-100">{summaryTotalProducts}</span>
             </p>
             <p className="text-sm text-slate-400">
-              Grand Total Value: <span className="font-bold text-emerald-400">৳{raw.grand_total_value}</span>
+              Grand Total Value: <span className="font-bold text-emerald-400">৳{summaryGrandTotalValue}</span>
             </p>
             <button
               type="button"
@@ -351,20 +476,20 @@ export default function Batch() {
               <h2 className="text-base font-semibold text-slate-100">Batch Table</h2>
             </div>
             <div className="p-4">
-              {isBatchLoading && (
+              {effectiveIsLoading && (
                 <div className="space-y-2">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="h-12 animate-pulse rounded-lg bg-slate-800" />
                   ))}
                 </div>
               )}
-              {Boolean(batchError) ? (
+              {Boolean(effectiveError) ? (
                 <p className="text-sm text-red-400">Error loading batches. Please try again.</p>
               ) : null}
-              {!isBatchLoading && !batchError && raw?.batches?.length === 0 && (
+              {!effectiveIsLoading && !effectiveError && normalizedBatches.length === 0 && (
                 <p className="py-6 text-center text-sm text-slate-500">No batches found for the selected filters.</p>
               )}
-              {!isBatchLoading && tableRows.length > 0 && (
+              {!effectiveIsLoading && tableRows.length > 0 && (
                 <>
                   <div className="overflow-x-auto rounded-lg border border-slate-700/60">
                     <table className="min-w-full text-sm">
@@ -406,13 +531,13 @@ export default function Batch() {
 
                   <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-700/50 bg-slate-800/50 px-5 py-3">
                     <p className="text-sm text-slate-400">
-                      Total Batches: <span className="font-semibold text-slate-100">{raw?.batches?.length ?? 0}</span>
+                      Total Batches: <span className="font-semibold text-slate-100">{summaryTotalBatches}</span>
                     </p>
                     <p className="text-sm text-slate-400">
-                      Grand Total Products: <span className="font-semibold text-slate-100">{raw?.grand_total_products ?? 0}</span>
+                      Grand Total Products: <span className="font-semibold text-slate-100">{summaryTotalProducts}</span>
                     </p>
                     <p className="text-sm text-slate-400">
-                      Grand Total Value: <span className="text-lg font-bold text-emerald-400">৳{raw?.grand_total_value ?? '0.00'}</span>
+                      Grand Total Value: <span className="text-lg font-bold text-emerald-400">৳{summaryGrandTotalValue}</span>
                     </p>
                   </div>
                 </>

@@ -38,6 +38,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { Input } from '@/components/ui/input';
 import { debounce } from 'lodash';
+import { usePrivacyPolicyQuery } from '@/redux/feature/userSlice';
 
 
 // Define interfaces
@@ -49,6 +50,7 @@ interface OrderItem {
   items_total?: number;
   mrp?: number;
   discount?: number;
+  discount_percent?: number;
 }
 
 interface Order {
@@ -69,6 +71,7 @@ interface Order {
   discount?: number;
   mrp?: number;
   phone?: string;
+  area?: string;
 }
 
 interface OrderUpdateFormValues {
@@ -116,7 +119,8 @@ const mapApiToOrders = (apiData: any[]): Order[] =>
     total_amount: order.total_amount,
     invoice_number: order.invoice_number,
     full_name: order.full_name,
-    phone: order.phone
+    phone: order.phone,
+    area: order.area
   }));
 
 const getStatusColor = (status: string) =>
@@ -198,6 +202,9 @@ export default function Component() {
     },
     { skip: !isFilterApplied }
   );
+
+  const { data } = usePrivacyPolicyQuery(undefined);
+  console.log(data?.data, 'privace=========')
 
   const [deleteOrder] = useDeleteOrderMutation();
   const [updateOrders] = useUpdateOrdersMutation();
@@ -430,6 +437,123 @@ export default function Component() {
     },
     []
   );
+
+  const handlePrintInvoice = useCallback(() => {
+    if (!invoiceRef.current) {
+      toast.error('Invoice content not found!', { position: 'top-right' });
+      return;
+    }
+
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
+    if (!printWindow) {
+      toast.error('Unable to open print window. Please allow popups.', { position: 'top-right' });
+      return;
+    }
+
+    const invoiceHtml = invoiceRef.current.innerHTML;
+    const logoImage = invoiceRef.current.querySelector('img');
+    const logoSrc = logoImage?.getAttribute('src') || '';
+    const absoluteLogoSrc = logoSrc
+      ? new URL(logoSrc, window.location.origin).toString()
+      : '';
+
+    printWindow.document.write(`
+      <!doctype html>
+      <html>
+        <head>
+          <title>Print Invoice</title>
+          <style>
+            * { box-sizing: border-box; }
+            body {
+              margin: 0;
+              padding: 16px;
+              font-family: Arial, sans-serif;
+              color: #000;
+              background: #fff;
+              font-size: 14px;
+            }
+            .space-y-2 > * + * { margin-block-start: 0.5rem; }
+            .p-2 { padding: 0.5rem; }
+            .p-4 { padding: 1rem; }
+            .mt-2 { margin-block-start: 0.5rem; }
+            .rounded-lg { border-radius: 0.5rem; }
+            .flex { display: flex; }
+            .flex-col { flex-direction: column; }
+            .justify-between { justify-content: space-between; }
+            .justify-end { justify-content: flex-end; }
+            .items-center { align-items: center; }
+            .grid { display: grid; }
+            .grid-cols-2 { grid-template-columns: 1fr 1fr; }
+            .gap-4 { gap: 1rem; }
+            .w-full { inline-size: 100%; }
+            .text-xs { font-size: 0.75rem; }
+            .text-lg { font-size: 1.125rem; }
+            .text-2xl { font-size: 1.5rem; }
+            .font-bold { font-weight: 700; }
+            .font-semibold { font-weight: 600; }
+            .font-medium { font-weight: 500; }
+            .divide-y > * + * { border-block-start: 1px solid #e5e7eb; }
+            table {
+              inline-size: 100%;
+              border-collapse: collapse;
+              font-size: 12px;
+            }
+            th, td {
+              border: 1px solid #000;
+              padding: 6px;
+            }
+            th {
+              background: #3b55a0;
+              color: #fff;
+            }
+            img {
+              max-block-size: 50px;
+              object-fit: contain;
+            }
+            .bg-white { background: #fff; }
+            .text-white, .text-gray-900, .text-black {
+              color: #000 !important;
+            }
+            .bg-\[\#3b55a0\] { background: #3b55a0; }
+            .invoice-billing {
+              display: flex;
+              justify-content: space-between;
+              gap: 1rem;
+            }
+            .invoice-billing > div {
+              flex: 1;
+            }
+            .totals-section ul {
+              margin: 0;
+              list-style: none;
+            }
+            @page {
+              size: auto;
+              margin: 10mm;
+            }
+          </style>
+        </head>
+        <body>
+          ${invoiceHtml}
+        </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+
+    if (absoluteLogoSrc) {
+      const img = printWindow.document.querySelector('img');
+      if (img) {
+        img.setAttribute('src', absoluteLogoSrc);
+      }
+    }
+
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    };
+  }, []);
 
 
 
@@ -684,20 +808,23 @@ export default function Component() {
               </div>
 
               {/* Billing Info */}
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                <div>
-                  <p><strong>Bill from:</strong></p>
-                  <p>Bangladesh Medicine (BDM)</p>
-                  <p>Wholesale Supplier</p>
-                  <p><strong>Phone</strong>: 01558920438</p>
-                  <p><strong>Address</strong>:House#42/3 Rd#17/A Dhanmondi, Dhaka-1205</p>
-                </div>
-                <div>
-                  <p><strong>Bill to:</strong></p>
-                  <p><strong>Name:</strong> {selectedOrder.name || 'N/A'}</p>
-                  <p><strong>Phone:</strong> {selectedOrder.phone || 'N/A'}</p>
-                  <p><strong>Shop Name:</strong> {selectedOrder.shopName}</p>
-                  <p><strong>Address:</strong> {selectedOrder.shippingAddress || 'N/A'}</p>
+              <div className="mt-2 space-y-2">
+                <div className="invoice-billing grid grid-cols-2 gap-4">
+                  <div>
+                    <p><strong>Bill from:</strong></p>
+                    <p>Bangladesh Medicine (BDM)</p>
+                    <p>Wholesale Supplier</p>
+                    <p><strong>Phone</strong>: 01558920438</p>
+                    <p><strong>Address</strong>:House#42/3 Rd#17/A Dhanmondi, Dhaka-1205</p>
+                  </div>
+                  <div>
+                    <p><strong>Bill to:</strong></p>
+                    <p><strong>Name:</strong> {selectedOrder.name || 'N/A'}</p>
+                    <p><strong>Phone:</strong> {selectedOrder.phone || 'N/A'}</p>
+                    <p><strong>Area:</strong> {selectedOrder.area || 'N/A'}</p>
+                    <p><strong>Shop Name:</strong> {selectedOrder.shopName}</p>
+                    <p><strong>Address:</strong> {selectedOrder.shippingAddress || 'N/A'}</p>
+                  </div>
                 </div>
                 <div>
                   <p><strong>Date:</strong> {selectedOrder.date}</p>
@@ -725,7 +852,7 @@ export default function Component() {
                         {item.product_name || `Product ID: ${item.product}`}
                       </td>
                       <td className="border p-2 border-black text-black text-right">{item?.mrp ?? 'N/A'}</td>
-                      <td className="border p-2 border-black text-black text-right">{item.discount || 'N/A'}%</td>
+                      <td className="border p-2 border-black text-black text-right">{item.discount_percent || 'N/A'}%</td>
                       <td className="border p-2 border-black text-black text-right">{item.selling_price || 'N/A'}</td>
                       <td className="border p-2 border-black text-black text-center w-[50px]">{item.quantity}</td>
                       <td className="border p-2 border-black text-black text-right">{item.items_total?.toFixed(2) || 'N/A'}</td>
@@ -751,13 +878,18 @@ export default function Component() {
                   </li>
                 </ul>
                 {/* Terms */}
-                <p className="mt-2 text-[11px]">
-                  <strong>Terms & Conditions:</strong> <br />
-                  # BDM আপনাদের সঠিক সময়ে পণ্য ডেলিভারি দিতে প্রতিশ্রুতিবদ্ধ, তাই যত দ্রুত সম্ভব দয়া করে ডেলিভারি ভাইকে ছেড়ে দিবেন। <br />
-                  # অডারকৃত পণ্য ফেরৎ দিলে ডিসকাউন্ট প্রযোজ্য নহে। সর্বোচ্চ ২৫% পণ্য ফেরৎ প্রযোজ্য। <br />
-                  # BDM সিস্টেমে বকেয়া রেখে পণ্য বিক্রির ব্যবস্থা নেই। তাই এমন বিব্রতকর প্রস্তাব না দেবার জন্য বিশেষভাবে অনুরোধ করছি। <br />
-                  # সকাল ৮টার আগে অডার পাঠিয়ে দিবেন। শুক্রবার ডেলিভারি কার্যক্রম বন্ধ থাকিবে।
-                </p>
+                <div className="mt-2 text-[11px]">
+                  <strong>Terms & Conditions:</strong>
+                  <div style={{ marginTop: '4px' }}>
+                    {data?.data?.map((term: any, termIndex: number) =>
+                      term?.content?.split('\n').filter(Boolean).map((line: string, lineIndex: number) => (
+                        <div key={`${termIndex}-${lineIndex}`} style={{ marginBottom: '2px' }}>
+                          {line}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
               </div>
 
 
@@ -765,10 +897,10 @@ export default function Component() {
           )}
           <DialogFooter className="mt-4">
             <Button
-              className="bg-gray-700 hover:bg-gray-600 mr-2"
-              onClick={() => selectedOrder && handleDownloadInvoice(selectedOrder)}
+              className="bg-gray-700 hover:bg-gray-600 mr-2 capitalize"
+              onClick={handlePrintInvoice}
             >
-              Download Invoice (PDF)
+              print invoice
             </Button>
             <DialogClose asChild>
               <Button className="bg-gray-700 hover:bg-gray-600">Close</Button>

@@ -51,6 +51,8 @@ interface OrderItem {
   mrp?: number;
   discount?: number;
   discount_percent?: number;
+  special_bonus?: number;
+  special_bonus_percentage?: number;
 }
 
 interface Order {
@@ -72,6 +74,8 @@ interface Order {
   mrp?: number;
   phone?: string;
   area?: string;
+  special_bonus?: number;
+  special_bonus_percentage?: number;
 }
 
 interface OrderUpdateFormValues {
@@ -120,7 +124,10 @@ const mapApiToOrders = (apiData: any[]): Order[] =>
     invoice_number: order.invoice_number,
     full_name: order.full_name,
     phone: order.phone,
-    area: order.area
+    area: order.area,
+    special_bonus: order.special_bonus,
+    special_bonus_percentage: order.special_bonus_percentage,
+    subtotal_amount: order.subtotal_amount
   }));
 
 const getStatusColor = (status: string) =>
@@ -866,12 +873,19 @@ export default function Component() {
                 <ul className="divide-y divide-gray-200 p-4 w-full flex flex-col justify-end">
                   <li className="flex justify-between py-2">
                     <span className="text-gray-900 font-medium">Subtotal</span>
-                    <span className="text-gray-900">{selectedOrder.total_amount?.toFixed(2) || 'N/A'}</span>
+                    <span className="text-gray-900">{selectedOrder?.subtotal_amount?.toFixed(2) || 'N/A'}</span>
                   </li>
                   <li className="flex justify-between py-2">
                     <span className="text-gray-900 font-medium">Delivery Charge</span>
                     <span className="text-gray-900">{selectedOrder.delivery_charge?.toFixed(2) || 'N/A'}</span>
                   </li>
+                  {/* special bonus discount */}
+                  {selectedOrder?.special_bonus_percentage > 0 && selectedOrder?.special_bonus > 0 && (
+                    <li className="flex justify-between py-2">
+                      <span className="text-gray-900 font-medium">Special Bonus ({selectedOrder?.special_bonus_percentage?.toFixed(2)}%)</span>
+                      <span className="text-gray-900">{selectedOrder.special_bonus?.toFixed(2) || 'N/A'}</span>
+                    </li>
+                  )}
                   <li className="flex justify-between py-2 font-semibold text-lg">
                     <span className="text-gray-900">Total</span>
                     <span className="text-gray-900">{selectedOrder.amount}</span>

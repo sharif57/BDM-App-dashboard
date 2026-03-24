@@ -114,11 +114,12 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronRight, LogOut } from "lucide-react";
+import { ChevronRight, ChevronDown, LogOut, ShoppingCart, Clock, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { logout } from "@/service/authService";
 import { toast } from "sonner";
+import { useState } from "react";
 import {
   useSettingDataQuery,
   useUserProfileQuery,
@@ -141,9 +142,15 @@ const sidebarItems = [
   { name: "Settings", href: "/settings" },
 ];
 
+const ordersSubmenu = [
+  { name: "All Orders", href: "/orders", icon: ShoppingCart, color: "green" },
+  { name: "Area Wise Orders", href: "/orders/area-wise", icon: RotateCcw, color: "blue" },
+];
+
 export default function Sidebar({ className = "" }: { className?: string }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [expandedOrders, setExpandedOrders] = useState(false);
 
   const { data } = useSettingDataQuery(undefined);
   const { data: profileData } = useUserProfileQuery(undefined);
@@ -203,13 +210,69 @@ export default function Sidebar({ className = "" }: { className?: string }) {
       <nav className="flex-1 overflow-y-auto pr-1">
         {filteredSidebarItems.map((item) => {
           const isActive = isItemActive(item.href);
+          const isOrdersItem = item.name === "Orders";
+
+          if (isOrdersItem) {
+            return (
+              <div key={item.name}>
+                {/* Orders Main Item */}
+                <div
+                  onClick={() => setExpandedOrders(!expandedOrders)}
+                  className={`flex items-center justify-between p-3 mb-2 rounded-lg cursor-pointer transition-all ${expandedOrders || isActive
+                      ? "bg-green-600/20 text-green-400 border border-green-600/30"
+                      : "text-gray-400 hover:bg-gray-700 hover:text-white"
+                    }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <ShoppingCart className="w-4 h-4" />
+                    <span className="font-medium">{item.name}</span>
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${expandedOrders ? "rotate-180" : ""
+                      }`}
+                  />
+                </div>
+
+                {/* Submenu Items */}
+                {expandedOrders && (
+                  <div className="ml-2 mb-2 space-y-1 border-l border-gray-600 pl-3">
+                    {ordersSubmenu.map((subItem) => {
+                      const SubIcon = subItem.icon;
+                      const colorClasses = {
+                        green: "bg-green-500/20 text-green-400",
+                        yellow: "bg-yellow-500/20 text-yellow-400",
+                        blue: "bg-blue-500/20 text-blue-400",
+                      };
+                      const isSubActive =
+                        pathname === subItem.href ||
+                        (subItem.href.includes("?") && pathname.includes("orders"));
+
+                      return (
+                        <Link key={subItem.name} href={subItem.href}>
+                          <div
+                            className={`flex items-center space-x-2 p-2 rounded-lg transition-colors ${isSubActive
+                                ? colorClasses[subItem.color as keyof typeof colorClasses]
+                                : "text-gray-400 hover:bg-gray-700 hover:text-white"
+                              }`}
+                          >
+                            <SubIcon className="w-4 h-4" />
+                            <span className="text-sm">{subItem.name}</span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          }
 
           return (
             <Link key={item.name} href={item.href}>
               <div
                 className={`flex items-center justify-between p-3 mb-2 rounded-lg cursor-pointer transition-colors ${isActive
-                    ? "bg-gray-700 text-white"
-                    : "text-gray-400 hover:bg-gray-700 hover:text-white"
+                  ? "bg-gray-700 text-white"
+                  : "text-gray-400 hover:bg-gray-700 hover:text-white"
                   }`}
               >
                 <div className="flex items-center space-x-3">

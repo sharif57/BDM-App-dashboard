@@ -82,7 +82,25 @@ export const orderApi = baseApi.injectEndpoints({
             providesTags: ['Order'],
         }),
 
+        // /orders/area_wise_order/?area=1&status=pending
+        areaWiseOrders: builder.query({
+            query: ({ area, status } = {}) => {
+                const params = new URLSearchParams();
+                if (area) params.append('area', area.toString());
+                if (status) params.append('status', status);
+
+                return {
+                    url: `/orders/area_wise_order/?${params.toString()}`,
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                    },
+                };
+            },
+            providesTags: ['Order'],
+        }),
+
     }),
 });
 
-export const { useAllOrdersQuery, useDeleteOrderMutation, usePendingProductsQuery, useUpdateOrdersMutation, useFilterOrdersQuery } = orderApi;
+export const { useAllOrdersQuery, useDeleteOrderMutation, usePendingProductsQuery, useUpdateOrdersMutation, useFilterOrdersQuery, useAreaWiseOrdersQuery } = orderApi;

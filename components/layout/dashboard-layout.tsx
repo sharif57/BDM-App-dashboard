@@ -22,7 +22,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const { data: profileData } = useUserProfileQuery(undefined);
   const { data } = useLowStockCountQuery(undefined);
-  console.log(data?.low_stock_product_count, '===========================')
+  console.log(data, '===========================')
 
   const IMAGE_BASE_URL = "https://api.bdmpharmacy.store";
 
@@ -89,7 +89,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <h1 className="text-xl font-semibold">{getPageTitle()}</h1>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <Link href="/products" className="relative inline-flex items-center justify-center">
+            <Link href="/products/low-stock" className="relative inline-flex items-center justify-center">
               <Button
                 variant="ghost"
                 size="lg"
@@ -100,7 +100,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
               {data?.low_stock_product_count > 0 && (
                 <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1.5 bg-red-500 text-white text-xs font-semibold rounded-full flex items-center justify-center ring-2 ring-[#2c2e34] shadow-md">
-                  {data.low_stock_product_count > 99 ? "99+" : data.low_stock_product_count}
+                  {data.low_stock_product_count }
                 </span>
               )}
             </Link>

@@ -400,19 +400,21 @@ export default function ProductsContent() {
                       <th className="text-left py-3 px-4 text-gray-400 font-medium">Price</th>
                       <th className="text-left py-3 px-4 text-gray-400 font-medium">Stock</th>
                       <th
-                        className={`text-left py-3 px-4 font-medium cursor-pointer select-none transition-colors duration-150 ${showLowStockOnly
-                            ? "text-yellow-400 underline underline-offset-4"
-                            : "text-gray-400 hover:text-yellow-300"
-                          }`}
-                        onClick={() => setShowLowStockOnly((prev) => !prev)}
-                        title={showLowStockOnly ? "Click to show all" : "Click to filter Low Stock"}
+
+                        className="text-left py-3 px-4 text-gray-400 font-medium"
+                      // className={`text-left py-3 px-4 font-medium cursor-pointer select-none transition-colors duration-150 ${showLowStockOnly
+                      //     ? "text-yellow-400 underline underline-offset-4"
+                      //     : "text-gray-400 hover:text-yellow-300"
+                      //   }`}
+                      // onClick={() => setShowLowStockOnly((prev) => !prev)}
+                      // title={showLowStockOnly ? "Click to show all" : "Click to filter Low Stock"}
                       >
                         Status
-                        {showLowStockOnly && (
+                        {/* {showLowStockOnly && (
                           <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-yellow-500/20 text-yellow-400">
                             Low Stock
                           </span>
-                        )}
+                        )} */}
                       </th>
                       <th className="text-left py-3 px-4 text-gray-400 font-medium">Actions</th>
                     </tr>
@@ -534,8 +536,8 @@ export default function ProductsContent() {
                         variant={item === page ? "default" : "outline"}
                         size="sm"
                         className={`h-8 w-8 p-0 ${item === page
-                            ? "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-                            : "border-gray-600 text-gray-400 hover:text-white hover:bg-gray-700"
+                          ? "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
+                          : "border-gray-600 text-gray-400 hover:text-white hover:bg-gray-700"
                           }`}
                         onClick={() => goToPage(item as number)}
                         aria-label={`Page ${item}`}

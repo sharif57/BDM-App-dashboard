@@ -105,8 +105,32 @@ export const userApi = baseApi.injectEndpoints({
       }),
     }),
 
+    // /settings/conditional-discounts/
+    conditionalDiscounts: builder.query({
+      query: () => ({
+        url: "/settings/conditional-discounts/",
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }),
+      providesTags: ["User"],
+    }),
+
+    // /settings/conditional-discounts-details/
+    updateConditionalDiscounts: builder.mutation({
+      query: (data) => ({
+        url: `/settings/conditional-discounts-details/`,
+        method: "PATCH",
+        body: data,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }),
+      invalidatesTags: ["User"],
+    }),
 
   }),
 });
 
-export const { useUserProfileQuery, useUpdateProfileMutation, useAllUsersQuery, useSettingDataQuery, useUpdateSettingMutation , useDeleteUserMutation, useUpdateUsersMutation , usePrivacyPolicyQuery , useUpdatePrivacyPolicyMutation } = userApi;
+export const { useUserProfileQuery, useUpdateProfileMutation, useAllUsersQuery, useSettingDataQuery, useUpdateSettingMutation , useDeleteUserMutation, useUpdateUsersMutation , usePrivacyPolicyQuery , useUpdatePrivacyPolicyMutation , useConditionalDiscountsQuery , useUpdateConditionalDiscountsMutation } = userApi;

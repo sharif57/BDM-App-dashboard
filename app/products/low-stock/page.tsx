@@ -104,7 +104,7 @@ export default function LowStock() {
   }
 
   return (
-    <div className="min-h-screen bg-[#2c2e34]">
+    <div className="min-h-screen ">
       <div className="  px-4  py-8 ">
         {/* Header Section */}
         <div className="mb-8">
@@ -173,7 +173,7 @@ export default function LowStock() {
         </div>
 
         {/* Products Table */}
-        <div className="bg-[#3a3c44] rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-700">
               <thead className="bg-[#2c2e34]">

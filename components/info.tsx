@@ -119,154 +119,163 @@ export default function Info() {
   }
 
   return (
-    <div className="min-h-screen  py-8 px-4 sm:px-6 lg:px-8 text-black">
-      <div className="container mx-auto">
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">Platform Settings</h3>
-            <p className="mt-1 max-w-2xl text-sm text-gray-500">Manage your platform configuration</p>
+   <div className="min-h-screen  py-8 px-4 sm:px-6 lg:px-8 text-white">
+  <div className="container mx-auto">
+    <div className="bg-gray-800 shadow-xl rounded-lg overflow-hidden border border-gray-700">
+      
+      {/* Header */}
+      <div className="px-4 py-5 sm:px-6 border-b border-gray-700">
+        <h3 className="text-lg font-medium leading-6 text-white">Platform Settings</h3>
+        <p className="mt-1 max-w-2xl text-sm text-gray-400">
+          Manage your platform configuration
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="px-4 py-5 sm:p-6">
+        <div className="grid grid-cols-1 gap-6">
+          
+          {/* Logo Upload */}
+          <div>
+            <div className="flex items-center">
+              <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-700 flex-shrink-0 border border-gray-600">
+                {logoPreview ? (
+                  <img 
+                    src={`${IMAGE_BASE_URL}${logoPreview}`} 
+                    alt="Logo" 
+                    className="h-full w-full object-cover" 
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center text-gray-500">
+                    <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <label className="ml-5 relative cursor-pointer bg-gray-700 hover:bg-gray-600 rounded-md font-medium text-blue-400 hover:text-blue-300 px-4 py-2 transition-colors focus-within:outline-none">
+                <span>Change logo</span>
+                <input
+                  type="file"
+                  className="sr-only"
+                  onChange={handleFileChange}
+                  accept="image/*"
+                />
+              </label>
+            </div>
           </div>
 
+          {/* Name Field */}
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
+              Platform Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              className="block w-full rounded-md bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
+              placeholder="Enter platform name"
+            />
+          </div>
 
-          <form onSubmit={handleSubmit} className="px-4 py-5 sm:p-6">
-            <div className="grid grid-cols-1 gap-6">
-              {/* Logo Upload */}
-              <div>
-                <div className="flex items-center">
-                  <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
-                    {logoPreview ? (
-                      <img src={`${IMAGE_BASE_URL}${logoPreview}`} alt="Logo" className="h-full w-full object-cover" />
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center text-gray-400">
-                        <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                  <label className="ml-5 relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
-                    <span>Change logo</span>
-                    <input
-                      type="file"
-                      className="sr-only"
-                      onChange={handleFileChange}
-                      accept="image/*"
-                    />
-                  </label>
-                </div>
-              </div>
+          {/* Description Field */}
+          <div>
+            <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-1">
+              Description
+            </label>
+            <textarea
+              name="description"
+              id="description"
+              rows={3}
+              value={formData.description}
+              onChange={handleInputChange}
+              className="block w-full rounded-md bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
+              placeholder="Enter platform description"
+            />
+          </div>
 
-              {/* Name Field */}
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Platform Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
-                  placeholder="Enter platform name"
-                />
-              </div>
+          {/* Version Field */}
+          <div>
+            <label htmlFor="version" className="block text-sm font-medium text-gray-300 mb-1">
+              Version
+            </label>
+            <input
+              type="text"
+              name="version"
+              id="version"
+              value={formData.version}
+              onChange={handleInputChange}
+              className="block w-full rounded-md bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
+              placeholder="Enter version number"
+            />
+          </div>
 
-              {/* Description Field */}
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  id="description"
-                  rows={3}
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
-                  placeholder="Enter platform description"
-                />
-              </div>
+          {/* Delivery Charge Field */}
+          <div>
+            <label htmlFor="delivery_charge" className="block text-sm font-medium text-gray-300 mb-1">
+              Delivery Charge
+            </label>
+            <input
+              type="number"
+              name="delivery_charge"
+              id="delivery_charge"
+              value={formData.delivery_charge}
+              onChange={handleInputChange}
+              className="block w-full rounded-md bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
+              placeholder="Enter delivery charge"
+              min="0"
+              step="0.01"
+            />
+          </div>
 
-              {/* Version Field */}
-              <div>
-                <label htmlFor="version" className="block text-sm font-medium text-gray-700 mb-1">
-                  Version
-                </label>
-                <input
-                  type="text"
-                  name="version"
-                  id="version"
-                  value={formData.version}
-                  onChange={handleInputChange}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
-                  placeholder="Enter version number"
-                />
-              </div>
+          {/* Contact Email Field */}
+          <div>
+            <label htmlFor="contact_email" className="block text-sm font-medium text-gray-300 mb-1">
+              Contact Email
+            </label>
+            <input
+              type="email"
+              name="contact_email"
+              id="contact_email"
+              value={formData.contact_email}
+              onChange={handleInputChange}
+              className="block w-full rounded-md bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
+              placeholder="Enter contact email"
+            />
+          </div>
 
-              {/* Delivery Charge Field */}
-              <div>
-                <label htmlFor="delivery_charge" className="block text-sm font-medium text-gray-700 mb-1">
-                  Delivery Charge
-                </label>
-                <input
-                  type="number"
-                  name="delivery_charge"
-                  id="delivery_charge"
-                  value={formData.delivery_charge}
-                  onChange={handleInputChange}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
-                  placeholder="Enter delivery charge"
-                  min="0"
-                  step="0.01"
-                />
-              </div>
-
-              {/* Contact Email Field */}
-              <div>
-                <label htmlFor="contact_email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Contact Email
-                </label>
-                <input
-                  type="email"
-                  name="contact_email"
-                  id="contact_email"
-                  value={formData.contact_email}
-                  onChange={handleInputChange}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
-                  placeholder="Enter contact email"
-                />
-              </div>
-
-              {/* Contact Phone Field */}
-              <div>
-                <label htmlFor="contact_phone" className="block text-sm font-medium text-gray-700 mb-1">
-                  Contact Phone
-                </label>
-                <input
-                  type="tel"
-                  name="contact_phone"
-                  id="contact_phone"
-                  value={formData.contact_phone}
-                  onChange={handleInputChange}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
-                  placeholder="Enter contact phone"
-                />
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-end">
-              <button
-                type="submit"
-                disabled={isUpdating}
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-              >
-                {isUpdating ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
-          </form>
+          {/* Contact Phone Field */}
+          <div>
+            <label htmlFor="contact_phone" className="block text-sm font-medium text-gray-300 mb-1">
+              Contact Phone
+            </label>
+            <input
+              type="tel"
+              name="contact_phone"
+              id="contact_phone"
+              value={formData.contact_phone}
+              onChange={handleInputChange}
+              className="block w-full rounded-md bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
+              placeholder="Enter contact phone"
+            />
+          </div>
         </div>
-      </div>
+
+        {/* Submit Button */}
+        <div className="mt-8 flex justify-end">
+          <button
+            type="submit"
+            disabled={isUpdating}
+            className="inline-flex justify-center py-2.5 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {isUpdating ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
+</div>
   )
 }

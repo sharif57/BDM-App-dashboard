@@ -115,7 +115,7 @@ const BannerSection: React.FC = () => {
   if (error) return <div className="text-center py-10 text-red-500">Error loading banners</div>;
 
   return (
-    <div className="container mx-auto p-6 ">
+    <div className="p-3 sm:p-4 lg:p-6 w-full ">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-white">Banner Management</h1>
         <Link href="/banner/add-banner">

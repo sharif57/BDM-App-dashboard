@@ -500,8 +500,8 @@ export default function Discount() {
   }
 
   return (
-    <div className="min-h-screen bg-[#2c2e34]">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="min-h-screen ">
+      <div className="container mx-auto px-4 py-8 ">
         {/* Header Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Conditional Discounts</h1>

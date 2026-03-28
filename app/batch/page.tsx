@@ -313,8 +313,8 @@ export default function Batch() {
   const isDatesSet = Boolean(startDate || endDate)
 
   return (
-    <div className="min-h-screen p-4 md:p-6 lg:p-8">
-      <div className="mx-auto container">
+    <div className="min-h-screen p-3 sm:p-4 lg:p-6">
+      <div className="">
 
         {/* Page Header */}
         <div className="mb-6">
@@ -323,7 +323,7 @@ export default function Batch() {
         </div>
 
         {/* Filter Card */}
-        <div className="mb-6 rounded-xl border border-slate-700/60 bg-slate-900/70 p-4 shadow-xl backdrop-blur md:p-6">
+        <div className="mb-6 rounded-xl border border-slate-700/60 bg-gray-800 p-4 shadow-xl backdrop-blur md:p-6">
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-400">Search Filters</h2>
           <form onSubmit={handleSearch}>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -471,7 +471,7 @@ export default function Batch() {
 
         {/* Batch Table Results */}
         {showResults && (
-          <div className="mb-6 rounded-xl border border-slate-700/60 bg-slate-900/70 shadow-xl backdrop-blur">
+          <div className="mb-6 rounded-xl border border-slate-700/60 bg-gray-800 shadow-xl backdrop-blur">
             <div className="border-b border-slate-700/60 px-5 py-4">
               <h2 className="text-base font-semibold text-slate-100">Batch Table</h2>
             </div>

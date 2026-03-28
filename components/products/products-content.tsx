@@ -106,7 +106,6 @@ export default function ProductsContent() {
   const [pageSize] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const { data: apiData, isLoading, isError, refetch } = useAllProductsQuery({ limit: pageSize, page, src: searchTerm });
-  console.log(apiData, 'all products==============');
   const [deleteProduct] = useDeleteProductMutation();
   const [updateProduct] = useUpdateProductMutation();
 

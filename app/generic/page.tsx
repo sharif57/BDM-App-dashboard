@@ -99,8 +99,8 @@ export default function GenericName() {
     if (isError) return <div className="text-red-400">Error loading generics</div>;
 
     return (
-        <div className="text-white pt-6">
-            <div className="flex items-center justify-between mb-6 px-4">
+        <div className="text-white pt-6 p-3 sm:p-4 lg:p-6">
+            <div className="flex items-center justify-between mb-6 ">
                 <h1 className="text-2xl font-semibold mb-6">Generic Management</h1>
                 <Link href="/generic/add-generic">
                     <Button className="bg-blue-500 hover:bg-blue-600">
@@ -110,7 +110,7 @@ export default function GenericName() {
             </div>
 
             {/* Generics Table */}
-            <div className="bg-[#23252b] rounded-lg overflow-hidden">
+            <div className="bg-gray-800 rounded-lg overflow-hidden">
                 <div className="grid grid-cols-4 gap-4 p-4 border-b border-gray-600 text-sm bg-[#2c2e33] font-medium text-gray-300">
                     <div>ID</div>
                     <div>Name</div>

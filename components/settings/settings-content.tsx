@@ -113,7 +113,7 @@ export default function MyProfile() {
         </div>
 
         {/* Profile Card */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="bg-gray-800 rounded-xl shadow-md overflow-hidden">
           <div className="md:flex">
             {/* Profile Image Section */}
             <div className="md:w-1/3 p-6 flex flex-col items-center border-b md:border-b-0 md:border-r border-gray-200">
@@ -131,8 +131,8 @@ export default function MyProfile() {
                   </div>
                 )}
               </div>
-              <h2 className="text-2xl font-semibold text-gray-800">{profile.full_name}</h2>
-              <p className="text-gray-600 mt-1">{profile.email}</p>
+              <h2 className="text-2xl font-semibold white">{profile.full_name}</h2>
+              <p className="text-white mt-1">{profile.email}</p>
             </div>
 
             {/* Profile Details Section */}
@@ -141,25 +141,25 @@ export default function MyProfile() {
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Full Name</h3>
-                    <p className="mt-1 text-lg text-gray-800">{profile.full_name}</p>
+                    <p className="mt-1 text-lg white">{profile.full_name}</p>
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Email</h3>
-                    <p className="mt-1 text-lg text-gray-800">{profile.email}</p>
+                    <p className="mt-1 text-lg white">{profile.email}</p>
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Phone</h3>
-                    <p className="mt-1 text-lg text-gray-800">{profile.phone}</p>
+                    <p className="mt-1 text-lg white">{profile.phone}</p>
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Shop Name</h3>
-                    <p className="mt-1 text-lg text-gray-800">{profile.shop_name}</p>
+                    <p className="mt-1 text-lg white">{profile.shop_name}</p>
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Shop Address</h3>
-                    <p className="mt-1 text-lg text-gray-800">{profile.shop_address}</p>
+                    <p className="mt-1 text-lg white">{profile.shop_address}</p>
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Status</h3>
@@ -188,10 +188,10 @@ export default function MyProfile() {
         {/* Edit Modal */}
         {editMode && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="bg-gray-800 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               {/* Modal Header */}
               <div className="border-b border-gray-200 px-6 py-4">
-                <h2 className="text-2xl font-bold text-gray-800">Edit Profile</h2>
+                <h2 className="text-2xl font-bold white">Edit Profile</h2>
               </div>
 
               {/* Modal Body */}
@@ -228,7 +228,7 @@ export default function MyProfile() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="full_name" className="block text-sm font-medium text-white mb-1">
                       Full Name
                     </label>
                     <input
@@ -236,11 +236,11 @@ export default function MyProfile() {
                       type="text"
                       value={profile.full_name}
                       onChange={(e) => handleProfileChange('full_name', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="email" className="block text-sm font-medium text-white mb-1">
                       Email
                     </label>
                     <input
@@ -252,7 +252,7 @@ export default function MyProfile() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="phone" className="block text-sm font-medium text-white mb-1">
                       Phone
                     </label>
                     <input
@@ -264,7 +264,7 @@ export default function MyProfile() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="shop_name" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="shop_name" className="block text-sm font-medium text-white mb-1">
                       Shop Name
                     </label>
                     <input
@@ -278,7 +278,7 @@ export default function MyProfile() {
                 </div>
 
                 <div>
-                  <label htmlFor="shop_address" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="shop_address" className="block texthite-sm font-medium text-w mb-1">
                     Shop Address
                   </label>
                   <textarea
@@ -299,7 +299,7 @@ export default function MyProfile() {
                       className="sr-only peer"
                     />
                     <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    <span className="ml-3 text-sm font-medium text-gray-700">Active</span>
+                    <span className="ml-3 text-sm font-medium text-white">Active</span>
                   </label>
                   <label className="inline-flex items-center cursor-pointer">
                     <input
@@ -309,7 +309,7 @@ export default function MyProfile() {
                       className="sr-only peer"
                     />
                     <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    <span className="ml-3 text-sm font-medium text-gray-700">Staff</span>
+                    <span className="ml-3 text-sm font-medium text-white">Staff</span>
                   </label>
                   <label className="inline-flex items-center cursor-pointer">
                     <input
@@ -319,7 +319,7 @@ export default function MyProfile() {
                       className="sr-only peer"
                     />
                     <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    <span className="ml-3 text-sm font-medium text-gray-700">Admin</span>
+                    <span className="ml-3 text-sm font-medium text-white">Admin</span>
                   </label>
                 </div>
               </div>
@@ -332,7 +332,7 @@ export default function MyProfile() {
                     setPreviewImage(null);
                     setSelectedImage(null);
                   }}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="px-4 py-2 border border-gray-300 rounded-md text-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   Cancel
                 </button>

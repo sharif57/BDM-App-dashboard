@@ -104,8 +104,8 @@ export default function Component() {
   };
 
   return (
-    <div className="pt-4">
-      <div className="container mx-auto">
+    <div className="pt-4 p-3 sm:p-4 lg:p-6 w-full">
+      <div className=" ">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-xl font-medium">Categories</h1>

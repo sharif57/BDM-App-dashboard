@@ -452,7 +452,7 @@ export default function Component() {
           data.data.map((notice: Notice) => (
             <div
               key={notice.id}
-              className="bg-[#2a2a2a] rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
+              className="bg-gray-800 rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
             >
               <h2 className="text-lg font-semibold text-green-400 mb-2">{notice.title}</h2>
               <p className="text-gray-300 text-sm mb-4 line-clamp-3">{notice.message}</p>

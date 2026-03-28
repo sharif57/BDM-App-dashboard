@@ -205,7 +205,7 @@ export default function Stock() {
     };
 
     return (
-        <div>
+        <div className="p-3 sm:p-4 lg:p-6 w-full">
             <div className="lg:flex justify-between items-center w-full gap-8 mt-8">
                 <div className="w-full flex flex-col gap-2">
                     <Label htmlFor="search-product" className="text-white">Search Product</Label>
@@ -301,7 +301,7 @@ export default function Stock() {
             ) : null}
 
             <p className="text-white text-end mt-4">Batch ID: {stockDatas?.batch_id}</p>
-            <Table className="border-2 mt-10">
+            <Table className="border-2 bg-gray-800 mt-10">
                 <TableCaption>A list of your recent stock data.</TableCaption>
                 <TableHeader>
                     <TableRow className="text-white">

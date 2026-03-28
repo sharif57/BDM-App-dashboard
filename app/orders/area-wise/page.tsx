@@ -488,7 +488,7 @@ export default function AreaWiseOrders() {
             </div>
 
             {/* Table Section */}
-            <div className="bg-[#23252b] rounded-lg overflow-hidden border border-gray-600 p-4">
+            <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-600 p-4">
                 {filteredOrders.length > 0 ? (
                     <>
                         {/* Table Header */}

@@ -1,348 +1,348 @@
-"use client";
+// "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { 
-  ChevronRight, 
-  ChevronDown, 
-  LogOut, 
-  ShoppingCart, 
-  Settings, 
-  RotateCcw,
-  Package,
-  AlertTriangle,
-  TrendingDown,
-  BarChart3,
-  LayoutDashboard,
-  Users,
-  MapPin,
-  Tag,
-  Building2,
-  FlaskConical,
-  Boxes,
-  Layers,
-  FileText
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { logout } from "@/service/authService";
-import { toast } from "sonner";
-import { useState, useEffect } from "react";
-import {
-  useSettingDataQuery,
-  useUserProfileQuery,
-} from "@/redux/feature/userSlice";
+// import Link from "next/link";
+// import { usePathname, useRouter } from "next/navigation";
+// import { 
+//   ChevronRight, 
+//   ChevronDown, 
+//   LogOut, 
+//   ShoppingCart, 
+//   Settings, 
+//   RotateCcw,
+//   Package,
+//   AlertTriangle,
+//   TrendingDown,
+//   BarChart3,
+//   LayoutDashboard,
+//   Users,
+//   MapPin,
+//   Tag,
+//   Building2,
+//   FlaskConical,
+//   Boxes,
+//   Layers,
+//   FileText
+// } from "lucide-react";
+// import { Button } from "@/components/ui/button";
+// import Image from "next/image";
+// import { logout } from "@/service/authService";
+// import { toast } from "sonner";
+// import { useState, useEffect } from "react";
+// import {
+//   useSettingDataQuery,
+//   useUserProfileQuery,
+// } from "@/redux/feature/userSlice";
 
-// Menu items with their submenus
-const menuItems = [
-  { 
-    name: "Dashboard", 
-    href: "/", 
-    icon: LayoutDashboard,
-    hasSubmenu: false 
-  },
-  { 
-    name: "Products", 
-    href: "/products", 
-    icon: Package,
-    hasSubmenu: true,
-    submenu: [
-      { name: "All Products", href: "/products", icon: Package },
-      { name: "Low Stock", href: "/products/low-stock", icon: AlertTriangle },
-    ]
-  },
-  { 
-    name: "Orders", 
-    href: "/orders", 
-    icon: ShoppingCart,
-    hasSubmenu: true,
-    submenu: [
-      { name: "All Orders", href: "/orders", icon: ShoppingCart },
-      { name: "Area Wise Orders", href: "/orders/area-wise", icon: RotateCcw },
-    ]
-  },
-  { 
-    name: "Notice", 
-    href: "/notice", 
-    icon: FileText,
-    hasSubmenu: false 
-  },
-  { 
-    name: "User", 
-    href: "/user", 
-    icon: Users,
-    hasSubmenu: false 
-  },
-  { 
-    name: "Area", 
-    href: "/area", 
-    icon: MapPin,
-    hasSubmenu: false 
-  },
-  { 
-    name: "Category", 
-    href: "/category", 
-    icon: Tag,
-    hasSubmenu: false 
-  },
-  { 
-    name: "Company", 
-    href: "/company", 
-    icon: Building2,
-    hasSubmenu: false 
-  },
-  { 
-    name: "Generic", 
-    href: "/generic", 
-    icon: FlaskConical,
-    hasSubmenu: false 
-  },
-  { 
-    name: "Banner", 
-    href: "/banner", 
-    icon: Image,
-    hasSubmenu: false 
-  },
-  { 
-    name: "Stock", 
-    href: "/stock", 
-    icon: Boxes,
-    hasSubmenu: false 
-  },
-  { 
-    name: "Batch", 
-    href: "/batch", 
-    icon: Layers,
-    hasSubmenu: false 
-  },
-  { 
-    name: "Privacy Policy", 
-    href: "/privacy-policy", 
-    icon: FileText,
-    hasSubmenu: false 
-  },
-  { 
-    name: "Settings", 
-    href: "/settings", 
-    icon: Settings,
-    hasSubmenu: true,
-    submenu: [
-      { name: "General", href: "/settings" },
-      { name: "Discount", href: "/settings/discounts" },
-    ]
-  },
-];
+// // Menu items with their submenus
+// const menuItems = [
+//   { 
+//     name: "Dashboard", 
+//     href: "/", 
+//     icon: LayoutDashboard,
+//     hasSubmenu: false 
+//   },
+//   { 
+//     name: "Products", 
+//     href: "/products", 
+//     icon: Package,
+//     hasSubmenu: true,
+//     submenu: [
+//       { name: "All Products", href: "/products", icon: Package },
+//       { name: "Low Stock", href: "/products/low-stock", icon: AlertTriangle },
+//     ]
+//   },
+//   { 
+//     name: "Orders", 
+//     href: "/orders", 
+//     icon: ShoppingCart,
+//     hasSubmenu: true,
+//     submenu: [
+//       { name: "All Orders", href: "/orders", icon: ShoppingCart },
+//       { name: "Area Wise Orders", href: "/orders/area-wise", icon: RotateCcw },
+//     ]
+//   },
+//   { 
+//     name: "Notice", 
+//     href: "/notice", 
+//     icon: FileText,
+//     hasSubmenu: false 
+//   },
+//   { 
+//     name: "User", 
+//     href: "/user", 
+//     icon: Users,
+//     hasSubmenu: false 
+//   },
+//   { 
+//     name: "Area", 
+//     href: "/area", 
+//     icon: MapPin,
+//     hasSubmenu: false 
+//   },
+//   { 
+//     name: "Category", 
+//     href: "/category", 
+//     icon: Tag,
+//     hasSubmenu: false 
+//   },
+//   { 
+//     name: "Company", 
+//     href: "/company", 
+//     icon: Building2,
+//     hasSubmenu: false 
+//   },
+//   { 
+//     name: "Generic", 
+//     href: "/generic", 
+//     icon: FlaskConical,
+//     hasSubmenu: false 
+//   },
+//   { 
+//     name: "Banner", 
+//     href: "/banner", 
+//     icon: Image,
+//     hasSubmenu: false 
+//   },
+//   { 
+//     name: "Stock", 
+//     href: "/stock", 
+//     icon: Boxes,
+//     hasSubmenu: false 
+//   },
+//   { 
+//     name: "Batch", 
+//     href: "/batch", 
+//     icon: Layers,
+//     hasSubmenu: false 
+//   },
+//   { 
+//     name: "Privacy Policy", 
+//     href: "/privacy-policy", 
+//     icon: FileText,
+//     hasSubmenu: false 
+//   },
+//   { 
+//     name: "Settings", 
+//     href: "/settings", 
+//     icon: Settings,
+//     hasSubmenu: true,
+//     submenu: [
+//       { name: "General", href: "/settings" },
+//       { name: "Discount", href: "/settings/discounts" },
+//     ]
+//   },
+// ];
 
-export default function Sidebar({ className = "" }: { className?: string }) {
-  const pathname = usePathname();
-  const router = useRouter();
+// export default function Sidebar({ className = "" }: { className?: string }) {
+//   const pathname = usePathname();
+//   const router = useRouter();
 
-  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
+//   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
 
-  const { data } = useSettingDataQuery(undefined);
-  const { data: profileData } = useUserProfileQuery(undefined);
+//   const { data } = useSettingDataQuery(undefined);
+//   const { data: profileData } = useUserProfileQuery(undefined);
 
-  const canViewUserRoute = Boolean(
-    profileData?.is_superuser &&
-    profileData?.is_staff &&
-    profileData?.role === "admin"
-  );
+//   const canViewUserRoute = Boolean(
+//     profileData?.is_superuser &&
+//     profileData?.is_staff &&
+//     profileData?.role === "admin"
+//   );
 
-  // Initialize expanded states based on current path
-  useEffect(() => {
-    const newExpandedState: Record<string, boolean> = {};
+//   // Initialize expanded states based on current path
+//   useEffect(() => {
+//     const newExpandedState: Record<string, boolean> = {};
     
-    menuItems.forEach(item => {
-      if (item.hasSubmenu && item.submenu) {
-        // Check if current path matches any submenu item or is a subpath of the main route
-        const isAnySubActive = item.submenu.some(sub => {
-          // For parent route exactly (like /products)
-          if (pathname === sub.href) return true;
-          // For sub-routes (like /products/low-stock)
-          if (pathname.startsWith(`${sub.href}/`)) return true;
-          // For routes that start with the parent path but are not exactly the parent
-          if (sub.href === item.href && pathname.startsWith(`${item.href}/`)) return true;
-          return false;
-        });
+//     menuItems.forEach(item => {
+//       if (item.hasSubmenu && item.submenu) {
+//         // Check if current path matches any submenu item or is a subpath of the main route
+//         const isAnySubActive = item.submenu.some(sub => {
+//           // For parent route exactly (like /products)
+//           if (pathname === sub.href) return true;
+//           // For sub-routes (like /products/low-stock)
+//           if (pathname.startsWith(`${sub.href}/`)) return true;
+//           // For routes that start with the parent path but are not exactly the parent
+//           if (sub.href === item.href && pathname.startsWith(`${item.href}/`)) return true;
+//           return false;
+//         });
         
-        if (isAnySubActive) {
-          newExpandedState[item.name] = true;
-        }
-      }
-    });
+//         if (isAnySubActive) {
+//           newExpandedState[item.name] = true;
+//         }
+//       }
+//     });
     
-    setExpandedMenus(prev => ({ ...prev, ...newExpandedState }));
-  }, [pathname]);
+//     setExpandedMenus(prev => ({ ...prev, ...newExpandedState }));
+//   }, [pathname]);
 
-  // Check if menu item is active
-  const isItemActive = (item: any) => {
-    if (item.href === "/") return pathname === "/";
+//   // Check if menu item is active
+//   const isItemActive = (item: any) => {
+//     if (item.href === "/") return pathname === "/";
     
-    if (item.hasSubmenu && item.submenu) {
-      // Check if any submenu item is active
-      const anySubActive = item.submenu.some(sub => {
-        // Exact match
-        if (pathname === sub.href) return true;
-        // Sub-route match (like /products/low-stock)
-        if (pathname.startsWith(`${sub.href}/`)) return true;
-        // For parent route when on sub-routes
-        if (sub.href === item.href && pathname.startsWith(`${item.href}/`)) return true;
-        return false;
-      });
+//     if (item.hasSubmenu && item.submenu) {
+//       // Check if any submenu item is active
+//       const anySubActive = item.submenu.some(sub => {
+//         // Exact match
+//         if (pathname === sub.href) return true;
+//         // Sub-route match (like /products/low-stock)
+//         if (pathname.startsWith(`${sub.href}/`)) return true;
+//         // For parent route when on sub-routes
+//         if (sub.href === item.href && pathname.startsWith(`${item.href}/`)) return true;
+//         return false;
+//       });
       
-      return anySubActive;
-    }
+//       return anySubActive;
+//     }
     
-    return pathname === item.href || pathname.startsWith(`${item.href}/`);
-  };
+//     return pathname === item.href || pathname.startsWith(`${item.href}/`);
+//   };
 
-  // Check if submenu item is active
-  const isSubItemActive = (href: string, parentHref: string) => {
-    // Exact match
-    if (pathname === href) return true;
-    // Sub-route match
-    if (pathname.startsWith(`${href}/`)) return true;
-    // For parent route when on sub-routes (e.g., /products/low-stock should highlight All Products)
-    if (href === parentHref && pathname.startsWith(`${parentHref}/`) && pathname !== parentHref) {
-      return false; // Don't highlight All Products when on sub-routes
-    }
-    return false;
-  };
+//   // Check if submenu item is active
+//   const isSubItemActive = (href: string, parentHref: string) => {
+//     // Exact match
+//     if (pathname === href) return true;
+//     // Sub-route match
+//     if (pathname.startsWith(`${href}/`)) return true;
+//     // For parent route when on sub-routes (e.g., /products/low-stock should highlight All Products)
+//     if (href === parentHref && pathname.startsWith(`${parentHref}/`) && pathname !== parentHref) {
+//       return false; // Don't highlight All Products when on sub-routes
+//     }
+//     return false;
+//   };
 
-  // Toggle menu expansion
-  const toggleMenu = (menuName: string) => {
-    setExpandedMenus(prev => ({
-      ...prev,
-      [menuName]: !prev[menuName]
-    }));
-  };
+//   // Toggle menu expansion
+//   const toggleMenu = (menuName: string) => {
+//     setExpandedMenus(prev => ({
+//       ...prev,
+//       [menuName]: !prev[menuName]
+//     }));
+//   };
 
-  // Hide sidebar on auth pages
-  if (pathname === "/auth/login" || pathname === "/register") {
-    return null;
-  }
+//   // Hide sidebar on auth pages
+//   if (pathname === "/auth/login" || pathname === "/register") {
+//     return null;
+//   }
 
-  const handleLogOut = async () => {
-    toast.info("Logging out...");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    await logout();
-    setTimeout(() => router.push("/auth/login"), 1000);
-  };
+//   const handleLogOut = async () => {
+//     toast.info("Logging out...");
+//     localStorage.removeItem("accessToken");
+//     localStorage.removeItem("refreshToken");
+//     await logout();
+//     setTimeout(() => router.push("/auth/login"), 1000);
+//   };
 
-  const IMAGE = process.env.NEXT_PUBLIC_IMAGE_URL;
+//   const IMAGE = process.env.NEXT_PUBLIC_IMAGE_URL;
 
-  // Filter menu items based on user permissions
-  const filteredMenuItems = canViewUserRoute
-    ? menuItems
-    : menuItems.filter((item) => item.name !== "User");
+//   // Filter menu items based on user permissions
+//   const filteredMenuItems = canViewUserRoute
+//     ? menuItems
+//     : menuItems.filter((item) => item.name !== "User");
 
-  // Reusable Submenu Renderer - Unified design for all submenus
-  const renderSubmenu = (submenu: any[], parentHref: string) => {
-    return (
-      <div className="ml-6 mt-1 space-y-1 border-l-2 border-gray-600 pl-3">
-        {submenu.map((subItem) => {
-          const isSubActive = isSubItemActive(subItem.href, parentHref);
+//   // Reusable Submenu Renderer - Unified design for all submenus
+//   const renderSubmenu = (submenu: any[], parentHref: string) => {
+//     return (
+//       <div className="ml-6 mt-1 space-y-1 border-l-2 border-gray-600 pl-3">
+//         {submenu.map((subItem) => {
+//           const isSubActive = isSubItemActive(subItem.href, parentHref);
           
-          return (
-            <Link key={subItem.name} href={subItem.href}>
-              <div
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all ${
-                  isSubActive
-                    ? "bg-gray-700 text-white"
-                    : "text-gray-400 hover:bg-gray-700 hover:text-white"
-                }`}
-              >
-                {subItem.icon && <subItem.icon className="w-4 h-4" />}
-                <span className="text-sm font-medium">{subItem.name}</span>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-    );
-  };
+//           return (
+//             <Link key={subItem.name} href={subItem.href}>
+//               <div
+//                 className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all ${
+//                   isSubActive
+//                     ? "bg-gray-700 text-white"
+//                     : "text-gray-400 hover:bg-gray-700 hover:text-white"
+//                 }`}
+//               >
+//                 {subItem.icon && <subItem.icon className="w-4 h-4" />}
+//                 <span className="text-sm font-medium">{subItem.name}</span>
+//               </div>
+//             </Link>
+//           );
+//         })}
+//       </div>
+//     );
+//   };
 
-  return (
-    <div className={`bg-[#2c2e34] p-4 flex flex-col h-full overflow-hidden ${className}`}>
-      {/* Logo */}
-      <div className="flex items-center justify-center mt-2 mb-7">
-        <Image
-          src={data?.data?.[0]?.logo ? `${IMAGE}${data.data[0].logo}` : "/placeholder.png"}
-          alt="Logo"
-          width={400}
-          height={400}
-          className="size-[80px] object-contain"
-        />
-      </div>
+//   return (
+//     <div className={`bg-[#2c2e34] p-4 flex flex-col h-full overflow-hidden ${className}`}>
+//       {/* Logo */}
+//       <div className="flex items-center justify-center mt-2 mb-7">
+//         <Image
+//           src={data?.data?.[0]?.logo ? `${IMAGE}${data.data[0].logo}` : "/placeholder.png"}
+//           alt="Logo"
+//           width={400}
+//           height={400}
+//           className="size-[80px] object-contain"
+//         />
+//       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto pr-1">
-        {filteredMenuItems.map((item) => {
-          const isActive = isItemActive(item);
-          const isExpanded = expandedMenus[item.name];
+//       {/* Navigation */}
+//       <nav className="flex-1 overflow-y-auto pr-1">
+//         {filteredMenuItems.map((item) => {
+//           const isActive = isItemActive(item);
+//           const isExpanded = expandedMenus[item.name];
 
-          // Menu item with submenu
-          if (item.hasSubmenu) {
-            return (
-              <div key={item.name} className="mb-1">
-                <div
-                  onClick={() => toggleMenu(item.name)}
-                  className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all ${
-                    isActive || isExpanded
-                      ? "bg-gray-700 text-white"
-                      : "text-gray-400 hover:bg-gray-700 hover:text-white"
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    {/* <item.icon className="w-5 h-5" /> */}
-                    <span className="font-medium">{item.name}</span>
-                  </div>
-                  <ChevronDown 
-                    className={`w-4 h-4 transition-transform duration-200 ${
-                      isExpanded ? "rotate-180" : ""
-                    }`} 
-                  />
-                </div>
+//           // Menu item with submenu
+//           if (item.hasSubmenu) {
+//             return (
+//               <div key={item.name} className="mb-1">
+//                 <div
+//                   onClick={() => toggleMenu(item.name)}
+//                   className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all ${
+//                     isActive || isExpanded
+//                       ? "bg-gray-700 text-white"
+//                       : "text-gray-400 hover:bg-gray-700 hover:text-white"
+//                   }`}
+//                 >
+//                   <div className="flex items-center space-x-3">
+//                     {/* <item.icon className="w-5 h-5" /> */}
+//                     <span className="font-medium">{item.name}</span>
+//                   </div>
+//                   <ChevronDown 
+//                     className={`w-4 h-4 transition-transform duration-200 ${
+//                       isExpanded ? "rotate-180" : ""
+//                     }`} 
+//                   />
+//                 </div>
 
-                {isExpanded && renderSubmenu(item.submenu!, item.href)}
-              </div>
-            );
-          }
+//                 {isExpanded && renderSubmenu(item.submenu!, item.href)}
+//               </div>
+//             );
+//           }
 
-          // Regular menu item without submenu
-          return (
-            <Link key={item.name} href={item.href}>
-              <div
-                className={`flex items-center justify-between p-3 mb-1 rounded-lg cursor-pointer transition-all ${
-                  isActive
-                    ? "bg-gray-700 text-white"
-                    : "text-gray-400 hover:bg-gray-700 hover:text-white"
-                }`}
-              >
-                <div className="flex items-center space-x-3">
-                  {/* <item.icon className="w-5 h-5" /> */}
-                  <span className="font-medium">{item.name}</span>
-                </div>
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </Link>
-          );
-        })}
-      </nav>
+//           // Regular menu item without submenu
+//           return (
+//             <Link key={item.name} href={item.href}>
+//               <div
+//                 className={`flex items-center justify-between p-3 mb-1 rounded-lg cursor-pointer transition-all ${
+//                   isActive
+//                     ? "bg-gray-700 text-white"
+//                     : "text-gray-400 hover:bg-gray-700 hover:text-white"
+//                 }`}
+//               >
+//                 <div className="flex items-center space-x-3">
+//                   {/* <item.icon className="w-5 h-5" /> */}
+//                   <span className="font-medium">{item.name}</span>
+//                 </div>
+//                 <ChevronRight className="w-4 h-4" />
+//               </div>
+//             </Link>
+//           );
+//         })}
+//       </nav>
 
-      {/* Logout */}
-      <Button
-        onClick={handleLogOut}
-        variant="ghost"
-        className="mt-3 shrink-0 text-red-400 hover:text-red-300 hover:bg-red-900/20 justify-start p-3"
-      >
-        <LogOut className="w-5 h-5 mr-2" />
-        Log Out
-      </Button>
-    </div>
-  );
-}
+//       {/* Logout */}
+//       <Button
+//         onClick={handleLogOut}
+//         variant="ghost"
+//         className="mt-3 shrink-0 text-red-400 hover:text-red-300 hover:bg-red-900/20 justify-start p-3"
+//       >
+//         <LogOut className="w-5 h-5 mr-2" />
+//         Log Out
+//       </Button>
+//     </div>
+//   );
+// }
 // "use client";
 
 // import Link from "next/link";
@@ -530,3 +530,356 @@ export default function Sidebar({ className = "" }: { className?: string }) {
 //     </div>
 //   );
 // }
+
+"use client";
+
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { 
+  ChevronRight, 
+  ChevronDown, 
+  LogOut, 
+  ShoppingCart, 
+  Settings, 
+  RotateCcw,
+  Package,
+  AlertTriangle,
+  TrendingDown,
+  BarChart3,
+  LayoutDashboard,
+  Users,
+  MapPin,
+  Tag,
+  Building2,
+  FlaskConical,
+  Boxes,
+  Layers,
+  FileText,
+  ImageDown
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { logout } from "@/service/authService";
+import { toast } from "sonner";
+import { useState, useEffect } from "react";
+import {
+  useSettingDataQuery,
+  useUserProfileQuery,
+} from "@/redux/feature/userSlice";
+
+// Menu items with their submenus
+const menuItems = [
+  { 
+    name: "Dashboard", 
+    href: "/", 
+    icon: LayoutDashboard,
+    hasSubmenu: false 
+  },
+  { 
+    name: "Products", 
+    href: "/products", 
+    icon: Package,
+    hasSubmenu: true,
+    submenu: [
+      { name: "All Products", href: "/products", icon: Package },
+      { name: "Low Stock", href: "/products/low-stock", icon: AlertTriangle },
+    ]
+  },
+  { 
+    name: "Orders", 
+    href: "/orders", 
+    icon: ShoppingCart,
+    hasSubmenu: true,
+    submenu: [
+      { name: "All Orders", href: "/orders", icon: ShoppingCart },
+      { name: "Area Wise Orders", href: "/orders/area-wise", icon: RotateCcw },
+    ]
+  },
+  { 
+    name: "Notice", 
+    href: "/notice", 
+    icon: FileText,
+    hasSubmenu: false 
+  },
+  { 
+    name: "User", 
+    href: "/user", 
+    icon: Users,
+    hasSubmenu: false 
+  },
+  { 
+    name: "Area", 
+    href: "/area", 
+    icon: MapPin,
+    hasSubmenu: false 
+  },
+  { 
+    name: "Category", 
+    href: "/category", 
+    icon: Tag,
+    hasSubmenu: false 
+  },
+  { 
+    name: "Company", 
+    href: "/company", 
+    icon: Building2,
+    hasSubmenu: false 
+  },
+  { 
+    name: "Generic", 
+    href: "/generic", 
+    icon: FlaskConical,
+    hasSubmenu: false 
+  },
+  { 
+    name: "Banner", 
+    href: "/banner", 
+    icon: ImageDown,
+    hasSubmenu: false 
+  },
+  { 
+    name: "Stock", 
+    href: "/stock", 
+    icon: Boxes,
+    hasSubmenu: false 
+  },
+  { 
+    name: "Batch", 
+    href: "/batch", 
+    icon: Layers,
+    hasSubmenu: false 
+  },
+  { 
+    name: "Privacy Policy", 
+    href: "/privacy-policy", 
+    icon: FileText,
+    hasSubmenu: false 
+  },
+  { 
+    name: "Settings", 
+    href: "/settings", 
+    icon: Settings,
+    hasSubmenu: true,
+    submenu: [
+      { name: "General", href: "/settings" },
+      { name: "Discount", href: "/settings/discounts" },
+    ]
+  },
+];
+
+export default function Sidebar({ className = "" }: { className?: string }) {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
+
+  const { data } = useSettingDataQuery(undefined);
+  const { data: profileData } = useUserProfileQuery(undefined);
+
+  const canViewUserRoute = Boolean(
+    profileData?.is_superuser &&
+    profileData?.is_staff &&
+    profileData?.role === "admin"
+  );
+
+  // Initialize expanded states based on current path
+  useEffect(() => {
+    const newExpandedState: Record<string, boolean> = {};
+    
+    menuItems.forEach(item => {
+      if (item.hasSubmenu && item.submenu) {
+        // Check if current path matches any submenu item or is a subpath of the main route
+        const isAnySubActive = item.submenu.some(sub => {
+          // For parent route exactly (like /products)
+          if (pathname === sub.href) return true;
+          // For sub-routes (like /products/low-stock)
+          if (pathname.startsWith(`${sub.href}/`)) return true;
+          // For routes that start with the parent path but are not exactly the parent
+          if (sub.href === item.href && pathname.startsWith(`${item.href}/`)) return true;
+          return false;
+        });
+        
+        if (isAnySubActive) {
+          newExpandedState[item.name] = true;
+        }
+      }
+    });
+    
+    setExpandedMenus(prev => ({ ...prev, ...newExpandedState }));
+  }, [pathname]);
+
+  // Check if menu item is active
+  const isItemActive = (item: any) => {
+    if (item.href === "/") return pathname === "/";
+    
+    if (item.hasSubmenu && item.submenu) {
+      // Check if any submenu item is active
+      const anySubActive = item.submenu.some(sub => {
+        // Exact match
+        if (pathname === sub.href) return true;
+        // Sub-route match (like /products/low-stock)
+        if (pathname.startsWith(`${sub.href}/`)) return true;
+        // For parent route when on sub-routes
+        if (sub.href === item.href && pathname.startsWith(`${item.href}/`)) return true;
+        return false;
+      });
+      
+      return anySubActive;
+    }
+    
+    return pathname === item.href || pathname.startsWith(`${item.href}/`);
+  };
+
+  // Check if submenu item is active
+  const isSubItemActive = (href: string) => {
+    // Exact match
+    if (pathname === href) return true;
+    // Sub-route match (e.g., /products/low-stock matches /products/low-stock/details)
+    if (pathname.startsWith(`${href}/`)) return true;
+    return false;
+  };
+
+  // Toggle menu expansion
+  const toggleMenu = (menuName: string) => {
+    setExpandedMenus(prev => ({
+      ...prev,
+      [menuName]: !prev[menuName]
+    }));
+  };
+
+  // Hide sidebar on auth pages
+  if (pathname === "/auth/login" || pathname === "/register") {
+    return null;
+  }
+
+  const handleLogOut = async () => {
+    toast.info("Logging out...");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    await logout();
+    setTimeout(() => router.push("/auth/login"), 1000);
+  };
+
+  const IMAGE = process.env.NEXT_PUBLIC_IMAGE_URL;
+
+  // Filter menu items based on user permissions
+  const filteredMenuItems = canViewUserRoute
+    ? menuItems
+    : menuItems.filter((item) => item.name !== "User");
+
+  // Reusable Submenu Renderer - Unified design for all submenus
+  const renderSubmenu = (submenu: any[]) => {
+    return (
+      <div className="ml-6 mt-2 space-y-1 border-l-2 border-blue-500/30 pl-3">
+        {submenu.map((subItem) => {
+          const isSubActive = isSubItemActive(subItem.href);
+          
+          return (
+            <Link key={subItem.name} href={subItem.href}>
+              <div
+                className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${
+                  isSubActive
+                    ? "bg-blue-500/20 text-blue-100 border-l-2 border-blue-500 ml-[-3px] pl-[11px]"
+                    : "text-gray-400 hover:bg-gray-700 hover:text-white"
+                }`}
+              >
+                {subItem.icon && <subItem.icon className="w-4 h-4" />}
+                <span className="text-sm font-medium">{subItem.name}</span>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    );
+  };
+
+  return (
+    <div className={`bg-[#2c2e34] p-4 flex flex-col h-full overflow-hidden ${className}`}>
+      {/* Logo Header */}
+      <div className="mb-8 ">
+        <div className="flex items-center justify-center mb-4">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl blur-lg opacity-50"></div>
+            <Image
+              src={data?.data?.[0]?.logo ? `${IMAGE}${data.data[0].logo}` : "/placeholder.png"}
+              alt="Logo"
+              width={400}
+              height={400}
+              className="relative size-[70px] object-contain bg-gray-800 rounded-xl p-2"
+            />
+          </div>
+        </div>
+        <div className="text-center">
+          <h1 className="text-xl font-bold text-white tracking-tight">Admin Panel</h1>
+          <p className="text-xs text-gray-400 mt-1">Dashboard</p>
+        </div>
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent mt-4"></div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto pr-2 space-y-2">
+        {filteredMenuItems.map((item) => {
+          const isActive = isItemActive(item);
+          const isExpanded = expandedMenus[item.name];
+
+          // Menu item with submenu
+          if (item.hasSubmenu) {
+            return (
+              <div key={item.name}>
+                <div
+                  onClick={() => toggleMenu(item.name)}
+                  className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                    isActive || isExpanded
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                      : "text-gray-400 hover:bg-gray-700 hover:text-white"
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <item.icon className="w-5 h-5" />
+                    <span className="font-medium">{item.name}</span>
+                  </div>
+                  <ChevronDown 
+                    className={`w-4 h-4 transition-transform duration-200 ${
+                      isExpanded ? "rotate-180" : ""
+                    }`} 
+                  />
+                </div>
+
+                {isExpanded && renderSubmenu(item.submenu!)}
+              </div>
+            );
+          }
+
+          // Regular menu item without submenu
+          return (
+            <Link key={item.name} href={item.href}>
+              <div
+                className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                  isActive
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                    : "text-gray-400 hover:bg-gray-700 hover:text-white"
+                }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <item.icon className="w-5 h-5" />
+                  <span className="font-medium">{item.name}</span>
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </div>
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Logout */}
+      <Button
+        onClick={handleLogOut}
+        variant="ghost"
+        className="mt-3 shrink-0 text-red-400 hover:text-red-300 hover:bg-red-900/20 justify-start p-3"
+      >
+        <LogOut className="w-5 h-5 mr-2" />
+        Log Out
+      </Button>
+    </div>
+  );
+}

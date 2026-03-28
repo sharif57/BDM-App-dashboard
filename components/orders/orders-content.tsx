@@ -750,7 +750,7 @@ export default function Component() {
       )}
 
       {!isLoading && !isError && orders.length > 0 && (
-        <div className="bg-[#23252b] rounded-lg overflow-hidden">
+        <div className="bg-gray-800 rounded-lg overflow-hidden">
           <div className="grid grid-cols-7 gap-4 p-4 border-b border-gray-600 text-sm bg-[#2c2e33] font-medium text-gray-300">
             <div>Invoice Number</div>
             <div>Date</div>

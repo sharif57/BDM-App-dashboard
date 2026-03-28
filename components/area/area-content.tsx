@@ -439,7 +439,7 @@ export default function AreaContent() {
         </div>
 
         {/* Table */}
-        <div className="bg-[#23252b] w-full rounded-lg overflow-hidden">
+        <div className="bg-gray-800 w-full rounded-lg overflow-hidden">
           <div className="grid grid-cols-4 gap-4 p-4 bg-gray-600 text-white text-sm font-medium">
             <div>Area ID</div>
             <div>Area Name</div>
